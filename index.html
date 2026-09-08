@@ -194,14 +194,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.sb.createClient(SB_URL, SB_KEY);
 
   async function checkAuth() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
     if (user) {
-      const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
@@ -209,7 +210,7 @@
   }
 
   async function logout() {
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
     location.reload();
   }
 
@@ -219,7 +220,7 @@
   }
 
   async function loadPools() {
-    const { data: pools } = await supabase.from('pools').select('*').limit(6);
+    const { data: pools } = await sb.from('pools').select('*').limit(6);
     const grid = document.getElementById('poolGrid');
     if (!pools || pools.length === 0) {
       grid.innerHTML = '<div class="empty">등록된 풀장이 없습니다</div>';
@@ -238,7 +239,7 @@
   }
 
   async function loadBuddyPosts() {
-    const { data: posts } = await supabase
+    const { data: posts } = await sb
       .from('buddy_posts')
       .select('*, profiles(username, license_type, license_level), pools(name, region)')
       .order('created_at', { ascending: false })
@@ -266,7 +267,7 @@
   }
 
   async function loadLessons() {
-    const { data: lessons } = await supabase
+    const { data: lessons } = await sb
       .from('lessons')
       .select('*, profiles(username, license_type, license_level), pools(name, region)')
       .order('date', { ascending: true })
@@ -309,6 +310,7 @@
   loadPools();
   loadBuddyPosts();
   loadLessons();
+})();
 </script>
 </body>
 </html>
