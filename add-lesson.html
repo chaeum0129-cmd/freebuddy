@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 강습 등록</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; }
+    .wrap { max-width: 560px; margin: 40px auto; padding: 0 24px; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 32px; }
+    h2 { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    input, select, textarea { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; background: #fff; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #1D9E75; }
+    textarea { resize: vertical; min-height: 80px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .btn-submit { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit:hover { background: #178a65; }
+    .error { color: #e53935; font-size: 12px; margin-top: 8px; display: none; text-align: center; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+  <button class="btn-ghost" onclick="location.href='my-page.html'">마이페이지</button>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h2>강습 일정 등록</h2>
+    <div class="form-group">
+      <label>풀장</label>
+      <select id="poolId"><option value="">풀장 선택</option></select>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>날짜</label>
+        <input type="date" id="date">
+      </div>
+      <div class="form-group">
+        <label>시간대</label>
+        <select id="timeSlot">
+          <option value="09:00~11:00">09:00 ~ 11:00</option>
+          <option value="11:00~13:00">11:00 ~ 13:00</option>
+          <option value="14:00~16:00">14:00 ~ 16:00</option>
+          <option value="16:00~18:00">16:00 ~ 18:00</option>
+          <option value="19:00~21:00">19:00 ~ 21:00</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label>수준</label>
+        <select id="level">
+          <option value="입문">입문</option>
+          <option value="초급">초급</option>
+          <option value="중급">중급</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>최대 인원</label>
+        <input type="number" id="maxStudents" value="1" min="1" max="10">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>가격</label>
+      <input type="text" id="price" placeholder="예: 50,000원 / 협의 가능">
+    </div>
+    <div class="form-group">
+      <label>메모 (선택)</label>
+      <textarea id="note" placeholder="준비물, 참고사항 등을 입력해주세요"></textarea>
+    </div>
+    <div class="error" id="errMsg"></div>
+    <button class="btn-submit" onclick="submitLesson()">강습 등록하기</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let currentUser = null;
+
+  async function init() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { location.href = 'login.html'; return; }
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (!profile || profile.instructor_status !== 'approved') { alert('강사 승인 후 이용 가능합니다'); location.href = 'my-page.html'; return; }
+    currentUser = user;
+    const { data: pools } = await supabase.from('pools').select('id, name, region').order('name');
+    const select = document.getElementById('poolId');
+    (pools || []).forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = `${p.name} (${p.region})`; select.appendChild(opt); });
+    document.getElementById('date').min = new Date().toISOString().split('T')[0];
+  }
+
+  async function submitLesson() {
+    const poolId = document.getElementById('poolId').value;
+    const date = document.getElementById('date').value;
+    const timeSlot = document.getElementById('timeSlot').value;
+    const level = document.getElementById('level').value;
+    const maxStudents = parseInt(document.getElementById('maxStudents').value);
+    const price = document.getElementById('price').value.trim();
+    const note = document.getElementById('note').value.trim();
+    const errEl = document.getElementById('errMsg');
+    errEl.style.display = 'none';
+
+    if (!poolId || !date) { errEl.textContent = '풀장과 날짜를 선택해주세요'; errEl.style.display = 'block'; return; }
+
+    const btn = document.querySelector('.btn-submit');
+    btn.textContent = '등록 중...'; btn.disabled = true;
+
+    const { error } = await supabase.from('lessons').insert({ instructor_id: currentUser.id, pool_id: poolId, date, time_slot: timeSlot, level, max_students: maxStudents, price, note });
+    if (error) { errEl.textContent = '등록 중 오류가 발생했습니다'; errEl.style.display = 'block'; btn.textContent = '강습 등록하기'; btn.disabled = false; return; }
+    alert('강습 일정이 등록됐습니다!');
+    location.href = 'my-page.html';
+  }
+
+  init();
+</script>
+</body>
+</html>

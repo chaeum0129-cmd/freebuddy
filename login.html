@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 로그인</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .wrap { max-width: 400px; margin: 64px auto; padding: 0 24px; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 36px; }
+    h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px; }
+    .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    input { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; }
+    input:focus { outline: none; border-color: #1D9E75; }
+    .btn-submit { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit:hover { background: #178a65; }
+    .signup-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
+    .signup-link a { color: #1D9E75; font-weight: 600; text-decoration: none; }
+    .error { color: #e53935; font-size: 13px; margin-top: 10px; display: none; text-align: center; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h2>로그인</h2>
+    <p class="sub">FreeBuddy에 오신 것을 환영합니다</p>
+
+    <div class="form-group">
+      <label>이메일</label>
+      <input type="email" id="email" placeholder="example@email.com">
+    </div>
+    <div class="form-group">
+      <label>비밀번호</label>
+      <input type="password" id="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') login()">
+    </div>
+
+    <div class="error" id="loginErr"></div>
+    <button class="btn-submit" onclick="login()">로그인</button>
+
+    <div class="signup-link">
+      계정이 없으신가요? <a href="signup.html">회원가입</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errEl = document.getElementById('loginErr');
+    errEl.style.display = 'none';
+
+    if (!email || !password) {
+      errEl.textContent = '이메일과 비밀번호를 입력해주세요';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    const btn = document.querySelector('.btn-submit');
+    btn.textContent = '로그인 중...';
+    btn.disabled = true;
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다';
+      errEl.style.display = 'block';
+      btn.textContent = '로그인';
+      btn.disabled = false;
+    } else {
+      location.href = 'index.html';
+    }
+  }
+</script>
+</body>
+</html>
