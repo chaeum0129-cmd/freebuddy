@@ -15,7 +15,7 @@
     h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px; }
     .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
     .type-btns { display: flex; gap: 10px; margin-bottom: 24px; }
-    .type-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; text-align: center; transition: all 0.15s; }
+    .type-btn { flex: 1; padding: 12px; border: 2px solid #e9ecef; border-radius: 10px; background: #fff; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; text-align: center; transition: all 0.15s; position: relative; z-index: 1; }
     .type-btn.active { border-color: #1D9E75; color: #1D9E75; background: #e8f8f2; }
     .form-group { margin-bottom: 16px; }
     label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
@@ -24,7 +24,6 @@
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .upload-area { border: 2px dashed #ddd; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; transition: border-color 0.15s; }
     .upload-area:hover { border-color: #1D9E75; }
-    .upload-area i { font-size: 28px; color: #ccc; margin-bottom: 8px; }
     .upload-area p { font-size: 13px; color: #999; }
     .upload-area .hint { font-size: 11px; color: #bbb; margin-top: 4px; }
     #uploadedName { font-size: 12px; color: #1D9E75; margin-top: 8px; display: none; }
@@ -35,6 +34,7 @@
     .login-link a { color: #1D9E75; font-weight: 600; text-decoration: none; }
     .error { color: #e53935; font-size: 12px; margin-top: 6px; display: none; }
     .notice { background: #e8f8f2; border: 1px solid #9FE1CB; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #0F6E56; margin-bottom: 16px; display: none; }
+    #licenseOtherGroup { display: none; margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -48,8 +48,8 @@
     <p class="sub">FreeBuddy와 함께 프리다이빙을 즐겨보세요</p>
 
     <div class="type-btns">
-      <button class="type-btn active" onclick="setType('member')">🤿 일반 회원</button>
-      <button class="type-btn" onclick="setType('instructor')">🏅 강사</button>
+      <button type="button" class="type-btn active" onclick="setType('member')">🤿 일반 회원</button>
+      <button type="button" class="type-btn" onclick="setType('instructor')">🏅 강사</button>
     </div>
 
     <div class="notice" id="instructorNotice">
@@ -77,23 +77,26 @@
     <div class="row">
       <div class="form-group">
         <label>자격증 종류</label>
-        <select id="licenseType">
+        <select id="licenseType" onchange="checkOtherLicense()">
           <option value="">선택</option>
           <option value="AIDA">AIDA</option>
           <option value="SSI">SSI</option>
           <option value="PADI">PADI</option>
+          <option value="CMAS">CMAS</option>
           <option value="기타">기타</option>
         </select>
+        <div id="licenseOtherGroup">
+          <input type="text" id="licenseOther" placeholder="자격증 이름 직접 입력">
+        </div>
       </div>
       <div class="form-group">
         <label>레벨</label>
         <select id="licenseLevel">
           <option value="">선택</option>
-          <option value="1스타">1스타</option>
-          <option value="2스타">2스타</option>
-          <option value="3스타">3스타</option>
-          <option value="4스타">4스타</option>
-          <option value="강사">강사</option>
+          <option value="입문">입문 (Free Diver)</option>
+          <option value="중급">중급 (Advanced)</option>
+          <option value="상급">상급 (Master)</option>
+          <option value="강사">강사 (Instructor)</option>
         </select>
       </div>
     </div>
@@ -104,13 +107,18 @@
         <option value="">선택</option>
         <option value="서울">서울</option>
         <option value="경기">경기</option>
-        <option value="부산">부산</option>
-        <option value="제주">제주</option>
         <option value="인천">인천</option>
-        <option value="대구">대구</option>
-        <option value="광주">광주</option>
+        <option value="강원">강원</option>
+        <option value="충청">충청</option>
         <option value="대전">대전</option>
-        <option value="기타">기타</option>
+        <option value="세종">세종</option>
+        <option value="전라">전라</option>
+        <option value="광주">광주</option>
+        <option value="경상">경상</option>
+        <option value="부산">부산</option>
+        <option value="대구">대구</option>
+        <option value="울산">울산</option>
+        <option value="제주">제주</option>
       </select>
     </div>
 
@@ -162,6 +170,11 @@
     document.getElementById('instructorNotice').style.display = show ? 'block' : 'none';
   }
 
+  function checkOtherLicense() {
+    const val = document.getElementById('licenseType').value;
+    document.getElementById('licenseOtherGroup').style.display = val === '기타' ? 'block' : 'none';
+  }
+
   function showFileName() {
     const file = document.getElementById('licenseFile').files[0];
     if (file) {
@@ -186,7 +199,11 @@
     const username = document.getElementById('username').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
-    const licenseType = document.getElementById('licenseType').value;
+    let licenseType = document.getElementById('licenseType').value;
+    if (licenseType === '기타') {
+      const other = document.getElementById('licenseOther').value.trim();
+      if (other) licenseType = other;
+    }
     const licenseLevel = document.getElementById('licenseLevel').value;
     const region = document.getElementById('region').value;
     const intro = document.getElementById('intro').value.trim();
@@ -234,9 +251,9 @@
       if (profileError) throw profileError;
 
       if (userType === 'instructor') {
-        alert('가입 신청이 완료되었습니다!\n자격증 확인 후 강사 승인이 이루어집니다 (1~2일 소요)');
+        alert('가입 신청이 완료됐습니다!\n자격증 확인 후 강사 승인이 이루어집니다 (1~2일 소요)');
       } else {
-        alert('가입이 완료되었습니다! 이메일을 확인해주세요.');
+        alert('가입이 완료됐습니다! 이메일을 확인해주세요.');
       }
       location.href = 'login.html';
     } catch (err) {
