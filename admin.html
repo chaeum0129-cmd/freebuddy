@@ -31,11 +31,19 @@
     .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
     .btn-submit { padding: 12px 28px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
     .btn-submit:hover { background: #178a65; }
-    .pool-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f1f3f5; }
+    .pool-item { padding: 16px 0; border-bottom: 1px solid #f1f3f5; }
     .pool-item:last-child { border: none; }
-    .pool-item-info { font-size: 14px; color: #333; }
+    .pool-item-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .pool-item-info { font-size: 14px; color: #333; font-weight: 600; }
     .pool-item-hours { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.6; }
-    .btn-del { padding: 5px 12px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; font-size: 12px; cursor: pointer; white-space: nowrap; margin-left: 12px; }
+    .pool-item-btns { display: flex; gap: 6px; flex-shrink: 0; margin-left: 12px; }
+    .btn-edit { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #555; font-size: 12px; cursor: pointer; }
+    .btn-edit:hover { border-color: #1D9E75; color: #1D9E75; }
+    .btn-del { padding: 5px 12px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; font-size: 12px; cursor: pointer; }
+    .pool-edit-form { background: #f8f9fa; border-radius: 10px; padding: 16px; margin-top: 12px; display: none; }
+    .pool-edit-form.show { display: block; }
+    .btn-save { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 6px; }
+    .btn-cancel-edit { padding: 8px 20px; background: #fff; color: #555; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; cursor: pointer; }
     .empty { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
     .loading { text-align: center; padding: 24px; color: #999; font-size: 13px; }
     .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; }
@@ -101,6 +109,7 @@
     <div id="poolList"><div class="loading">불러오는 중...</div></div>
   </div>
 </div>
+
 <script>
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
@@ -136,6 +145,31 @@
     loadPools();
   };
 
+  window.toggleEdit = function(id) {
+    var form = document.getElementById('editForm_' + id);
+    form.classList.toggle('show');
+  };
+
+  window.savePool = async function(id) {
+    var name = document.getElementById('eName_' + id).value.trim();
+    var region = document.getElementById('eRegion_' + id).value;
+    var address = document.getElementById('eAddress_' + id).value.trim();
+    var depth = document.getElementById('eDepth_' + id).value.trim();
+    var weekday = document.getElementById('eWeekday_' + id).value.trim();
+    var weekend = document.getElementById('eWeekend_' + id).value.trim();
+    if (!name) { alert('풀장 이름을 입력해주세요'); return; }
+    var res = await sb.from('pools').update({ name: name, region: region, address: address, depth: depth, weekday_hours: weekday, weekend_hours: weekend }).eq('id', id);
+    if (res.error) { alert('수정 오류: ' + res.error.message); return; }
+    alert('수정됐습니다!');
+    loadPools();
+  };
+
+  window.deletePool = async function(id) {
+    if (!confirm('풀장을 삭제할까요?')) return;
+    await sb.from('pools').delete().eq('id', id);
+    loadPools();
+  };
+
   window.updateStatus = async function(userId, status) {
     if (!confirm(status === 'approved' ? '승인하시겠습니까?' : '거절하시겠습니까?')) return;
     await sb.from('profiles').update({ instructor_status: status }).eq('id', userId);
@@ -148,12 +182,6 @@
     else alert('자격증 이미지를 불러올 수 없습니다');
   };
 
-  window.deletePool = async function(id) {
-    if (!confirm('풀장을 삭제할까요?')) return;
-    await sb.from('pools').delete().eq('id', id);
-    loadPools();
-  };
-
   async function loadInstructors() {
     var res = await sb.from('profiles').select('*').eq('user_type', 'instructor').order('created_at', { ascending: false });
     var el = document.getElementById('instructorList');
@@ -163,12 +191,44 @@
     }).join('');
   }
 
+  var REGIONS = ['서울','경기','부산','제주','인천','대구','광주','대전','기타'];
+
   async function loadPools() {
     var res = await sb.from('pools').select('*').order('region');
     var el = document.getElementById('poolList');
     if (!res.data || res.data.length === 0) { el.innerHTML = '<div class="empty">등록된 풀장이 없습니다</div>'; return; }
     el.innerHTML = res.data.map(function(p) {
-      return '<div class="pool-item"><div><div class="pool-item-info"><strong>' + p.name + '</strong> · ' + p.region + (p.depth?' · '+p.depth:'') + '</div><div class="pool-item-hours">' + (p.address?'📍 '+p.address+'<br>':'') + (p.weekday_hours?'평일: '+p.weekday_hours+'<br>':'') + (p.weekend_hours?'주말: '+p.weekend_hours:'') + '</div></div><button class="btn-del" onclick="deletePool('+p.id+')">삭제</button></div>';
+      var regionOpts = REGIONS.map(function(r) {
+        return '<option value="' + r + '"' + (p.region === r ? ' selected' : '') + '>' + r + '</option>';
+      }).join('');
+      return '<div class="pool-item">' +
+        '<div class="pool-item-top">' +
+          '<div>' +
+            '<div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth ? ' · ' + p.depth : '') + '</div>' +
+            '<div class="pool-item-hours">' +
+              (p.address ? '📍 ' + p.address + '<br>' : '') +
+              (p.weekday_hours ? '평일: ' + p.weekday_hours + '<br>' : '') +
+              (p.weekend_hours ? '주말: ' + p.weekend_hours : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="pool-item-btns">' +
+            '<button class="btn-edit" onclick="toggleEdit(' + p.id + ')">수정</button>' +
+            '<button class="btn-del" onclick="deletePool(' + p.id + ')">삭제</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="pool-edit-form" id="editForm_' + p.id + '">' +
+          '<div class="row" style="margin-bottom:10px">' +
+            '<div><label style="font-size:12px;margin-bottom:4px;display:block">풀장 이름</label><input id="eName_' + p.id + '" value="' + (p.name||'') + '"></div>' +
+            '<div><label style="font-size:12px;margin-bottom:4px;display:block">지역</label><select id="eRegion_' + p.id + '">' + regionOpts + '</select></div>' +
+          '</div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">주소</label><input id="eAddress_' + p.id + '" value="' + (p.address||'') + '"></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">수심</label><input id="eDepth_' + p.id + '" value="' + (p.depth||'') + '"></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">평일 운영시간</label><textarea id="eWeekday_' + p.id + '">' + (p.weekday_hours||'') + '</textarea></div>' +
+          '<div style="margin-bottom:12px"><label style="font-size:12px;margin-bottom:4px;display:block">주말 운영시간</label><textarea id="eWeekend_' + p.id + '">' + (p.weekend_hours||'') + '</textarea></div>' +
+          '<button class="btn-save" onclick="savePool(' + p.id + ')">저장</button>' +
+          '<button class="btn-cancel-edit" onclick="toggleEdit(' + p.id + ')">취소</button>' +
+        '</div>' +
+      '</div>';
     }).join('');
   }
 
