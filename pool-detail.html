@@ -249,7 +249,7 @@
     renderCalendar();
   }
 
-  function renderCalendar() {
+  window.renderCalendar = function() {
     const monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
     document.getElementById('calMonth').textContent = `${calYear}년 ${monthNames[calMonth]}`;
     const grid = document.getElementById('calGrid');
@@ -279,7 +279,7 @@
 
   window.changeMonth = function(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
 
-  async function selectDate(dateStr) {
+  window.selectDate = async function(dateStr) {
     selectedDate = dateStr;
     selectedSlot = null;
     renderCalendar();
