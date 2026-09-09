@@ -63,6 +63,36 @@
     <div id="instructorList"><div class="loading">불러오는 중...</div></div>
   </div>
   <div class="section">
+    <h2>회원 목록</h2>
+    <div style="margin-bottom:14px;display:flex;gap:10px">
+      <input type="text" id="memberSearch" placeholder="별명 또는 이름으로 검색" style="flex:1;padding:9px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px">
+      <select id="memberFilter" style="padding:9px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff">
+        <option value="">전체</option>
+        <option value="member">일반 회원</option>
+        <option value="instructor">강사</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="background:#f8f9fa;border-bottom:2px solid #e9ecef">
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">별명</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">이름</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">전화번호</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">자격증</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">지역</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">유형</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">가입일</th>
+            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">관리</th>
+          </tr>
+        </thead>
+        <tbody id="memberList"><tr><td colspan="8" style="text-align:center;padding:30px;color:#999">불러오는 중...</td></tr></tbody>
+      </table>
+    </div>
+    <div id="memberCount" style="font-size:12px;color:#888;margin-top:10px"></div>
+  </div>
+
+  <div class="section">
     <h2>풀장 등록</h2>
     <div class="row">
       <div class="form-group">
@@ -119,6 +149,7 @@
   function initSB() {
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
       sb = window.supabase.createClient(SB_URL, SB_KEY);
+      loadMembers();
       loadInstructors();
       loadPools();
     } else {
@@ -182,6 +213,50 @@
     else alert('자격증 이미지를 불러올 수 없습니다');
   };
 
+  var allMembers = [];
+
+  async function loadMembers() {
+    var res = await sb.from('profiles').select('*').order('created_at', { ascending: false });
+    allMembers = res.data || [];
+    renderMembers(allMembers);
+    document.getElementById('memberCount').textContent = '전체 ' + allMembers.length + '명';
+  }
+
+  function renderMembers(members) {
+    var tbody = document.getElementById('memberList');
+    if (!members || members.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#bbb">회원이 없습니다</td></tr>';
+      return;
+    }
+    tbody.innerHTML = members.map(function(m) {
+      var typeLabel = m.user_type === 'instructor'
+        ? '<span style="background:#EEEDFE;color:#3C3489;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">강사</span>'
+        : '<span style="background:#e8f8f2;color:#0F6E56;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">일반</span>';
+      var statusLabel = m.instructor_status === 'pending'
+        ? '<span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:12px;font-size:11px">승인대기</span>'
+        : m.instructor_status === 'approved'
+        ? '<span style="background:#e8f8f2;color:#0F6E56;padding:2px 8px;border-radius:12px;font-size:11px">승인완료</span>'
+        : '';
+      var date = m.created_at ? m.created_at.slice(0,10) : '';
+      return '<tr style="border-bottom:1px solid #f1f3f5">' +
+        '<td style="padding:10px 12px;font-weight:600">' + (m.username||'-') + '</td>' +
+        '<td style="padding:10px 12px">' + (m.realname||'-') + '</td>' +
+        '<td style="padding:10px 12px">' + (m.phone||'-') + '</td>' +
+        '<td style="padding:10px 12px">' + (m.license_type||'-') + ' ' + (m.license_level||'') + '</td>' +
+        '<td style="padding:10px 12px">' + (m.region||'-') + '</td>' +
+        '<td style="padding:10px 12px">' + typeLabel + ' ' + statusLabel + '</td>' +
+        '<td style="padding:10px 12px;color:#888">' + date + '</td>' +
+        '<td style="padding:10px 12px"><button onclick="deleteMember('' + m.id + '')" style="padding:4px 10px;border:1px solid #ffcdd2;border-radius:6px;background:#fff;color:#e53935;font-size:11px;cursor:pointer">탈퇴</button></td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  window.deleteMember = async function(id) {
+    if (!confirm('이 회원을 탈퇴 처리할까요?')) return;
+    await sb.from('profiles').delete().eq('id', id);
+    loadMembers();
+  };
+
   async function loadInstructors() {
     var res = await sb.from('profiles').select('*').eq('user_type', 'instructor').order('created_at', { ascending: false });
     var el = document.getElementById('instructorList');
@@ -230,6 +305,24 @@
         '</div>' +
       '</div>';
     }).join('');
+  }
+
+  // 회원 검색/필터
+  document.getElementById('memberSearch').addEventListener('input', filterMembers);
+  document.getElementById('memberFilter').addEventListener('change', filterMembers);
+
+  function filterMembers() {
+    var keyword = document.getElementById('memberSearch').value.toLowerCase();
+    var type = document.getElementById('memberFilter').value;
+    var filtered = allMembers.filter(function(m) {
+      var matchKeyword = !keyword ||
+        (m.username && m.username.toLowerCase().includes(keyword)) ||
+        (m.realname && m.realname.toLowerCase().includes(keyword));
+      var matchType = !type || m.user_type === type;
+      return matchKeyword && matchType;
+    });
+    renderMembers(filtered);
+    document.getElementById('memberCount').textContent = '검색 결과 ' + filtered.length + '명 / 전체 ' + allMembers.length + '명';
   }
 
   initSB();
