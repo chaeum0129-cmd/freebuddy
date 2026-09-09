@@ -85,17 +85,18 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   let currentUser = null;
 
   async function init() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
     if (!profile) return;
 
     const isInstructor = profile.user_type === 'instructor' && profile.instructor_status === 'approved';
@@ -131,7 +132,7 @@
   }
 
   async function loadMyBuddyPosts(userId) {
-    const { data: posts } = await supabase.from('buddy_posts').select('*, pools(name, region)').eq('user_id', userId).order('date', { ascending: false });
+    const { data: posts } = await sb.from('buddy_posts').select('*, pools(name, region)').eq('user_id', userId).order('date', { ascending: false });
     const el = document.getElementById('myBuddyPosts');
     if (!posts || posts.length === 0) { el.innerHTML = '<div class="empty">등록한 버디 모집이 없습니다</div>'; return; }
     el.innerHTML = posts.map(p => `
@@ -147,12 +148,12 @@
 
   async function deleteBuddyPost(id) {
     if (!confirm('버디 모집 글을 삭제할까요?')) return;
-    await supabase.from('buddy_posts').delete().eq('id', id);
+    await sb.from('buddy_posts').delete().eq('id', id);
     loadMyBuddyPosts(currentUser.id);
   }
 
   async function loadMyLessons(userId) {
-    const { data: lessons } = await supabase.from('lessons').select('*, pools(name)').eq('instructor_id', userId).order('date', { ascending: false });
+    const { data: lessons } = await sb.from('lessons').select('*, pools(name)').eq('instructor_id', userId).order('date', { ascending: false });
     const el = document.getElementById('myLessons');
     if (!lessons || lessons.length === 0) { el.innerHTML = '<div class="empty">등록한 강습이 없습니다</div>'; return; }
     el.innerHTML = lessons.map(l => `
@@ -168,12 +169,12 @@
 
   async function deleteLesson(id) {
     if (!confirm('강습 일정을 삭제할까요?')) return;
-    await supabase.from('lessons').delete().eq('id', id);
+    await sb.from('lessons').delete().eq('id', id);
     loadMyLessons(currentUser.id);
   }
 
   async function loadMyBookings(userId) {
-    const { data: bookings } = await supabase.from('lesson_bookings').select('*, lessons(date, time_slot, level, profiles(username)), pools(name)').eq('student_id', userId);
+    const { data: bookings } = await sb.from('lesson_bookings').select('*, lessons(date, time_slot, level, profiles(username)), pools(name)').eq('student_id', userId);
     const el = document.getElementById('myBookings');
     if (!bookings || bookings.length === 0) { el.innerHTML = '<div class="empty">신청한 강습이 없습니다</div>'; return; }
     el.innerHTML = bookings.map(b => `
@@ -186,9 +187,11 @@
     `).join('');
   }
 
-  async function logout() { await supabase.auth.signOut(); location.href = 'index.html'; }
+  async function logout() { await sb.auth.signOut(); location.href = 'index.html'; }
 
   init();
+
+})();
 </script>
 </body>
 </html>

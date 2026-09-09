@@ -83,19 +83,20 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   let currentUser = null;
 
   async function init() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
     if (!user) { location.href = 'login.html'; return; }
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
     if (!profile || profile.instructor_status !== 'approved') { alert('강사 승인 후 이용 가능합니다'); location.href = 'my-page.html'; return; }
     currentUser = user;
-    const { data: pools } = await supabase.from('pools').select('id, name, region').order('name');
+    const { data: pools } = await sb.from('pools').select('id, name, region').order('name');
     const select = document.getElementById('poolId');
     (pools || []).forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = `${p.name} (${p.region})`; select.appendChild(opt); });
     document.getElementById('date').min = new Date().toISOString().split('T')[0];
@@ -117,13 +118,15 @@
     const btn = document.querySelector('.btn-submit');
     btn.textContent = '등록 중...'; btn.disabled = true;
 
-    const { error } = await supabase.from('lessons').insert({ instructor_id: currentUser.id, pool_id: poolId, date, time_slot: timeSlot, level, max_students: maxStudents, price, note });
+    const { error } = await sb.from('lessons').insert({ instructor_id: currentUser.id, pool_id: poolId, date, time_slot: timeSlot, level, max_students: maxStudents, price, note });
     if (error) { errEl.textContent = '등록 중 오류가 발생했습니다'; errEl.style.display = 'block'; btn.textContent = '강습 등록하기'; btn.disabled = false; return; }
     alert('강습 일정이 등록됐습니다!');
     location.href = 'my-page.html';
   }
 
   init();
+
+})();
 </script>
 </body>
 </html>

@@ -92,23 +92,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   let currentLevel = '';
 
   async function checkAuth() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
     if (user) {
-      const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
     }
   }
 
-  async function logout() { await supabase.auth.signOut(); location.reload(); }
+  async function logout() { await sb.auth.signOut(); location.reload(); }
 
   function filterLevel(level) {
     currentLevel = level;
@@ -121,7 +122,7 @@
   async function loadLessons() {
     const grid = document.getElementById('lessonGrid');
     grid.innerHTML = '<div class="loading">불러오는 중...</div>';
-    let query = supabase.from('lessons').select('*, profiles(username, license_type, license_level), pools(name, region)').order('date', { ascending: true });
+    let query = sb.from('lessons').select('*, profiles(username, license_type, license_level), pools(name, region)').order('date', { ascending: true });
     if (currentLevel) query = query.eq('level', currentLevel);
     const { data: lessons } = await query;
     if (!lessons || lessons.length === 0) {
@@ -153,6 +154,8 @@
 
   checkAuth();
   loadLessons();
+
+})();
 </script>
 </body>
 </html>

@@ -100,29 +100,30 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   const lessonId = new URLSearchParams(window.location.search).get('id');
   let currentUser = null;
   let lessonData = null;
 
   async function checkAuth() {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await sb.auth.getUser();
     currentUser = user;
     if (user) {
-      const { data: profile } = await supabase.from('profiles').select('username').eq('id', user.id).single();
+      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
     }
   }
 
-  async function logout() { await supabase.auth.signOut(); location.reload(); }
+  async function logout() { await sb.auth.signOut(); location.reload(); }
 
   async function loadLesson() {
-    const { data: lesson } = await supabase.from('lessons').select('*, profiles(username, license_type, license_level, intro, contact), pools(name, region, address)').eq('id', lessonId).single();
+    const { data: lesson } = await sb.from('lessons').select('*, profiles(username, license_type, license_level, intro, contact), pools(name, region, address)').eq('id', lessonId).single();
     if (!lesson) { document.getElementById('lessonCard').innerHTML = '<div class="empty">강습 정보를 찾을 수 없습니다</div>'; return; }
     lessonData = lesson;
     document.title = `FreeBuddy - ${lesson.profiles?.username} 강사 강습`;
@@ -155,7 +156,7 @@
   }
 
   async function loadBookings() {
-    const { data: bookings } = await supabase.from('lesson_bookings').select('*, profiles(username)').eq('lesson_id', lessonId);
+    const { data: bookings } = await sb.from('lesson_bookings').select('*, profiles(username)').eq('lesson_id', lessonId);
     const list = document.getElementById('bookingList');
     if (!bookings || bookings.length === 0) { list.innerHTML = '<div class="empty">아직 예약자가 없습니다</div>'; return; }
     list.innerHTML = bookings.map(b => `
@@ -172,7 +173,7 @@
   async function bookLesson() {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (lessonData && currentUser.id === lessonData.instructor_id) { alert('본인 강습에는 신청할 수 없습니다'); return; }
-    const { error } = await supabase.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });
+    const { error } = await sb.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });
     if (error) { alert(error.message.includes('duplicate') ? '이미 신청한 강습입니다' : '오류가 발생했습니다'); return; }
     alert('수강 신청이 완료됐습니다!\n강사님께 연락하여 일정을 확정해주세요.');
     if (lessonData?.profiles?.contact) window.open(lessonData.profiles.contact, '_blank');
@@ -181,6 +182,8 @@
 
   checkAuth();
   loadLesson();
+
+})();
 </script>
 </body>
 </html>
