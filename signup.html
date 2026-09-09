@@ -61,6 +61,18 @@
       <input type="text" id="username" placeholder="사이트에서 사용할 별명">
       <div class="error" id="usernameErr">별명을 입력해주세요</div>
     </div>
+    <div class="row">
+      <div class="form-group">
+        <label>이름 (실명)</label>
+        <input type="text" id="realname" placeholder="홍길동">
+        <div class="error" id="realnameErr">이름을 입력해주세요</div>
+      </div>
+      <div class="form-group">
+        <label>전화번호</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000">
+        <div class="error" id="phoneErr">전화번호를 입력해주세요</div>
+      </div>
+    </div>
     <div class="form-group">
       <label>이메일</label>
       <input type="email" id="email" placeholder="example@email.com">
@@ -141,6 +153,15 @@
       </div>
     </div>
 
+    <div class="form-group" style="margin-top:8px">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer">
+        <input type="checkbox" id="agreePrivacy" style="width:auto;margin:0">
+        <span style="font-size:13px;color:#555">
+          <a href="privacy.html" target="_blank" style="color:#1D9E75;font-weight:600">개인정보처리방침</a>에 동의합니다 <span style="color:#e53935">*</span>
+        </span>
+      </label>
+      <div class="error" id="agreeErr">개인정보처리방침에 동의해주세요</div>
+    </div>
     <div class="error" id="generalErr"></div>
     <button type="button" class="btn-submit" id="signupBtn">가입하기</button>
 
@@ -201,9 +222,14 @@
 
     var valid = true;
     if (!username) { showErr('usernameErr', '별명을 입력해주세요'); valid = false; }
+    var realname = document.getElementById('realname').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    if (!realname) { showErr('realnameErr', '이름을 입력해주세요'); valid = false; }
+    if (!phone) { showErr('phoneErr', '전화번호를 입력해주세요'); valid = false; }
     if (!email) { showErr('emailErr', '이메일을 입력해주세요'); valid = false; }
     if (password.length < 8) { showErr('passwordErr', '비밀번호를 8자 이상 입력해주세요'); valid = false; }
     if (userType === 'instructor' && !licenseFile) { showErr('licenseErr', '자격증 사진을 업로드해주세요'); valid = false; }
+    if (!document.getElementById('agreePrivacy').checked) { showErr('agreeErr', '개인정보처리방침에 동의해주세요'); valid = false; }
     if (!valid) return;
 
     var btn = document.getElementById('signupBtn');
@@ -225,10 +251,13 @@
         licenseImageUrl = path;
       }
 
+      var realname = document.getElementById('realname').value.trim();
+      var phone = document.getElementById('phone').value.trim();
       var profileRes = await sb.from('profiles').insert({
         id: userId, username: username, user_type: userType,
         license_type: licenseType, license_level: licenseLevel,
         region: region, intro: intro, contact: contact,
+        realname: realname, phone: phone,
         instructor_status: userType === 'instructor' ? 'pending' : null,
         license_image_url: licenseImageUrl
       });
