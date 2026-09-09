@@ -18,10 +18,13 @@
     label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
     input { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; }
     input:focus { outline: none; border-color: #1D9E75; }
-    .btn-submit { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
     .btn-submit:hover { background: #178a65; }
-    .signup-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
+    .signup-link { text-align: center; margin-top: 16px; font-size: 13px; color: #888; }
     .signup-link a { color: #1D9E75; font-weight: 600; text-decoration: none; }
+    .find-link { text-align: center; margin-top: 10px; font-size: 13px; }
+    .find-link a { color: #888; text-decoration: none; }
+    .find-link a:hover { color: #1D9E75; }
     .error { color: #e53935; font-size: 13px; margin-top: 10px; display: none; text-align: center; }
   </style>
 </head>
@@ -41,17 +44,17 @@
     </div>
     <div class="form-group">
       <label>비밀번호</label>
-      <input type="password" id="password" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter') login()">
+      <input type="password" id="password" placeholder="비밀번호 입력">
     </div>
 
     <div class="error" id="loginErr"></div>
-    <button class="btn-submit" onclick="login()">로그인</button>
+    <button type="button" class="btn-submit" id="loginBtn">로그인</button>
 
     <div class="signup-link">
       계정이 없으신가요? <a href="signup.html">회원가입</a>
     </div>
-    <div class="signup-link" style="margin-top:10px">
-      <a href="find-account.html" style="color:#888">별명 찾기 / 비밀번호 재설정</a>
+    <div class="find-link">
+      <a href="find-account.html">별명 찾기 / 비밀번호 재설정</a>
     </div>
   </div>
 </div>
@@ -61,12 +64,20 @@
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var sb;
 
-  async function login() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const errEl = document.getElementById('loginErr');
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  async function doLogin() {
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var errEl = document.getElementById('loginErr');
     errEl.style.display = 'none';
 
     if (!email || !password) {
@@ -75,13 +86,19 @@
       return;
     }
 
-    const btn = document.querySelector('.btn-submit');
+    var btn = document.getElementById('loginBtn');
     btn.textContent = '로그인 중...';
     btn.disabled = true;
 
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) {
-      errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다';
+    var res = await sb.auth.signInWithPassword({ email: email, password: password });
+    if (res.error) {
+      if (res.error.message.includes('Email not confirmed')) {
+        errEl.textContent = '이메일 인증이 필요합니다. 가입 시 받은 이메일을 확인해주세요.';
+      } else if (res.error.message.includes('Invalid login')) {
+        errEl.textContent = '이메일 또는 비밀번호가 올바르지 않습니다.';
+      } else {
+        errEl.textContent = '로그인에 실패했습니다. 다시 시도해주세요.';
+      }
       errEl.style.display = 'block';
       btn.textContent = '로그인';
       btn.disabled = false;
@@ -90,6 +107,12 @@
     }
   }
 
+  document.getElementById('loginBtn').addEventListener('click', doLogin);
+  document.getElementById('password').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  initSB();
 })();
 </script>
 </body>
