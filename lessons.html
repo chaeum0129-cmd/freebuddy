@@ -93,7 +93,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -111,7 +111,7 @@
 
   async function logout() { await sb.auth.signOut(); location.reload(); }
 
-  function filterLevel(level) {
+  window.filterLevel = function(level) {
     currentLevel = level;
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.classList.toggle('active', btn.textContent === (level || '전체'));

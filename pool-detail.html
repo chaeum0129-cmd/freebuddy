@@ -202,7 +202,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -277,7 +277,7 @@
     grid.innerHTML = html;
   }
 
-  function changeMonth(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
+  window.changeMonth = function(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
 
   async function selectDate(dateStr) {
     selectedDate = dateStr;
@@ -298,7 +298,7 @@
     document.getElementById('buddySectionTitle').textContent = `${dateLabel} 버디 모집 현황`;
   }
 
-  function selectSlot(slot, el) {
+  window.selectSlot = function(slot, el) {
     selectedSlot = slot;
     document.querySelectorAll('.time-slot').forEach(e => e.classList.remove('selected-slot'));
     el.style.borderColor = '#0F6E56';
@@ -332,21 +332,21 @@
     `).join('');
   }
 
-  function contactBuddy(contact, username) {
+  window.contactBuddy = function(contact, username) {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (contact) window.open(contact, '_blank');
     else alert(`${username}님의 연락처가 등록되지 않았습니다`);
   }
 
-  function openBuddyModal() {
+  window.openBuddyModal = function() {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (!selectedDate) { alert('날짜를 먼저 선택해주세요'); return; }
     document.getElementById('buddyModal').classList.add('show');
   }
 
-  function closeBuddyModal() { document.getElementById('buddyModal').classList.remove('show'); }
+  window.closeBuddyModal = function() { document.getElementById('buddyModal').classList.remove('show'); }
 
-  async function submitBuddyPost() {
+  window.submitBuddyPost = async function() {
     const timeSlot = document.getElementById('modalTimeSlot').value;
     const contact = document.getElementById('modalContact').value.trim();
     const note = document.getElementById('modalNote').value.trim();

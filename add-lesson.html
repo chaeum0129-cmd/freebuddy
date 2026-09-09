@@ -84,7 +84,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -102,7 +102,7 @@
     document.getElementById('date').min = new Date().toISOString().split('T')[0];
   }
 
-  async function submitLesson() {
+  window.submitLesson = async function() {
     const poolId = document.getElementById('poolId').value;
     const date = document.getElementById('date').value;
     const timeSlot = document.getElementById('timeSlot').value;

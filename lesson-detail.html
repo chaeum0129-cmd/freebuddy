@@ -101,7 +101,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -170,7 +170,7 @@
     `).join('');
   }
 
-  async function bookLesson() {
+  window.bookLesson = async function() {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (lessonData && currentUser.id === lessonData.instructor_id) { alert('본인 강습에는 신청할 수 없습니다'); return; }
     const { error } = await sb.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });

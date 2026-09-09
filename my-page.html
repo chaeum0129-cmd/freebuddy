@@ -86,7 +86,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.sb.co';
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
@@ -146,7 +146,7 @@
     `).join('');
   }
 
-  async function deleteBuddyPost(id) {
+  window.deleteBuddyPost = async function(id) {
     if (!confirm('버디 모집 글을 삭제할까요?')) return;
     await sb.from('buddy_posts').delete().eq('id', id);
     loadMyBuddyPosts(currentUser.id);
@@ -167,7 +167,7 @@
     `).join('');
   }
 
-  async function deleteLesson(id) {
+  window.deleteLesson = async function(id) {
     if (!confirm('강습 일정을 삭제할까요?')) return;
     await sb.from('lessons').delete().eq('id', id);
     loadMyLessons(currentUser.id);
@@ -187,7 +187,7 @@
     `).join('');
   }
 
-  async function logout() { await sb.auth.signOut(); location.href = 'index.html'; }
+  window.logout = async function() { await sb.auth.signOut(); location.href = 'index.html'; }
 
   init();
 
