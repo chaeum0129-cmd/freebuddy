@@ -10,46 +10,51 @@
     nav { background: #111; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; }
     .logo { font-size: 18px; font-weight: 700; color: #1D9E75; }
     .admin-badge { font-size: 12px; color: #fff; background: #444; padding: 3px 10px; border-radius: 20px; }
-    .wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
     .section { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
     h2 { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 20px; }
+    .search-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .search-row input { flex: 1; padding: 9px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
+    .search-row select { padding: 9px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; background: #fff; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #f8f9fa; padding: 10px 12px; border-bottom: 2px solid #e9ecef; text-align: left; color: #555; font-weight: 600; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid #f1f3f5; color: #333; }
+    tr:last-child td { border-bottom: none; }
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+    .badge-member { background: #e8f8f2; color: #0F6E56; }
+    .badge-instructor { background: #EEEDFE; color: #3C3489; }
+    .badge-pending { background: #fff3e0; color: #e65100; }
+    .badge-approved { background: #e8f8f2; color: #0F6E56; }
+    .badge-rejected { background: #ffebee; color: #e53935; }
     .instructor-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f1f3f5; }
     .instructor-item:last-child { border: none; }
     .instructor-info { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 38px; height: 38px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #0F6E56; }
-    .instructor-name { font-size: 14px; font-weight: 600; color: #111; }
-    .instructor-detail { font-size: 12px; color: #888; margin-top: 2px; }
-    .btn-approve { padding: 7px 16px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 6px; }
-    .btn-reject { padding: 7px 16px; background: #fff; color: #e53935; border: 1px solid #ffcdd2; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .btn-view-license { padding: 5px 12px; background: #f1f3f5; color: #555; border: 1px solid #e9ecef; border-radius: 6px; font-size: 12px; cursor: pointer; margin-right: 8px; }
+    .avatar { width: 38px; height: 38px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .btn-approve { padding: 7px 14px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; margin-right: 4px; }
+    .btn-reject { padding: 7px 14px; background: #fff; color: #e53935; border: 1px solid #ffcdd2; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-view { padding: 4px 10px; background: #f1f3f5; color: #555; border: 1px solid #e9ecef; border-radius: 6px; font-size: 11px; cursor: pointer; margin-right: 6px; }
+    .btn-del { padding: 4px 10px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; font-size: 11px; cursor: pointer; }
     .form-group { margin-bottom: 14px; }
     label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
     input, select, textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; background: #fff; }
     textarea { resize: vertical; min-height: 60px; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #1D9E75; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
     .btn-submit { padding: 12px 28px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
-    .btn-submit:hover { background: #178a65; }
-    .pool-item { padding: 16px 0; border-bottom: 1px solid #f1f3f5; }
+    .pool-item { padding: 14px 0; border-bottom: 1px solid #f1f3f5; }
     .pool-item:last-child { border: none; }
     .pool-item-top { display: flex; align-items: flex-start; justify-content: space-between; }
-    .pool-item-info { font-size: 14px; color: #333; font-weight: 600; }
+    .pool-item-info { font-size: 14px; font-weight: 600; color: #333; }
     .pool-item-hours { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.6; }
     .pool-item-btns { display: flex; gap: 6px; flex-shrink: 0; margin-left: 12px; }
     .btn-edit { padding: 5px 12px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #555; font-size: 12px; cursor: pointer; }
-    .btn-edit:hover { border-color: #1D9E75; color: #1D9E75; }
-    .btn-del { padding: 5px 12px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; font-size: 12px; cursor: pointer; }
     .pool-edit-form { background: #f8f9fa; border-radius: 10px; padding: 16px; margin-top: 12px; display: none; }
     .pool-edit-form.show { display: block; }
     .btn-save { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-right: 6px; }
     .btn-cancel-edit { padding: 8px 20px; background: #fff; color: #555; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; cursor: pointer; }
     .empty { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
     .loading { text-align: center; padding: 24px; color: #999; font-size: 13px; }
-    .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; }
-    .status-pending { background: #fff3e0; color: #e65100; }
-    .status-approved { background: #e8f8f2; color: #0F6E56; }
-    .status-rejected { background: #ffebee; color: #e53935; }
+    .member-count { font-size: 12px; color: #888; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -58,40 +63,47 @@
   <span class="admin-badge">관리자</span>
 </nav>
 <div class="wrap">
-  <div class="section">
-    <h2>강사 승인 관리</h2>
-    <div id="instructorList"><div class="loading">불러오는 중...</div></div>
-  </div>
+
+  <!-- 회원 목록 -->
   <div class="section">
     <h2>회원 목록</h2>
-    <div style="margin-bottom:14px;display:flex;gap:10px">
-      <input type="text" id="memberSearch" placeholder="별명 또는 이름으로 검색" style="flex:1;padding:9px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px">
-      <select id="memberFilter" style="padding:9px 14px;border:1px solid #ddd;border-radius:8px;font-size:13px;background:#fff">
+    <div class="search-row">
+      <input type="text" id="memberSearch" placeholder="별명 또는 이름으로 검색">
+      <select id="memberFilter">
         <option value="">전체</option>
         <option value="member">일반 회원</option>
         <option value="instructor">강사</option>
       </select>
     </div>
     <div style="overflow-x:auto">
-      <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <table>
         <thead>
-          <tr style="background:#f8f9fa;border-bottom:2px solid #e9ecef">
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">별명</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">이름</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">전화번호</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">자격증</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">지역</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">유형</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">가입일</th>
-            <th style="padding:10px 12px;text-align:left;color:#555;font-weight:600">관리</th>
+          <tr>
+            <th>별명</th>
+            <th>이름</th>
+            <th>전화번호</th>
+            <th>자격증</th>
+            <th>지역</th>
+            <th>유형</th>
+            <th>가입일</th>
+            <th>관리</th>
           </tr>
         </thead>
-        <tbody id="memberList"><tr><td colspan="8" style="text-align:center;padding:30px;color:#999">불러오는 중...</td></tr></tbody>
+        <tbody id="memberTableBody">
+          <tr><td colspan="8" class="loading">불러오는 중...</td></tr>
+        </tbody>
       </table>
     </div>
-    <div id="memberCount" style="font-size:12px;color:#888;margin-top:10px"></div>
+    <div class="member-count" id="memberCount"></div>
   </div>
 
+  <!-- 강사 승인 -->
+  <div class="section">
+    <h2>강사 승인 관리</h2>
+    <div id="instructorList"><div class="loading">불러오는 중...</div></div>
+  </div>
+
+  <!-- 풀장 등록 -->
   <div class="section">
     <h2>풀장 등록</h2>
     <div class="row">
@@ -104,12 +116,18 @@
         <select id="poolRegion">
           <option value="서울">서울</option>
           <option value="경기">경기</option>
-          <option value="부산">부산</option>
-          <option value="제주">제주</option>
           <option value="인천">인천</option>
-          <option value="대구">대구</option>
-          <option value="광주">광주</option>
+          <option value="강원">강원</option>
+          <option value="충청">충청</option>
           <option value="대전">대전</option>
+          <option value="세종">세종</option>
+          <option value="전라">전라</option>
+          <option value="광주">광주</option>
+          <option value="경상">경상</option>
+          <option value="부산">부산</option>
+          <option value="대구">대구</option>
+          <option value="울산">울산</option>
+          <option value="제주">제주</option>
           <option value="기타">기타</option>
         </select>
       </div>
@@ -132,12 +150,15 @@
       <textarea id="weekendHours" placeholder="예: 1타임 09:00~11:00 / 2타임 11:00~13:00"></textarea>
       <div class="hint">평일과 동일하면 '평일과 동일' 입력</div>
     </div>
-    <button class="btn-submit" onclick="addPool()">풀장 등록</button>
+    <button class="btn-submit" id="addPoolBtn">풀장 등록</button>
   </div>
+
+  <!-- 등록된 풀장 -->
   <div class="section">
     <h2>등록된 풀장</h2>
     <div id="poolList"><div class="loading">불러오는 중...</div></div>
   </div>
+
 </div>
 
 <script>
@@ -145,6 +166,8 @@
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb;
+  var allMembers = [];
+  var REGIONS = ['서울','경기','인천','강원','충청','대전','세종','전라','광주','경상','부산','대구','울산','제주','기타'];
 
   function initSB() {
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
@@ -157,157 +180,50 @@
     }
   }
 
-  window.addPool = async function() {
-    var name = document.getElementById('poolName').value.trim();
-    var region = document.getElementById('poolRegion').value;
-    var address = document.getElementById('poolAddress').value.trim();
-    var depth = document.getElementById('poolDepth').value.trim();
-    var weekdayHours = document.getElementById('weekdayHours').value.trim();
-    var weekendHours = document.getElementById('weekendHours').value.trim();
-    if (!name) { alert('풀장 이름을 입력해주세요'); return; }
-    var res = await sb.from('pools').insert({ name: name, region: region, address: address, depth: depth, weekday_hours: weekdayHours, weekend_hours: weekendHours });
-    if (res.error) { alert('등록 오류: ' + res.error.message); return; }
-    alert('풀장이 등록됐습니다!');
-    document.getElementById('poolName').value = '';
-    document.getElementById('poolAddress').value = '';
-    document.getElementById('poolDepth').value = '';
-    document.getElementById('weekdayHours').value = '';
-    document.getElementById('weekendHours').value = '';
-    loadPools();
-  };
-
-  window.toggleEdit = function(id) {
-    var form = document.getElementById('editForm_' + id);
-    form.classList.toggle('show');
-  };
-
-  window.savePool = async function(id) {
-    var name = document.getElementById('eName_' + id).value.trim();
-    var region = document.getElementById('eRegion_' + id).value;
-    var address = document.getElementById('eAddress_' + id).value.trim();
-    var depth = document.getElementById('eDepth_' + id).value.trim();
-    var weekday = document.getElementById('eWeekday_' + id).value.trim();
-    var weekend = document.getElementById('eWeekend_' + id).value.trim();
-    if (!name) { alert('풀장 이름을 입력해주세요'); return; }
-    var res = await sb.from('pools').update({ name: name, region: region, address: address, depth: depth, weekday_hours: weekday, weekend_hours: weekend }).eq('id', id);
-    if (res.error) { alert('수정 오류: ' + res.error.message); return; }
-    alert('수정됐습니다!');
-    loadPools();
-  };
-
-  window.deletePool = async function(id) {
-    if (!confirm('풀장을 삭제할까요?')) return;
-    await sb.from('pools').delete().eq('id', id);
-    loadPools();
-  };
-
-  window.updateStatus = async function(userId, status) {
-    if (!confirm(status === 'approved' ? '승인하시겠습니까?' : '거절하시겠습니까?')) return;
-    await sb.from('profiles').update({ instructor_status: status }).eq('id', userId);
-    loadInstructors();
-  };
-
-  window.viewLicense = async function(path) {
-    var res = await sb.storage.from('licenses').createSignedUrl(path, 60);
-    if (res.data && res.data.signedUrl) window.open(res.data.signedUrl, '_blank');
-    else alert('자격증 이미지를 불러올 수 없습니다');
-  };
-
-  var allMembers = [];
-
+  // 회원 목록
   async function loadMembers() {
     var res = await sb.from('profiles').select('*').order('created_at', { ascending: false });
     allMembers = res.data || [];
     renderMembers(allMembers);
-    document.getElementById('memberCount').textContent = '전체 ' + allMembers.length + '명';
   }
 
   function renderMembers(members) {
-    var tbody = document.getElementById('memberList');
-    if (!members || members.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#bbb">회원이 없습니다</td></tr>';
+    var tbody = document.getElementById('memberTableBody');
+    document.getElementById('memberCount').textContent = '전체 ' + allMembers.length + '명' + (members.length !== allMembers.length ? ' / 검색 결과 ' + members.length + '명' : '');
+    if (!members.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty">회원이 없습니다</td></tr>';
       return;
     }
     tbody.innerHTML = members.map(function(m) {
-      var typeLabel = m.user_type === 'instructor'
-        ? '<span style="background:#EEEDFE;color:#3C3489;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">강사</span>'
-        : '<span style="background:#e8f8f2;color:#0F6E56;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600">일반</span>';
-      var statusLabel = m.instructor_status === 'pending'
-        ? '<span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:12px;font-size:11px">승인대기</span>'
-        : m.instructor_status === 'approved'
-        ? '<span style="background:#e8f8f2;color:#0F6E56;padding:2px 8px;border-radius:12px;font-size:11px">승인완료</span>'
-        : '';
-      var date = m.created_at ? m.created_at.slice(0,10) : '';
-      return '<tr style="border-bottom:1px solid #f1f3f5">' +
-        '<td style="padding:10px 12px;font-weight:600">' + (m.username||'-') + '</td>' +
-        '<td style="padding:10px 12px">' + (m.realname||'-') + '</td>' +
-        '<td style="padding:10px 12px">' + (m.phone||'-') + '</td>' +
-        '<td style="padding:10px 12px">' + (m.license_type||'-') + ' ' + (m.license_level||'') + '</td>' +
-        '<td style="padding:10px 12px">' + (m.region||'-') + '</td>' +
-        '<td style="padding:10px 12px">' + typeLabel + ' ' + statusLabel + '</td>' +
-        '<td style="padding:10px 12px;color:#888">' + date + '</td>' +
-        '<td style="padding:10px 12px"><button onclick="deleteMember('' + m.id + '')" style="padding:4px 10px;border:1px solid #ffcdd2;border-radius:6px;background:#fff;color:#e53935;font-size:11px;cursor:pointer">탈퇴</button></td>' +
+      var typeBadge = m.user_type === 'instructor'
+        ? '<span class="badge badge-instructor">강사</span>'
+        : '<span class="badge badge-member">일반</span>';
+      var statusBadge = m.instructor_status === 'pending' ? ' <span class="badge badge-pending">승인대기</span>'
+        : m.instructor_status === 'approved' ? ' <span class="badge badge-approved">승인</span>' : '';
+      return '<tr>' +
+        '<td><strong>' + (m.username||'-') + '</strong></td>' +
+        '<td>' + (m.realname||'-') + '</td>' +
+        '<td>' + (m.phone||'-') + '</td>' +
+        '<td>' + (m.license_type||'-') + (m.license_level ? ' ' + m.license_level : '') + '</td>' +
+        '<td>' + (m.region||'-') + '</td>' +
+        '<td>' + typeBadge + statusBadge + '</td>' +
+        '<td style="color:#888">' + (m.created_at ? m.created_at.slice(0,10) : '-') + '</td>' +
+        '<td><button class="btn-del" data-id="' + m.id + '">탈퇴</button></td>' +
         '</tr>';
     }).join('');
+
+    // 탈퇴 버튼 이벤트
+    tbody.querySelectorAll('.btn-del').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.dataset.id;
+        if (confirm('이 회원을 탈퇴 처리할까요?')) {
+          sb.from('profiles').delete().eq('id', id).then(function() { loadMembers(); });
+        }
+      });
+    });
   }
 
-  window.deleteMember = async function(id) {
-    if (!confirm('이 회원을 탈퇴 처리할까요?')) return;
-    await sb.from('profiles').delete().eq('id', id);
-    loadMembers();
-  };
-
-  async function loadInstructors() {
-    var res = await sb.from('profiles').select('*').eq('user_type', 'instructor').order('created_at', { ascending: false });
-    var el = document.getElementById('instructorList');
-    if (!res.data || res.data.length === 0) { el.innerHTML = '<div class="empty">신청한 강사가 없습니다</div>'; return; }
-    el.innerHTML = res.data.map(function(p) {
-      return '<div class="instructor-item"><div class="instructor-info"><div class="avatar">' + (p.username||'?')[0] + '</div><div><div class="instructor-name">' + p.username + ' <span class="status-badge status-' + p.instructor_status + '">' + (p.instructor_status==='pending'?'승인 대기':p.instructor_status==='approved'?'승인 완료':'거절') + '</span></div><div class="instructor-detail">' + (p.license_type||'') + ' ' + (p.license_level||'') + ' · ' + (p.region||'') + '</div></div></div><div>' + (p.license_image_url ? '<button class="btn-view-license" onclick="viewLicense(\''+p.license_image_url+'\')">자격증 보기</button>' : '') + (p.instructor_status==='pending' ? '<button class="btn-approve" onclick="updateStatus(\''+p.id+'\',\'approved\')">승인</button><button class="btn-reject" onclick="updateStatus(\''+p.id+'\',\'rejected\')">거절</button>' : '') + '</div></div>';
-    }).join('');
-  }
-
-  var REGIONS = ['서울','경기','부산','제주','인천','대구','광주','대전','기타'];
-
-  async function loadPools() {
-    var res = await sb.from('pools').select('*').order('region');
-    var el = document.getElementById('poolList');
-    if (!res.data || res.data.length === 0) { el.innerHTML = '<div class="empty">등록된 풀장이 없습니다</div>'; return; }
-    el.innerHTML = res.data.map(function(p) {
-      var regionOpts = REGIONS.map(function(r) {
-        return '<option value="' + r + '"' + (p.region === r ? ' selected' : '') + '>' + r + '</option>';
-      }).join('');
-      return '<div class="pool-item">' +
-        '<div class="pool-item-top">' +
-          '<div>' +
-            '<div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth ? ' · ' + p.depth : '') + '</div>' +
-            '<div class="pool-item-hours">' +
-              (p.address ? '📍 ' + p.address + '<br>' : '') +
-              (p.weekday_hours ? '평일: ' + p.weekday_hours + '<br>' : '') +
-              (p.weekend_hours ? '주말: ' + p.weekend_hours : '') +
-            '</div>' +
-          '</div>' +
-          '<div class="pool-item-btns">' +
-            '<button class="btn-edit" onclick="toggleEdit(' + p.id + ')">수정</button>' +
-            '<button class="btn-del" onclick="deletePool(' + p.id + ')">삭제</button>' +
-          '</div>' +
-        '</div>' +
-        '<div class="pool-edit-form" id="editForm_' + p.id + '">' +
-          '<div class="row" style="margin-bottom:10px">' +
-            '<div><label style="font-size:12px;margin-bottom:4px;display:block">풀장 이름</label><input id="eName_' + p.id + '" value="' + (p.name||'') + '"></div>' +
-            '<div><label style="font-size:12px;margin-bottom:4px;display:block">지역</label><select id="eRegion_' + p.id + '">' + regionOpts + '</select></div>' +
-          '</div>' +
-          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">주소</label><input id="eAddress_' + p.id + '" value="' + (p.address||'') + '"></div>' +
-          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">수심</label><input id="eDepth_' + p.id + '" value="' + (p.depth||'') + '"></div>' +
-          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">평일 운영시간</label><textarea id="eWeekday_' + p.id + '">' + (p.weekday_hours||'') + '</textarea></div>' +
-          '<div style="margin-bottom:12px"><label style="font-size:12px;margin-bottom:4px;display:block">주말 운영시간</label><textarea id="eWeekend_' + p.id + '">' + (p.weekend_hours||'') + '</textarea></div>' +
-          '<button class="btn-save" onclick="savePool(' + p.id + ')">저장</button>' +
-          '<button class="btn-cancel-edit" onclick="toggleEdit(' + p.id + ')">취소</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  // 회원 검색/필터
+  // 검색/필터
   document.getElementById('memberSearch').addEventListener('input', filterMembers);
   document.getElementById('memberFilter').addEventListener('change', filterMembers);
 
@@ -315,14 +231,129 @@
     var keyword = document.getElementById('memberSearch').value.toLowerCase();
     var type = document.getElementById('memberFilter').value;
     var filtered = allMembers.filter(function(m) {
-      var matchKeyword = !keyword ||
-        (m.username && m.username.toLowerCase().includes(keyword)) ||
-        (m.realname && m.realname.toLowerCase().includes(keyword));
-      var matchType = !type || m.user_type === type;
-      return matchKeyword && matchType;
+      var matchK = !keyword || (m.username||'').toLowerCase().includes(keyword) || (m.realname||'').toLowerCase().includes(keyword);
+      var matchT = !type || m.user_type === type;
+      return matchK && matchT;
     });
     renderMembers(filtered);
-    document.getElementById('memberCount').textContent = '검색 결과 ' + filtered.length + '명 / 전체 ' + allMembers.length + '명';
+  }
+
+  // 강사 승인
+  async function loadInstructors() {
+    var res = await sb.from('profiles').select('*').eq('user_type', 'instructor').order('created_at', { ascending: false });
+    var el = document.getElementById('instructorList');
+    if (!res.data || !res.data.length) { el.innerHTML = '<div class="empty">신청한 강사가 없습니다</div>'; return; }
+    el.innerHTML = res.data.map(function(p) {
+      var statusBadge = p.instructor_status === 'pending' ? '<span class="badge badge-pending">승인 대기</span>'
+        : p.instructor_status === 'approved' ? '<span class="badge badge-approved">승인 완료</span>'
+        : '<span class="badge badge-rejected">거절</span>';
+      var btns = p.instructor_status === 'pending'
+        ? '<button class="btn-approve" data-id="' + p.id + '" data-action="approved">승인</button><button class="btn-reject" data-id="' + p.id + '" data-action="rejected">거절</button>'
+        : '';
+      var licenseBtn = p.license_image_url ? '<button class="btn-view" data-path="' + p.license_image_url + '">자격증 보기</button>' : '';
+      return '<div class="instructor-item"><div class="instructor-info"><div class="avatar">' + (p.username||'?')[0] + '</div><div><div style="font-size:14px;font-weight:600">' + (p.username||'') + ' ' + statusBadge + '</div><div style="font-size:12px;color:#888">' + (p.license_type||'') + ' · ' + (p.region||'') + '</div></div></div><div>' + licenseBtn + btns + '</div></div>';
+    }).join('');
+
+    el.querySelectorAll('.btn-approve, .btn-reject').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.dataset.id;
+        var action = this.dataset.action;
+        if (confirm(action === 'approved' ? '승인하시겠습니까?' : '거절하시겠습니까?')) {
+          sb.from('profiles').update({ instructor_status: action }).eq('id', id).then(function() { loadInstructors(); loadMembers(); });
+        }
+      });
+    });
+
+    el.querySelectorAll('.btn-view').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        var res = await sb.storage.from('licenses').createSignedUrl(this.dataset.path, 60);
+        if (res.data && res.data.signedUrl) window.open(res.data.signedUrl, '_blank');
+        else alert('자격증을 불러올 수 없습니다');
+      });
+    });
+  }
+
+  // 풀장 등록
+  document.getElementById('addPoolBtn').addEventListener('click', async function() {
+    var name = document.getElementById('poolName').value.trim();
+    var region = document.getElementById('poolRegion').value;
+    var address = document.getElementById('poolAddress').value.trim();
+    var depth = document.getElementById('poolDepth').value.trim();
+    var weekday = document.getElementById('weekdayHours').value.trim();
+    var weekend = document.getElementById('weekendHours').value.trim();
+    if (!name) { alert('풀장 이름을 입력해주세요'); return; }
+    var res = await sb.from('pools').insert({ name: name, region: region, address: address, depth: depth, weekday_hours: weekday, weekend_hours: weekend });
+    if (res.error) { alert('등록 오류: ' + res.error.message); return; }
+    alert('풀장이 등록됐습니다!');
+    ['poolName','poolAddress','poolDepth','weekdayHours','weekendHours'].forEach(function(id) { document.getElementById(id).value = ''; });
+    loadPools();
+  });
+
+  // 풀장 목록
+  async function loadPools() {
+    var res = await sb.from('pools').select('*').order('region');
+    var el = document.getElementById('poolList');
+    if (!res.data || !res.data.length) { el.innerHTML = '<div class="empty">등록된 풀장이 없습니다</div>'; return; }
+    el.innerHTML = res.data.map(function(p) {
+      var regionOpts = REGIONS.map(function(r) { return '<option value="' + r + '"' + (p.region===r?' selected':'') + '>' + r + '</option>'; }).join('');
+      return '<div class="pool-item" id="pool_' + p.id + '">' +
+        '<div class="pool-item-top">' +
+          '<div><div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth?' · '+p.depth:'') + '</div>' +
+          '<div class="pool-item-hours">' + (p.address?'📍 '+p.address+'<br>':'') + (p.weekday_hours?'평일: '+p.weekday_hours+'<br>':'') + (p.weekend_hours?'주말: '+p.weekend_hours:'') + '</div></div>' +
+          '<div class="pool-item-btns">' +
+            '<button class="btn-edit" data-id="' + p.id + '">수정</button>' +
+            '<button class="btn-del" data-id="' + p.id + '">삭제</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="pool-edit-form" id="editForm_' + p.id + '">' +
+          '<div class="row" style="margin-bottom:10px"><div><label style="font-size:12px;margin-bottom:4px;display:block">풀장 이름</label><input id="eName_' + p.id + '" value="' + (p.name||'') + '"></div>' +
+          '<div><label style="font-size:12px;margin-bottom:4px;display:block">지역</label><select id="eRegion_' + p.id + '">' + regionOpts + '</select></div></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">주소</label><input id="eAddress_' + p.id + '" value="' + (p.address||'') + '"></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">수심</label><input id="eDepth_' + p.id + '" value="' + (p.depth||'') + '"></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">평일 운영시간</label><textarea id="eWeekday_' + p.id + '">' + (p.weekday_hours||'') + '</textarea></div>' +
+          '<div style="margin-bottom:12px"><label style="font-size:12px;margin-bottom:4px;display:block">주말 운영시간</label><textarea id="eWeekend_' + p.id + '">' + (p.weekend_hours||'') + '</textarea></div>' +
+          '<button class="btn-save" data-id="' + p.id + '">저장</button>' +
+          '<button class="btn-cancel-edit" data-id="' + p.id + '">취소</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // 수정/삭제/저장 이벤트
+    el.querySelectorAll('.btn-edit').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var form = document.getElementById('editForm_' + this.dataset.id);
+        form.classList.toggle('show');
+      });
+    });
+    el.querySelectorAll('.btn-cancel-edit').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.getElementById('editForm_' + this.dataset.id).classList.remove('show');
+      });
+    });
+    el.querySelectorAll('.btn-save').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        var id = this.dataset.id;
+        var res = await sb.from('pools').update({
+          name: document.getElementById('eName_'+id).value.trim(),
+          region: document.getElementById('eRegion_'+id).value,
+          address: document.getElementById('eAddress_'+id).value.trim(),
+          depth: document.getElementById('eDepth_'+id).value.trim(),
+          weekday_hours: document.getElementById('eWeekday_'+id).value.trim(),
+          weekend_hours: document.getElementById('eWeekend_'+id).value.trim()
+        }).eq('id', id);
+        if (res.error) { alert('수정 오류: ' + res.error.message); return; }
+        alert('수정됐습니다!');
+        loadPools();
+      });
+    });
+    el.querySelectorAll('.btn-del').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.dataset.id;
+        if (confirm('풀장을 삭제할까요?')) {
+          sb.from('pools').delete().eq('id', id).then(function() { loadPools(); });
+        }
+      });
+    });
   }
 
   initSB();
