@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 인증 완료</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .wrap { max-width: 480px; margin: 80px auto; padding: 0 24px; text-align: center; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 40px 36px; }
+    .icon { font-size: 64px; margin-bottom: 24px; }
+    h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px; }
+    .desc { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 28px; }
+    .btn-login { display: block; width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
+    .btn-login:hover { background: #178a65; }
+    .error-card { display: none; }
+    .error-card .icon { font-size: 64px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+</nav>
+
+<div class="wrap">
+  <!-- 성공 -->
+  <div class="card" id="successCard">
+    <div class="icon">✅</div>
+    <h2>이메일 인증 완료!</h2>
+    <p class="desc">
+      이메일 인증이 완료됐습니다.<br>
+      이제 FreeBuddy를 자유롭게 이용하실 수 있어요 🤿
+    </p>
+    <a href="login.html" class="btn-login">로그인 하러 가기</a>
+  </div>
+
+  <!-- 오류 -->
+  <div class="card error-card" id="errorCard">
+    <div class="icon">❌</div>
+    <h2>인증에 실패했습니다</h2>
+    <p class="desc">
+      인증 링크가 만료됐거나 올바르지 않습니다.<br>
+      다시 회원가입하거나 인증 이메일을 재발송해주세요.
+    </p>
+    <a href="signup.html" class="btn-login">다시 회원가입</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      var sb = window.supabase.createClient(SB_URL, SB_KEY);
+      // URL 해시에서 토큰 확인
+      var hashParams = new URLSearchParams(window.location.hash.slice(1));
+      var type = hashParams.get('type');
+      var accessToken = hashParams.get('access_token');
+
+      if (type === 'signup' && accessToken) {
+        document.getElementById('successCard').style.display = 'block';
+        document.getElementById('errorCard').style.display = 'none';
+        // 3초 후 자동으로 로그인 페이지로 이동
+        setTimeout(function() { location.href = 'login.html'; }, 3000);
+      } else if (type === 'recovery') {
+        // 비밀번호 재설정인 경우
+        location.href = 'reset-password.html' + window.location.hash;
+      } else {
+        document.getElementById('successCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'block';
+      }
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  initSB();
+})();
+</script>
+</body>
+</html>

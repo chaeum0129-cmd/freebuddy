@@ -273,10 +273,12 @@
         throw profileRes.error;
       }
 
-      alert(userType === 'instructor'
-        ? '가입 신청이 완료됐습니다!\n자격증 확인 후 강사 승인이 이루어집니다 (1~2일 소요)'
-        : '가입이 완료됐습니다! 이메일을 확인해주세요.');
-      location.href = 'login.html';
+      // 이메일 저장 후 인증 안내 페이지로 이동
+      sessionStorage.setItem('pendingEmail', email);
+      if (userType === 'instructor') {
+        alert('가입 신청이 완료됐습니다!\n자격증 확인 후 강사 승인이 이루어집니다 (1~2일 소요)\n\n이메일 인증을 완료해주세요.');
+      }
+      location.href = 'verify-email.html?email=' + encodeURIComponent(email);
     } catch (err) {
       showErr('generalErr', err.message || '오류가 발생했습니다. 다시 시도해주세요.');
       btn.textContent = '가입하기';

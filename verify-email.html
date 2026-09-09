@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 이메일 인증</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .wrap { max-width: 480px; margin: 80px auto; padding: 0 24px; text-align: center; }
+    .icon { font-size: 64px; margin-bottom: 24px; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 40px 36px; }
+    h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px; }
+    .desc { font-size: 14px; color: #666; line-height: 1.8; margin-bottom: 28px; }
+    .email-box { background: #e8f8f2; border-radius: 10px; padding: 14px; font-size: 14px; color: #0F6E56; font-weight: 600; margin-bottom: 28px; }
+    .notice { font-size: 13px; color: #aaa; line-height: 1.7; margin-bottom: 24px; }
+    .btn-login { display: block; width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; margin-bottom: 12px; }
+    .btn-login:hover { background: #178a65; }
+    .btn-resend { display: block; width: 100%; padding: 12px; background: #fff; color: #555; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .btn-resend:hover { border-color: #1D9E75; color: #1D9E75; }
+    .success-msg { color: #1D9E75; font-size: 13px; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <div class="icon">📧</div>
+    <h2>이메일을 확인해주세요!</h2>
+    <p class="desc">
+      가입하신 이메일로 인증 링크를 발송했어요.<br>
+      이메일의 <strong>인증 링크를 클릭</strong>하면 가입이 완료됩니다.
+    </p>
+    <div class="email-box" id="emailBox">이메일 확인 중...</div>
+    <p class="notice">
+      이메일이 오지 않으면 스팸함을 확인해주세요.<br>
+      인증 링크는 24시간 동안 유효합니다.
+    </p>
+    <a href="login.html" class="btn-login">로그인 하러 가기</a>
+    <button class="btn-resend" id="resendBtn">인증 이메일 재발송</button>
+    <div class="success-msg" id="successMsg">✅ 인증 이메일을 재발송했습니다!</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb;
+  var pendingEmail = '';
+
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      // URL 파라미터에서 이메일 가져오기
+      var params = new URLSearchParams(window.location.search);
+      pendingEmail = params.get('email') || sessionStorage.getItem('pendingEmail') || '';
+      document.getElementById('emailBox').textContent = pendingEmail || '가입하신 이메일 주소';
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  document.getElementById('resendBtn').addEventListener('click', async function() {
+    if (!pendingEmail) { alert('이메일 정보가 없습니다. 다시 회원가입해주세요.'); return; }
+    var btn = this;
+    btn.textContent = '발송 중...';
+    btn.disabled = true;
+    var res = await sb.auth.resend({ type: 'signup', email: pendingEmail });
+    if (res.error) {
+      alert('재발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } else {
+      document.getElementById('successMsg').style.display = 'block';
+    }
+    btn.textContent = '인증 이메일 재발송';
+    btn.disabled = false;
+  });
+
+  initSB();
+})();
+</script>
+</body>
+</html>
