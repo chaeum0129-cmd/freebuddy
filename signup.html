@@ -57,9 +57,9 @@
     </div>
 
     <div class="form-group">
-      <label>아이디</label>
-      <input type="text" id="username" placeholder="영문, 숫자 조합 4자 이상">
-      <div class="error" id="usernameErr">아이디를 입력해주세요</div>
+      <label>별명 (닉네임)</label>
+      <input type="text" id="username" placeholder="사이트에서 사용할 별명">
+      <div class="error" id="usernameErr">별명을 입력해주세요</div>
     </div>
     <div class="form-group">
       <label>이메일</label>
@@ -87,7 +87,7 @@
           <input type="text" id="licenseOther" placeholder="자격증 이름 직접 입력">
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="levelGroup">
         <label>레벨</label>
         <select id="licenseLevel">
           <option value="">선택</option>
@@ -173,6 +173,7 @@
     var show = type === 'instructor';
     document.getElementById('instructorSection').style.display = show ? 'block' : 'none';
     document.getElementById('instructorNotice').style.display = show ? 'block' : 'none';
+    document.getElementById('levelGroup').style.display = show ? 'none' : 'block';
   }
 
   function showErr(id, msg) {
@@ -199,7 +200,7 @@
     var licenseFile = document.getElementById('licenseFile').files[0];
 
     var valid = true;
-    if (!username) { showErr('usernameErr', '아이디를 입력해주세요'); valid = false; }
+    if (!username) { showErr('usernameErr', '별명을 입력해주세요'); valid = false; }
     if (!email) { showErr('emailErr', '이메일을 입력해주세요'); valid = false; }
     if (password.length < 8) { showErr('passwordErr', '비밀번호를 8자 이상 입력해주세요'); valid = false; }
     if (userType === 'instructor' && !licenseFile) { showErr('licenseErr', '자격증 사진을 업로드해주세요'); valid = false; }

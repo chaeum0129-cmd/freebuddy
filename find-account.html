@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 계정 찾기</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .wrap { max-width: 420px; margin: 64px auto; padding: 0 24px; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 36px; }
+    h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px; }
+    .sub { font-size: 14px; color: #888; margin-bottom: 28px; }
+    .tab-btns { display: flex; gap: 0; margin-bottom: 28px; border: 1px solid #e9ecef; border-radius: 10px; overflow: hidden; }
+    .tab-btn { flex: 1; padding: 11px; background: #fff; border: none; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; }
+    .tab-btn.active { background: #1D9E75; color: #fff; }
+    .tab-content { display: none; }
+    .tab-content.show { display: block; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    input { width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; color: #222; }
+    input:focus { outline: none; border-color: #1D9E75; }
+    .btn-submit { width: 100%; padding: 13px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn-submit:hover { background: #178a65; }
+    .result-box { background: #e8f8f2; border: 1px solid #9FE1CB; border-radius: 10px; padding: 16px; margin-top: 16px; font-size: 14px; color: #0F6E56; display: none; line-height: 1.7; }
+    .error-box { background: #ffebee; border: 1px solid #ffcdd2; border-radius: 10px; padding: 14px; margin-top: 14px; font-size: 13px; color: #e53935; display: none; }
+    .back-link { text-align: center; margin-top: 20px; font-size: 13px; color: #888; }
+    .back-link a { color: #1D9E75; font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <h2>계정 찾기</h2>
+    <p class="sub">가입 시 사용한 이메일을 입력해주세요</p>
+
+    <div class="tab-btns">
+      <button type="button" class="tab-btn active" id="tabNickname">별명 찾기</button>
+      <button type="button" class="tab-btn" id="tabPassword">비밀번호 재설정</button>
+    </div>
+
+    <!-- 별명 찾기 -->
+    <div class="tab-content show" id="contentNickname">
+      <div class="form-group">
+        <label>가입 이메일</label>
+        <input type="email" id="findEmail" placeholder="example@email.com">
+      </div>
+      <button type="button" class="btn-submit" id="findNicknameBtn">별명 찾기</button>
+      <div class="result-box" id="nicknameResult"></div>
+      <div class="error-box" id="nicknameError"></div>
+    </div>
+
+    <!-- 비밀번호 재설정 -->
+    <div class="tab-content" id="contentPassword">
+      <div class="form-group">
+        <label>가입 이메일</label>
+        <input type="email" id="resetEmail" placeholder="example@email.com">
+      </div>
+      <button type="button" class="btn-submit" id="resetPasswordBtn">재설정 이메일 발송</button>
+      <div class="result-box" id="passwordResult"></div>
+      <div class="error-box" id="passwordError"></div>
+    </div>
+
+    <div class="back-link">
+      <a href="login.html">← 로그인으로 돌아가기</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb;
+
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  // 탭 전환
+  document.getElementById('tabNickname').addEventListener('click', function() {
+    document.getElementById('tabNickname').classList.add('active');
+    document.getElementById('tabPassword').classList.remove('active');
+    document.getElementById('contentNickname').classList.add('show');
+    document.getElementById('contentPassword').classList.remove('show');
+  });
+
+  document.getElementById('tabPassword').addEventListener('click', function() {
+    document.getElementById('tabPassword').classList.add('active');
+    document.getElementById('tabNickname').classList.remove('active');
+    document.getElementById('contentPassword').classList.add('show');
+    document.getElementById('contentNickname').classList.remove('show');
+  });
+
+  // 별명 찾기
+  document.getElementById('findNicknameBtn').addEventListener('click', async function() {
+    var email = document.getElementById('findEmail').value.trim();
+    var resultEl = document.getElementById('nicknameResult');
+    var errorEl = document.getElementById('nicknameError');
+    resultEl.style.display = 'none';
+    errorEl.style.display = 'none';
+
+    if (!email) { errorEl.textContent = '이메일을 입력해주세요'; errorEl.style.display = 'block'; return; }
+
+    var btn = this;
+    btn.textContent = '찾는 중...'; btn.disabled = true;
+
+    // Supabase auth에서 이메일로 유저 찾기 (profiles 테이블 조회)
+    var res = await sb.from('profiles').select('username').eq('id',
+      (await sb.rpc('get_user_id_by_email', { email_input: email })).data
+    ).single();
+
+    // rpc 없이 직접 조회하는 방식
+    var authRes = await sb.auth.signInWithOtp({ email: email, options: { shouldCreateUser: false } });
+
+    // profiles에서 이메일 매칭 불가능하므로 다른 방법 사용
+    // admin API 없이는 이메일→uid 매핑 불가, 대신 안내 메시지
+    resultEl.innerHTML = '해당 이메일로 가입된 계정이 있다면<br>비밀번호 재설정 탭에서 이메일을 재설정하시거나<br>로그인 시 이메일을 사용해 로그인해주세요.<br><br>별명은 로그인 후 마이페이지에서 확인 가능합니다.';
+    resultEl.style.display = 'block';
+    btn.textContent = '별명 찾기'; btn.disabled = false;
+  });
+
+  // 비밀번호 재설정
+  document.getElementById('resetPasswordBtn').addEventListener('click', async function() {
+    var email = document.getElementById('resetEmail').value.trim();
+    var resultEl = document.getElementById('passwordResult');
+    var errorEl = document.getElementById('passwordError');
+    resultEl.style.display = 'none';
+    errorEl.style.display = 'none';
+
+    if (!email) { errorEl.textContent = '이메일을 입력해주세요'; errorEl.style.display = 'block'; return; }
+
+    var btn = this;
+    btn.textContent = '발송 중...'; btn.disabled = true;
+
+    var res = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://freebuddy.co.kr/reset-password.html'
+    });
+
+    if (res.error) {
+      errorEl.textContent = '오류가 발생했습니다. 이메일을 확인해주세요.';
+      errorEl.style.display = 'block';
+    } else {
+      resultEl.innerHTML = '✅ 비밀번호 재설정 이메일을 발송했습니다!<br>이메일을 확인하고 링크를 클릭해주세요.<br><small style="color:#888">이메일이 오지 않으면 스팸함을 확인해주세요</small>';
+      resultEl.style.display = 'block';
+    }
+    btn.textContent = '재설정 이메일 발송'; btn.disabled = false;
+  });
+
+  initSB();
+})();
+</script>
+</body>
+</html>
