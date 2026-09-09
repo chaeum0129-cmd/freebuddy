@@ -238,7 +238,12 @@
 
     try {
       var authRes = await sb.auth.signUp({ email: email, password: password });
-      if (authRes.error) throw authRes.error;
+      if (authRes.error) {
+        if (authRes.error.message.includes('already registered') || authRes.error.message.includes('User already registered')) {
+          throw new Error('이미 가입된 이메일입니다. 로그인 페이지에서 로그인해주세요.');
+        }
+        throw authRes.error;
+      }
 
       var userId = authRes.data.user.id;
       var licenseImageUrl = null;
@@ -261,7 +266,12 @@
         instructor_status: userType === 'instructor' ? 'pending' : null,
         license_image_url: licenseImageUrl
       });
-      if (profileRes.error) throw profileRes.error;
+      if (profileRes.error) {
+        if (profileRes.error.message.includes('duplicate') || profileRes.error.code === '23505') {
+          throw new Error('이미 사용 중인 별명입니다. 다른 별명을 입력해주세요.');
+        }
+        throw profileRes.error;
+      }
 
       alert(userType === 'instructor'
         ? '가입 신청이 완료됐습니다!\n자격증 확인 후 강사 승인이 이루어집니다 (1~2일 소요)'
