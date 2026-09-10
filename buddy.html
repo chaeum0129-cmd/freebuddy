@@ -588,8 +588,9 @@
       if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
       return;
     }
-    if (contact) window.open(contact, '_blank');
-    else alert(username + '님의 연락처 정보가 없습니다');
+    var url = (contact || '').trim();
+    if (url && url.startsWith('http')) window.open(url, '_blank');
+    else alert(username + '님이 아직 오픈채팅 링크를 등록하지 않았습니다.\n버디 모집글에 댓글로 문의해보세요!');
   };
 
   window.goWrite = function() {
