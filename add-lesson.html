@@ -21,7 +21,6 @@
     textarea { resize: vertical; min-height: 80px; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .btn-submit { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
-    .btn-submit:hover { background: #178a65; }
     .error { color: #e53935; font-size: 12px; margin-top: 8px; display: none; text-align: center; }
   </style>
 </head>
@@ -77,65 +76,54 @@
       <textarea id="note" placeholder="준비물, 참고사항 등을 입력해주세요"></textarea>
     </div>
     <div class="error" id="errMsg"></div>
-    <button class="btn-submit" onclick="submitLesson()">강습 등록하기</button>
+    <button class="btn-submit" id="submitBtn">강습 등록하기</button>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sb.js"></script>
 <script>
-(function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb;
-
-  function initSB() {
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      sb = window.supabase.createClient(SB_URL, SB_KEY);
-      init();
-    } else {
-      setTimeout(initSB, 100);
-    }
-  }
-
-  let currentUser = null;
+  var sb = getSB();
+  var currentUser = null;
 
   async function init() {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) { location.href = 'login.html'; return; }
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
-    if (!profile || profile.instructor_status !== 'approved') { alert('강사 승인 후 이용 가능합니다'); location.href = 'my-page.html'; return; }
-    currentUser = user;
-    const { data: pools } = await sb.from('pools').select('id, name, region').order('name');
-    const select = document.getElementById('poolId');
-    (pools || []).forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = `${p.name} (${p.region})`; select.appendChild(opt); });
+    var res = await sb.auth.getUser();
+    if (!res.data || !res.data.user) { location.href = 'login.html'; return; }
+    var profile = await sb.from('profiles').select('*').eq('id', res.data.user.id).single();
+    if (!profile.data || profile.data.instructor_status !== 'approved') {
+      alert('강사 승인 후 이용 가능합니다'); location.href = 'my-page.html'; return;
+    }
+    currentUser = res.data.user;
+    var pools = await sb.from('pools').select('id, name, region').order('name');
+    var select = document.getElementById('poolId');
+    (pools.data || []).forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name + ' (' + p.region + ')';
+      select.appendChild(opt);
+    });
     document.getElementById('date').min = new Date().toISOString().split('T')[0];
   }
 
-  window.submitLesson = async function() {
-    const poolId = document.getElementById('poolId').value;
-    const date = document.getElementById('date').value;
-    const timeSlot = document.getElementById('timeSlot').value;
-    const level = document.getElementById('level').value;
-    const maxStudents = parseInt(document.getElementById('maxStudents').value);
-    const price = document.getElementById('price').value.trim();
-    const note = document.getElementById('note').value.trim();
-    const errEl = document.getElementById('errMsg');
+  document.getElementById('submitBtn').addEventListener('click', async function() {
+    var poolId = document.getElementById('poolId').value;
+    var date = document.getElementById('date').value;
+    var timeSlot = document.getElementById('timeSlot').value;
+    var level = document.getElementById('level').value;
+    var maxStudents = parseInt(document.getElementById('maxStudents').value);
+    var price = document.getElementById('price').value.trim();
+    var note = document.getElementById('note').value.trim();
+    var errEl = document.getElementById('errMsg');
     errEl.style.display = 'none';
-
     if (!poolId || !date) { errEl.textContent = '풀장과 날짜를 선택해주세요'; errEl.style.display = 'block'; return; }
-
-    const btn = document.querySelector('.btn-submit');
-    btn.textContent = '등록 중...'; btn.disabled = true;
-
-    const { error } = await sb.from('lessons').insert({ instructor_id: currentUser.id, pool_id: poolId, date, time_slot: timeSlot, level, max_students: maxStudents, price, note });
-    if (error) { errEl.textContent = '등록 중 오류가 발생했습니다'; errEl.style.display = 'block'; btn.textContent = '강습 등록하기'; btn.disabled = false; return; }
+    var btn = this; btn.textContent = '등록 중...'; btn.disabled = true;
+    var res = await sb.from('lessons').insert({ instructor_id: currentUser.id, pool_id: poolId, date: date, time_slot: timeSlot, level: level, max_students: maxStudents, price: price, note: note });
+    if (res.error) { errEl.textContent = '등록 중 오류가 발생했습니다'; errEl.style.display = 'block'; btn.textContent = '강습 등록하기'; btn.disabled = false; return; }
     alert('강습 일정이 등록됐습니다!');
     location.href = 'my-page.html';
-  }
+  });
 
   init();
-
-})();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>

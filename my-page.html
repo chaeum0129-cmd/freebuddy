@@ -13,15 +13,16 @@
     .logo span { color: #222; }
     .nav-links { display: flex; gap: 24px; }
     .nav-link { font-size: 14px; color: #555; font-weight: 500; }
-    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; }
     .wrap { max-width: 760px; margin: 0 auto; padding: 32px 24px; }
     .profile-card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
     .profile-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
     .avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
     .profile-name { font-size: 20px; font-weight: 700; color: #111; }
     .profile-type { font-size: 13px; color: #888; margin-top: 4px; }
-    .badge-approved { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #e8f8f2; color: #0F6E56; font-weight: 600; margin-left: 8px; }
-    .badge-pending { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #fff3e0; color: #e65100; font-weight: 600; margin-left: 8px; }
+    .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; margin-left: 8px; }
+    .badge-approved { background: #e8f8f2; color: #0F6E56; }
+    .badge-pending { background: #fff3e0; color: #e65100; }
     .profile-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     @media (max-width: 500px) { .profile-info { grid-template-columns: 1fr 1fr; } .nav-links { display: none; } }
     .info-item { background: #f8f9fa; border-radius: 10px; padding: 12px; }
@@ -33,15 +34,14 @@
     .post-item:last-child { border: none; }
     .post-info { font-size: 14px; color: #333; }
     .post-detail { font-size: 12px; color: #888; margin-top: 2px; }
-    .btn-delete { font-size: 12px; padding: 5px 12px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; cursor: pointer; }
-    .btn-delete:hover { background: #ffebee; }
+    .btn-del { font-size: 12px; padding: 5px 12px; border: 1px solid #ffcdd2; border-radius: 6px; background: #fff; color: #e53935; cursor: pointer; }
+    .instructor-box { background: #e8f8f2; border: 1px solid #9FE1CB; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .instructor-box p { font-size: 14px; color: #0F6E56; margin-bottom: 12px; }
+    .btn-add-lesson { padding: 10px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .btn-logout { width: 100%; padding: 13px; border: 1px solid #ddd; border-radius: 10px; background: #fff; font-size: 14px; font-weight: 600; color: #888; cursor: pointer; margin-top: 8px; }
     .btn-logout:hover { border-color: #e53935; color: #e53935; }
     .empty { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
     .loading { text-align: center; padding: 24px; color: #999; font-size: 13px; }
-    .instructor-section { background: #e8f8f2; border: 1px solid #9FE1CB; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
-    .instructor-section p { font-size: 14px; color: #0F6E56; margin-bottom: 12px; }
-    .btn-add-lesson { padding: 10px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -52,7 +52,7 @@
     <a href="buddy.html" class="nav-link">버디 구하기</a>
     <a href="lessons.html" class="nav-link">강습</a>
   </div>
-  <button class="btn-ghost" onclick="logout()">로그아웃</button>
+  <button class="btn-ghost" id="logoutBtn">로그아웃</button>
 </nav>
 
 <div class="wrap">
@@ -60,7 +60,7 @@
     <div class="loading">프로필을 불러오는 중...</div>
   </div>
 
-  <div id="instructorBox" style="display:none" class="instructor-section">
+  <div id="instructorBox" style="display:none" class="instructor-box">
     <p>✅ 승인된 강사입니다. 강습 일정을 등록할 수 있습니다.</p>
     <button class="btn-add-lesson" onclick="location.href='add-lesson.html'">강습 일정 등록</button>
   </div>
@@ -80,127 +80,105 @@
     <div id="myBookings"><div class="loading">불러오는 중...</div></div>
   </div>
 
-  <button class="btn-logout" onclick="logout()">로그아웃</button>
+  <button class="btn-logout" id="logoutBtn2">로그아웃</button>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="sb.js"></script>
 <script>
-(function() {
-  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
-  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb;
-
-  function initSB() {
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      sb = window.supabase.createClient(SB_URL, SB_KEY);
-      init();
-    } else {
-      setTimeout(initSB, 100);
-    }
-  }
-
-  let currentUser = null;
+  var sb = getSB();
+  var currentUser = null;
 
   async function init() {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) { location.href = 'login.html'; return; }
-    currentUser = user;
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+    var res = await sb.auth.getUser();
+    if (!res.data || !res.data.user) { location.href = 'login.html'; return; }
+    currentUser = res.data.user;
+
+    var profileRes = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+    var profile = profileRes.data;
     if (!profile) return;
 
-    const isInstructor = profile.user_type === 'instructor' && profile.instructor_status === 'approved';
-    const isPending = profile.user_type === 'instructor' && profile.instructor_status === 'pending';
+    var isInstructor = profile.user_type === 'instructor' && profile.instructor_status === 'approved';
+    var isPending = profile.user_type === 'instructor' && profile.instructor_status === 'pending';
 
-    document.getElementById('profileCard').innerHTML = `
-      <div class="profile-top">
-        <div class="avatar-lg">${(profile.username || '?')[0]}</div>
-        <div>
-          <div class="profile-name">
-            ${profile.username}
-            ${isInstructor ? '<span class="badge-approved">강사 ✓</span>' : ''}
-            ${isPending ? '<span class="badge-pending">승인 대기 중</span>' : ''}
-          </div>
-          <div class="profile-type">${profile.user_type === 'instructor' ? '강사 회원' : '일반 회원'}</div>
-        </div>
-      </div>
-      <div class="profile-info">
-        <div class="info-item"><div class="info-label">자격증</div><div class="info-value">${profile.license_type || '-'}</div></div>
-        <div class="info-item"><div class="info-label">레벨</div><div class="info-value">${profile.license_level || '-'}</div></div>
-        <div class="info-item"><div class="info-label">활동 지역</div><div class="info-value">${profile.region || '-'}</div></div>
-      </div>
-    `;
+    document.getElementById('profileCard').innerHTML =
+      '<div class="profile-top"><div class="avatar-lg">' + (profile.username || '?')[0] + '</div>' +
+      '<div><div class="profile-name">' + (profile.username || '') +
+      (isInstructor ? '<span class="badge badge-approved">강사 ✓</span>' : '') +
+      (isPending ? '<span class="badge badge-pending">승인 대기 중</span>' : '') +
+      '</div><div class="profile-type">' + (profile.user_type === 'instructor' ? '강사 회원' : '일반 회원') + '</div></div></div>' +
+      '<div class="profile-info">' +
+      '<div class="info-item"><div class="info-label">별명</div><div class="info-value">' + (profile.username || '-') + '</div></div>' +
+      '<div class="info-item"><div class="info-label">자격증</div><div class="info-value">' + (profile.license_type || '-') + '</div></div>' +
+      '<div class="info-item"><div class="info-label">레벨</div><div class="info-value">' + (profile.license_level || '-') + '</div></div>' +
+      '<div class="info-item"><div class="info-label">활동 지역</div><div class="info-value">' + (profile.region || '-') + '</div></div>' +
+      '</div>';
 
     if (isInstructor) {
       document.getElementById('instructorBox').style.display = 'block';
       document.getElementById('myLessonsCard').style.display = 'block';
-      loadMyLessons(user.id);
+      loadMyLessons();
     }
 
-    loadMyBuddyPosts(user.id);
-    loadMyBookings(user.id);
+    loadMyBuddyPosts();
+    loadMyBookings();
   }
 
-  async function loadMyBuddyPosts(userId) {
-    const { data: posts } = await sb.from('buddy_posts').select('*, pools(name, region)').eq('user_id', userId).order('date', { ascending: false });
-    const el = document.getElementById('myBuddyPosts');
-    if (!posts || posts.length === 0) { el.innerHTML = '<div class="empty">등록한 버디 모집이 없습니다</div>'; return; }
-    el.innerHTML = posts.map(p => `
-      <div class="post-item">
-        <div>
-          <div class="post-info">${p.pools?.name || ''} · ${p.date} ${p.time_slot}</div>
-          <div class="post-detail">${p.note || ''}</div>
-        </div>
-        <button class="btn-delete" onclick="deleteBuddyPost(${p.id})">삭제</button>
-      </div>
-    `).join('');
+  async function loadMyBuddyPosts() {
+    var res = await sb.from('buddy_posts').select('*, pools(name, region)').eq('user_id', currentUser.id).order('date', { ascending: false });
+    var el = document.getElementById('myBuddyPosts');
+    if (!res.data || !res.data.length) { el.innerHTML = '<div class="empty">등록한 버디 모집이 없습니다</div>'; return; }
+    el.innerHTML = res.data.map(function(p) {
+      return '<div class="post-item"><div>' +
+        '<div class="post-info">' + (p.pools && p.pools.name || '') + ' · ' + p.date + ' ' + p.time_slot + '</div>' +
+        '<div class="post-detail">' + (p.note || '') + '</div></div>' +
+        '<button class="btn-del" data-id="' + p.id + '">삭제</button></div>';
+    }).join('');
+    el.querySelectorAll('.btn-del').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('버디 모집 글을 삭제할까요?')) return;
+        await sb.from('buddy_posts').delete().eq('id', this.dataset.id);
+        loadMyBuddyPosts();
+      });
+    });
   }
 
-  window.deleteBuddyPost = async function(id) {
-    if (!confirm('버디 모집 글을 삭제할까요?')) return;
-    await sb.from('buddy_posts').delete().eq('id', id);
-    loadMyBuddyPosts(currentUser.id);
+  async function loadMyLessons() {
+    var res = await sb.from('lessons').select('*, pools(name)').eq('instructor_id', currentUser.id).order('date', { ascending: false });
+    var el = document.getElementById('myLessons');
+    if (!res.data || !res.data.length) { el.innerHTML = '<div class="empty">등록한 강습이 없습니다</div>'; return; }
+    el.innerHTML = res.data.map(function(l) {
+      return '<div class="post-item"><div>' +
+        '<div class="post-info">' + (l.pools && l.pools.name || '') + ' · ' + l.date + ' ' + l.time_slot + ' · ' + (l.level || '') + '</div>' +
+        '<div class="post-detail">' + (l.price || '가격 협의') + ' · 최대 ' + l.max_students + '명</div></div>' +
+        '<button class="btn-del" data-id="' + l.id + '">삭제</button></div>';
+    }).join('');
+    el.querySelectorAll('.btn-del').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        if (!confirm('강습 일정을 삭제할까요?')) return;
+        await sb.from('lessons').delete().eq('id', this.dataset.id);
+        loadMyLessons();
+      });
+    });
   }
 
-  async function loadMyLessons(userId) {
-    const { data: lessons } = await sb.from('lessons').select('*, pools(name)').eq('instructor_id', userId).order('date', { ascending: false });
-    const el = document.getElementById('myLessons');
-    if (!lessons || lessons.length === 0) { el.innerHTML = '<div class="empty">등록한 강습이 없습니다</div>'; return; }
-    el.innerHTML = lessons.map(l => `
-      <div class="post-item">
-        <div>
-          <div class="post-info">${l.pools?.name || ''} · ${l.date} ${l.time_slot} · ${l.level || ''}</div>
-          <div class="post-detail">${l.price || '가격 협의'} · 최대 ${l.max_students}명</div>
-        </div>
-        <button class="btn-delete" onclick="deleteLesson(${l.id})">삭제</button>
-      </div>
-    `).join('');
+  async function loadMyBookings() {
+    var res = await sb.from('lesson_bookings').select('*, lessons(date, time_slot, level, profiles(username))').eq('student_id', currentUser.id);
+    var el = document.getElementById('myBookings');
+    if (!res.data || !res.data.length) { el.innerHTML = '<div class="empty">신청한 강습이 없습니다</div>'; return; }
+    el.innerHTML = res.data.map(function(b) {
+      var instructor = (b.lessons && b.lessons.profiles && b.lessons.profiles.username) || '';
+      return '<div class="post-item"><div>' +
+        '<div class="post-info">' + instructor + ' 강사 · ' + (b.lessons && b.lessons.date || '') + ' ' + (b.lessons && b.lessons.time_slot || '') + '</div>' +
+        '<div class="post-detail">' + (b.status === 'pending' ? '신청 중' : '확정') + '</div></div></div>';
+    }).join('');
   }
 
-  window.deleteLesson = async function(id) {
-    if (!confirm('강습 일정을 삭제할까요?')) return;
-    await sb.from('lessons').delete().eq('id', id);
-    loadMyLessons(currentUser.id);
-  }
-
-  async function loadMyBookings(userId) {
-    const { data: bookings } = await sb.from('lesson_bookings').select('*, lessons(date, time_slot, level, profiles(username)), pools(name)').eq('student_id', userId);
-    const el = document.getElementById('myBookings');
-    if (!bookings || bookings.length === 0) { el.innerHTML = '<div class="empty">신청한 강습이 없습니다</div>'; return; }
-    el.innerHTML = bookings.map(b => `
-      <div class="post-item">
-        <div>
-          <div class="post-info">${b.lessons?.profiles?.username || ''} 강사 · ${b.lessons?.date || ''} ${b.lessons?.time_slot || ''}</div>
-          <div class="post-detail">${b.status === 'pending' ? '신청 중' : '확정'}</div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  window.logout = async function() { await sb.auth.signOut(); location.href = 'index.html'; }
+  async function doLogout() { await sb.auth.signOut(); location.href = 'index.html'; }
+  document.getElementById('logoutBtn').addEventListener('click', doLogout);
+  document.getElementById('logoutBtn2').addEventListener('click', doLogout);
 
   init();
-
-})();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
