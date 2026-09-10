@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 버디 모집 상세</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; }
+    .logo span { color: #222; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-link { font-size: 14px; color: #555; font-weight: 500; }
+    .nav-link:hover { color: #1D9E75; }
+    .nav-btns { display: flex; gap: 8px; }
+    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-ghost:hover { border-color: #1D9E75; color: #1D9E75; }
+    .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
+    .nav-user { display: none; align-items: center; gap: 12px; }
+
+    /* 페이지 헤더 */
+    .page-header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+    .back-btn { width: 34px; height: 34px; border: 1px solid #e9ecef; border-radius: 8px; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; font-size: 14px; flex-shrink: 0; }
+    .back-btn:hover { border-color: #1D9E75; color: #1D9E75; }
+    .breadcrumb { font-size: 14px; color: #888; }
+    .breadcrumb a { color: #1D9E75; }
+
+    /* 본문 */
+    .wrap { max-width: 680px; margin: 0 auto; padding: 24px 24px 60px; }
+
+    /* 모집글 카드 */
+    .post-card {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .host-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid #f1f3f5; }
+    .avatar { width: 46px; height: 46px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .host-info { flex: 1; }
+    .host-name { font-size: 15px; font-weight: 700; color: #111; }
+    .host-cert { font-size: 12px; color: #888; margin-top: 2px; }
+    .host-badge { font-size: 11px; font-weight: 700; background: #1D9E75; color: #fff; padding: 3px 10px; border-radius: 20px; }
+    .time-ago { font-size: 12px; color: #ccc; }
+
+    .post-pool { font-size: 20px; font-weight: 700; color: #111; margin-bottom: 6px; }
+    .post-region { font-size: 14px; color: #aaa; margin-bottom: 16px; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .info-item { background: #f8f9fa; border-radius: 10px; padding: 12px 14px; }
+    .info-label { font-size: 11px; color: #aaa; font-weight: 700; margin-bottom: 3px; }
+    .info-value { font-size: 14px; font-weight: 600; color: #333; }
+
+    .post-tags { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag { font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+    .tag-free  { background: #e8f8f2; color: #0F6E56; }
+    .tag-scuba { background: #e3f0ff; color: #1565C0; }
+    .tag-level { background: #EEEDFE; color: #3C3489; }
+    .tag-tour  { background: #fff3e0; color: #e65100; }
+
+    .post-note { font-size: 14px; color: #555; line-height: 1.7; background: #f8f9fa; border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+
+    /* 오픈채팅 버튼 */
+    .btn-kakao { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; background: #FEE500; color: #3A1D1D; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+    .btn-kakao:hover { background: #f0d800; }
+    .kakao-hint { text-align: center; font-size: 12px; color: #bbb; }
+
+    /* 삭제 버튼 (방장만) */
+    .btn-delete { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; padding: 10px; background: #fff; border: 1px solid #ffd0d0; border-radius: 10px; font-size: 13px; color: #e53e3e; cursor: pointer; margin-top: 12px; }
+    .btn-delete:hover { background: #fff5f5; }
+
+    /* AD */
+    .ad-banner { margin-bottom: 16px; }
+    .ad-box { height: 72px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .ad-label { font-size: 11px; color: #999; }
+    .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; }
+
+    /* 댓글 섹션 */
+    .comment-section { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 22px; }
+    .comment-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .comment-count { font-size: 13px; font-weight: 600; color: #1D9E75; background: #e8f8f2; padding: 2px 9px; border-radius: 20px; }
+
+    /* 댓글 입력 */
+    .comment-input-box { display: flex; gap: 10px; margin-bottom: 22px; align-items: flex-start; }
+    .comment-avatar { width: 36px; height: 36px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .comment-input-right { flex: 1; }
+    .comment-textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e0e3e7;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #222;
+      font-family: inherit;
+      resize: none;
+      min-height: 76px;
+      outline: none;
+      transition: border-color 0.15s;
+      line-height: 1.6;
+    }
+    .comment-textarea:focus { border-color: #1D9E75; }
+    .comment-input-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .btn-comment-submit { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn-comment-submit:hover { background: #178a65; }
+    .btn-comment-submit:disabled { background: #ccc; cursor: default; }
+
+    /* 로그인 유도 */
+    .login-prompt { background: #f8f9fa; border-radius: 10px; padding: 16px; text-align: center; margin-bottom: 20px; }
+    .login-prompt p { font-size: 13px; color: #888; margin-bottom: 10px; }
+    .btn-login-small { padding: 7px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+    /* 댓글 목록 */
+    .comment-list { display: flex; flex-direction: column; gap: 16px; }
+    .comment-item { display: flex; gap: 10px; }
+    .comment-body { flex: 1; }
+    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .comment-username { font-size: 13px; font-weight: 700; color: #111; }
+    .comment-host-badge { font-size: 10px; font-weight: 700; background: #e8f8f2; color: #0F6E56; padding: 1px 7px; border-radius: 10px; }
+    .comment-time { font-size: 11px; color: #ccc; }
+    .comment-text { font-size: 14px; color: #444; line-height: 1.65; }
+    .comment-delete { font-size: 11px; color: #ddd; cursor: pointer; background: none; border: none; padding: 0; margin-left: auto; }
+    .comment-delete:hover { color: #e53e3e; }
+    .comment-divider { height: 1px; background: #f1f3f5; }
+
+    .empty { text-align: center; padding: 32px; color: #bbb; font-size: 14px; }
+    .loading { text-align: center; padding: 32px; color: #999; font-size: 14px; }
+
+    /* 토스트 */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+  <div class="nav-links">
+    <a href="pools.html" class="nav-link">풀장 찾기</a>
+    <a href="buddy.html" class="nav-link" style="color:#1D9E75">버디 구하기</a>
+    <a href="lessons.html" class="nav-link">강습</a>
+  </div>
+  <div class="nav-btns" id="navBtns">
+    <button class="btn-ghost" onclick="location.href='login.html'">로그인</button>
+    <button class="btn-primary" onclick="location.href='signup.html'">회원가입</button>
+  </div>
+  <div class="nav-user" id="navUser">
+    <a href="my-page.html" id="navUsername" style="font-size:14px;color:#333;font-weight:500;text-decoration:none;cursor:pointer"></a>
+    <button class="btn-ghost" onclick="logout()">로그아웃</button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <button class="back-btn" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
+  <span class="breadcrumb"><a href="buddy.html">버디 구하기</a> › 모집 상세</span>
+</div>
+
+<div class="wrap">
+  <!-- 모집글 카드 -->
+  <div class="post-card" id="postCard">
+    <div class="loading">모집글을 불러오는 중...</div>
+  </div>
+
+  <!-- 광고 -->
+  <div class="ad-banner">
+    <div class="ad-box">
+      <span class="ad-badge">광고</span>
+      <span class="ad-label">Google AdSense</span>
+    </div>
+  </div>
+
+  <!-- 댓글 섹션 -->
+  <div class="comment-section">
+    <div class="comment-title">
+      댓글 <span class="comment-count" id="commentCount">0</span>
+    </div>
+
+    <!-- 댓글 입력 (로그인 시) -->
+    <div id="commentInputArea" style="display:none">
+      <div class="comment-input-box">
+        <div class="comment-avatar" id="myAvatar">?</div>
+        <div class="comment-input-right">
+          <textarea class="comment-textarea" id="commentText" placeholder="버디에게 말을 걸어보세요 :)" maxlength="300"></textarea>
+          <div class="comment-input-footer">
+            <button class="btn-comment-submit" id="commentSubmitBtn" onclick="submitComment()">등록</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 로그인 유도 (비로그인 시) -->
+    <div id="loginPrompt" class="login-prompt">
+      <p>댓글을 작성하려면 로그인이 필요합니다</p>
+      <button class="btn-login-small" onclick="location.href='login.html'">로그인하기</button>
+    </div>
+
+    <!-- 댓글 목록 -->
+    <div class="comment-list" id="commentList">
+      <div class="loading">댓글을 불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb;
+  var currentUser    = null;
+  var currentProfile = null;
+  var postId         = new URLSearchParams(window.location.search).get('id');
+  var postData       = null;
+
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      checkAuth();
+      loadPost();
+      loadComments();
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  /* ── 인증 ── */
+  async function checkAuth() {
+    var res = await sb.auth.getUser();
+    if (res.data && res.data.user) {
+      currentUser = res.data.user;
+      var pr = await sb.from('profiles').select('username, license_type, license_level').eq('id', currentUser.id).single();
+      currentProfile = pr.data || {};
+      var name = currentProfile.username || '나';
+      document.getElementById('navBtns').style.display = 'none';
+      document.getElementById('navUser').style.display = 'flex';
+      document.getElementById('navUsername').textContent = name + '님';
+      document.getElementById('myAvatar').textContent = name[0];
+      document.getElementById('commentInputArea').style.display = 'block';
+      document.getElementById('loginPrompt').style.display = 'none';
+    }
+  }
+
+  window.logout = async function() { await sb.auth.signOut(); location.reload(); };
+
+  /* ── 모집글 로드 ── */
+  async function loadPost() {
+    if (!postId) { document.getElementById('postCard').innerHTML = '<div class="empty">잘못된 접근입니다</div>'; return; }
+    var res = await sb.from('buddy_posts')
+      .select('*, profiles(username, license_type, license_level), pools(name, region, address)')
+      .eq('id', postId).single();
+    if (!res.data) { document.getElementById('postCard').innerHTML = '<div class="empty">모집글을 찾을 수 없습니다</div>'; return; }
+    postData = res.data;
+    document.title = 'FreeBuddy - ' + ((postData.pools && postData.pools.name) || '버디 모집');
+    renderPost(postData);
+  }
+
+  function renderPost(p) {
+    var username  = (p.profiles && p.profiles.username) || '?';
+    var licType   = (p.profiles && p.profiles.license_type)  || '';
+    var licLevel  = (p.profiles && p.profiles.license_level) || '';
+    var poolName  = (p.pools && p.pools.name)   || (p.location || '미정');
+    var region    = (p.pools && p.pools.region) || '';
+    var isTour    = p.post_type === 'tour';
+    var sport     = p.sport || licType || '프리다이빙';
+    var sportClass = sport.includes('스쿠버') ? 'tag-scuba' : 'tag-free';
+    var isOwner   = currentUser && currentUser.id === p.user_id;
+
+    var html =
+      '<div class="host-row">' +
+        '<div class="avatar">' + username[0] + '</div>' +
+        '<div class="host-info">' +
+          '<div class="host-name">' + username + '</div>' +
+          '<div class="host-cert">' + licType + (licLevel ? ' · ' + licLevel : '') + '</div>' +
+        '</div>' +
+        '<span class="host-badge">방장</span>' +
+        '<span class="time-ago" style="margin-left:8px">' + timeAgo(p.created_at) + '</span>' +
+      '</div>' +
+
+      '<div class="post-pool">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</div>' +
+      (region ? '<div class="post-region">📍 ' + region + '</div>' : '') +
+
+      '<div class="info-grid">' +
+        '<div class="info-item"><div class="info-label">날짜</div><div class="info-value">📅 ' + (p.date || '미정') + '</div></div>' +
+        '<div class="info-item"><div class="info-label">집합 시간</div><div class="info-value">⏰ ' + (p.time_slot || '미정') + '</div></div>' +
+      '</div>' +
+
+      '<div class="post-tags">' +
+        '<span class="tag ' + sportClass + '">' + sport + '</span>' +
+        (p.level ? p.level.split(',').map(function(l) { return '<span class="tag tag-level">' + l.trim() + '</span>'; }).join('') : '') +
+        (isTour ? '<span class="tag tag-tour">해양·해외</span>' : '') +
+      '</div>' +
+
+      (p.note ? '<div class="post-note">📝 ' + p.note + '</div>' : '') +
+
+      (p.contact && p.contact.startsWith('http') ?
+        '<button class="btn-kakao" onclick="window.open(\'' + p.contact + '\',\'_blank\')">' +
+        '💬 카카오 오픈채팅 참여하기</button>' +
+        '<div class="kakao-hint">링크를 클릭하면 오픈채팅방으로 이동합니다</div>' :
+        '<div class="kakao-hint" style="text-align:center;padding:12px 0;color:#bbb">오픈채팅 링크 없음 — 아래 댓글로 문의하세요</div>'
+      ) +
+
+      (isOwner ?
+        '<button class="btn-delete" onclick="deletePost()"><i class="fa fa-trash"></i> 모집글 삭제</button>' : '');
+
+    document.getElementById('postCard').innerHTML = html;
+  }
+
+  /* ── 댓글 로드 ── */
+  async function loadComments() {
+    var res = await sb.from('buddy_comments')
+      .select('*, profiles(username)')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true });
+    var comments = res.data || [];
+    document.getElementById('commentCount').textContent = comments.length;
+    renderComments(comments);
+  }
+
+  function renderComments(comments) {
+    var list = document.getElementById('commentList');
+    if (comments.length === 0) {
+      list.innerHTML = '<div class="empty">아직 댓글이 없습니다.<br>첫 번째로 말을 걸어보세요!</div>';
+      return;
+    }
+    list.innerHTML = comments.map(function(c, i) {
+      var username = (c.profiles && c.profiles.username) || '?';
+      var isOwner  = currentUser && currentUser.id === c.user_id;
+      var isHost   = postData && c.user_id === postData.user_id;
+      return (
+        (i > 0 ? '<div class="comment-divider"></div>' : '') +
+        '<div class="comment-item" id="comment-' + c.id + '">' +
+          '<div class="comment-avatar" style="width:34px;height:34px;border-radius:50%;background:#e8f8f2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0F6E56;flex-shrink:0">' + username[0] + '</div>' +
+          '<div class="comment-body">' +
+            '<div class="comment-header">' +
+              '<span class="comment-username">' + username + '</span>' +
+              (isHost ? '<span class="comment-host-badge">방장</span>' : '') +
+              '<span class="comment-time">' + timeAgo(c.created_at) + '</span>' +
+              (isOwner ? '<button class="comment-delete" onclick="deleteComment(' + c.id + ')"><i class="fa fa-times"></i></button>' : '') +
+            '</div>' +
+            '<div class="comment-text">' + escHtml(c.content) + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  /* ── 댓글 등록 ── */
+  window.submitComment = async function() {
+    if (!currentUser) { location.href = 'login.html'; return; }
+    var text = document.getElementById('commentText').value.trim();
+    if (!text) { showToast('댓글 내용을 입력해주세요'); return; }
+
+    var btn = document.getElementById('commentSubmitBtn');
+    btn.disabled = true;
+
+    var res = await sb.from('buddy_comments').insert({
+      post_id: postId,
+      user_id: currentUser.id,
+      content: text
+    });
+
+    btn.disabled = false;
+    if (res.error) { showToast('오류가 발생했습니다'); return; }
+    document.getElementById('commentText').value = '';
+    showToast('댓글이 등록됐습니다');
+    loadComments();
+  };
+
+  /* ── 댓글 삭제 ── */
+  window.deleteComment = async function(commentId) {
+    if (!confirm('댓글을 삭제할까요?')) return;
+    await sb.from('buddy_comments').delete().eq('id', commentId).eq('user_id', currentUser.id);
+    showToast('댓글이 삭제됐습니다');
+    loadComments();
+  };
+
+  /* ── 모집글 삭제 ── */
+  window.deletePost = async function() {
+    if (!confirm('모집글을 삭제할까요?\n댓글도 모두 삭제됩니다.')) return;
+    await sb.from('buddy_comments').delete().eq('post_id', postId);
+    await sb.from('buddy_posts').delete().eq('id', postId).eq('user_id', currentUser.id);
+    showToast('모집글이 삭제됐습니다');
+    setTimeout(function() { location.href = 'buddy.html'; }, 1000);
+  };
+
+  /* ── 유틸 ── */
+  function timeAgo(dateStr) {
+    var diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+    if (diff < 1)    return '방금 전';
+    if (diff < 60)   return diff + '분 전';
+    if (diff < 1440) return Math.floor(diff / 60) + '시간 전';
+    return Math.floor(diff / 1440) + '일 전';
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  initSB();
+})();
+</script>
+</body>
+</html>
