@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreeBuddy - 풀장 상세</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
@@ -13,26 +14,35 @@
     .logo span { color: #222; }
     .nav-links { display: flex; gap: 24px; }
     .nav-link { font-size: 14px; color: #555; font-weight: 500; }
+    .nav-link:hover { color: #1D9E75; }
     .nav-btns { display: flex; gap: 8px; }
     .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-ghost:hover { border-color: #1D9E75; color: #1D9E75; }
     .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
     .nav-user { display: none; align-items: center; gap: 12px; }
-    .nav-user span { font-size: 14px; color: #333; font-weight: 500; }
+
     .breadcrumb { padding: 12px 24px; font-size: 13px; color: #aaa; max-width: 960px; margin: 0 auto; }
     .breadcrumb a { color: #1D9E75; }
+
+    /* 풀장 헤더 */
     .pool-header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 20px 24px; }
-    .pool-header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; }
+    .pool-header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
     .pool-title { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px; }
     .pool-tags { display: flex; gap: 8px; flex-wrap: wrap; }
     .pool-tag { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: #f1f3f5; color: #555; }
-    .region-badge { font-size: 12px; padding: 4px 12px; border-radius: 20px; background: #1D9E75; color: #fff; font-weight: 600; }
+    .region-badge { font-size: 12px; padding: 5px 14px; border-radius: 20px; background: #1D9E75; color: #fff; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+
     .ad-banner { margin: 16px auto; max-width: 960px; padding: 0 24px; }
     .ad-box { height: 72px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .ad-label { font-size: 11px; color: #999; }
     .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; }
+
+    /* 2컬럼 레이아웃 */
     .two-col { max-width: 960px; margin: 0 auto; padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } .nav-links { display: none; } }
     .col-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 14px; }
+
+    /* 캘린더 */
     .calendar { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px; }
     .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .cal-month { font-size: 14px; font-weight: 700; color: #111; }
@@ -40,56 +50,73 @@
     .cal-nav button:hover { border-color: #1D9E75; color: #1D9E75; }
     .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .cal-day-hdr { text-align: center; font-size: 11px; color: #aaa; padding: 4px 0 8px; font-weight: 600; }
-    .cal-day { text-align: center; font-size: 13px; padding: 6px 4px; border-radius: 6px; cursor: pointer; color: #555; position: relative; }
-    .cal-day:hover { background: #f1f3f5; }
+    .cal-day { text-align: center; font-size: 13px; padding: 6px 4px; border-radius: 6px; cursor: pointer; color: #555; }
+    .cal-day:hover:not(.past):not(.empty) { background: #f1f3f5; }
     .cal-day.has-buddy { color: #0F6E56; font-weight: 700; background: #e8f8f2; }
     .cal-day.selected { background: #1D9E75 !important; color: #fff !important; font-weight: 700; }
     .cal-day.today { border: 2px solid #1D9E75; color: #1D9E75; font-weight: 700; }
     .cal-day.past { color: #ccc; cursor: default; }
     .cal-day.empty { cursor: default; }
     .dot { width: 4px; height: 4px; border-radius: 50%; background: #1D9E75; margin: 2px auto 0; }
-    .time-panel { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px; }
-    .date-label { font-size: 13px; color: #888; margin-bottom: 12px; }
-    .date-label strong { color: #1D9E75; }
-    .time-slot { padding: 11px 14px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.15s; }
-    .time-slot:hover { border-color: #1D9E75; background: #f0fdf4; }
-    .time-slot.active { border-color: #1D9E75; background: #e8f8f2; }
-    .time-label { font-size: 13px; font-weight: 600; color: #333; }
-    .time-count { font-size: 12px; color: #888; }
-    .time-count .cnt { color: #1D9E75; font-weight: 700; }
-    .btn-write { width: 100%; padding: 12px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+
+    /* 오른쪽 패널 */
+    .right-panel { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .date-label { font-size: 14px; color: #888; }
+    .date-label strong { color: #1D9E75; font-size: 15px; }
+
+    /* 버디 현황 요약 */
+    .buddy-summary { background: #f8f9fa; border-radius: 10px; padding: 14px 16px; }
+    .summary-row { display: flex; align-items: center; justify-content: space-between; }
+    .summary-label { font-size: 13px; color: #666; }
+    .summary-count { font-size: 22px; font-weight: 700; color: #1D9E75; }
+    .summary-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+
+    /* 집합 시간 목록 (간결) */
+    .time-list { display: flex; flex-direction: column; gap: 8px; }
+    .time-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; background: #f8f9fa; border-radius: 8px;
+      border: 1px solid #e9ecef; cursor: pointer; transition: all 0.15s;
+    }
+    .time-item:hover { border-color: #1D9E75; background: #f0fdf8; }
+    .time-item .time-val { font-size: 14px; font-weight: 600; color: #333; }
+    .time-item .time-user { font-size: 12px; color: #888; }
+    .time-item .time-badge { font-size: 11px; background: #e8f8f2; color: #0F6E56; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+
+    /* 버디 구하기 버튼 */
+    .btn-write {
+      width: 100%; padding: 13px; background: #1D9E75; color: #fff;
+      border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
     .btn-write:hover { background: #178a65; }
+
+    .empty-panel { text-align: center; padding: 24px; color: #bbb; font-size: 13px; }
+
+    /* 버디 목록 섹션 */
     .divider { max-width: 960px; margin: 0 auto; height: 1px; background: #e9ecef; }
     .buddy-section { max-width: 960px; margin: 0 auto; padding: 24px; }
     .buddy-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .buddy-section-title { font-size: 16px; font-weight: 700; color: #111; }
-    .buddy-list { display: flex; flex-direction: column; gap: 10px; }
-    .buddy-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px 18px; }
+
+    .buddy-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; cursor: pointer; transition: box-shadow 0.15s; }
+    .buddy-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.06); border-color: #d0f0e4; }
     .buddy-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .buddy-user { display: flex; align-items: center; gap: 10px; }
     .avatar { width: 36px; height: 36px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
     .buddy-username { font-size: 14px; font-weight: 600; color: #111; }
     .level-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #EEEDFE; color: #3C3489; font-weight: 500; }
-    .buddy-info-row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .buddy-info-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
     .buddy-info-item { font-size: 12px; color: #888; }
-    .btn-contact { font-size: 12px; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #333; cursor: pointer; font-weight: 500; white-space: nowrap; }
-    .btn-contact:hover { border-color: #1D9E75; color: #1D9E75; }
+    .btn-contact { font-size: 12px; padding: 6px 14px; border: 1.5px solid #1D9E75; border-radius: 8px; background: #fff; color: #1D9E75; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .btn-contact:hover { background: #1D9E75; color: #fff; }
+
     .empty { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
-    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
-    .modal-bg.show { display: flex; }
-    .modal { background: #fff; border-radius: 16px; padding: 28px; width: 90%; max-width: 400px; }
-    .modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: #111; }
-    .modal .form-group { margin-bottom: 14px; }
-    .modal label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
-    .modal select, .modal input, .modal textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; color: #222; }
-    .modal textarea { resize: vertical; min-height: 70px; }
-    .modal-btns { display: flex; gap: 10px; margin-top: 16px; }
-    .modal-btns button { flex: 1; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .btn-cancel { border: 1px solid #ddd; background: #fff; color: #555; }
-    .btn-ok { border: none; background: #1D9E75; color: #fff; }
+    .loading { text-align: center; padding: 30px; color: #999; font-size: 14px; }
   </style>
 </head>
 <body>
+
 <nav>
   <a href="index.html" class="logo">Free<span>Buddy</span></a>
   <div class="nav-links">
@@ -108,7 +135,7 @@
 </nav>
 
 <div class="breadcrumb">
-  <a href="pools.html">풀장 목록</a> &rsaquo; <span id="breadPool">풀장</span>
+  <a href="pools.html">풀장 목록</a> › <span id="breadPool">풀장</span>
 </div>
 
 <div class="pool-header">
@@ -129,6 +156,7 @@
 </div>
 
 <div class="two-col">
+  <!-- 캘린더 -->
   <div>
     <div class="col-title">날짜 선택</div>
     <div class="calendar">
@@ -142,12 +170,12 @@
       <div class="cal-grid" id="calGrid"></div>
     </div>
   </div>
+
+  <!-- 오른쪽 패널 -->
   <div>
-    <div class="col-title">시간대 선택</div>
-    <div class="time-panel">
-      <div class="date-label">날짜를 선택하면 버디 현황이 표시됩니다</div>
-      <div id="timeSlots"></div>
-      <button class="btn-write" onclick="openBuddyModal()">이 시간에 버디 구하기</button>
+    <div class="col-title">버디 현황</div>
+    <div class="right-panel" id="rightPanel">
+      <div class="empty-panel">📅 날짜를 선택하면<br>버디 모집 현황이 표시됩니다</div>
     </div>
   </div>
 </div>
@@ -158,8 +186,8 @@
   <div class="buddy-section-header">
     <span class="buddy-section-title" id="buddySectionTitle">버디 모집 현황</span>
   </div>
-  <div class="buddy-list" id="buddyList">
-    <div class="empty">날짜와 시간대를 선택해주세요</div>
+  <div id="buddyList">
+    <div class="empty">날짜를 선택하면 버디 모집 현황이 표시됩니다</div>
   </div>
 </div>
 
@@ -170,198 +198,203 @@
   </div>
 </div>
 
-<!-- 버디 모집 모달 -->
-<div class="modal-bg" id="buddyModal">
-  <div class="modal">
-    <h3>버디 구하기</h3>
-    <div class="form-group">
-      <label>시간대</label>
-      <select id="modalTimeSlot">
-        <option value="09:00~11:00">09:00 ~ 11:00</option>
-        <option value="11:00~13:00">11:00 ~ 13:00</option>
-        <option value="14:00~16:00">14:00 ~ 16:00</option>
-        <option value="16:00~18:00">16:00 ~ 18:00</option>
-        <option value="19:00~21:00">19:00 ~ 21:00</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>연락처 (카카오 오픈채팅 등)</label>
-      <input type="text" id="modalContact" placeholder="연락 방법을 입력해주세요">
-    </div>
-    <div class="form-group">
-      <label>메모 (선택)</label>
-      <textarea id="modalNote" placeholder="원하는 내용을 자유롭게 입력해주세요"></textarea>
-    </div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeBuddyModal()">취소</button>
-      <button class="btn-ok" onclick="submitBuddyPost()">등록하기</button>
-    </div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var sb;
+  var poolId      = new URLSearchParams(window.location.search).get('id');
+  var currentUser = null;
+  var selectedDate = null;
+  var calYear  = new Date().getFullYear();
+  var calMonth = new Date().getMonth();
+  var buddyDates = [];
 
-  const poolId = new URLSearchParams(window.location.search).get('id');
-  let currentUser = null;
-  let selectedDate = null;
-  let selectedSlot = null;
-  let calYear = new Date().getFullYear();
-  let calMonth = new Date().getMonth();
-  let buddyDates = [];
-
-  const TIME_SLOTS = ['09:00~11:00','11:00~13:00','14:00~16:00','16:00~18:00','19:00~21:00'];
-
-  async function checkAuth() {
-    const { data: { user } } = await sb.auth.getUser();
-    currentUser = user;
-    if (user) {
-      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
-      document.getElementById('navBtns').style.display = 'none';
-      document.getElementById('navUser').style.display = 'flex';
-      document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      checkAuth();
+      loadPool();
+      loadBuddyDates();
+    } else {
+      setTimeout(initSB, 100);
     }
   }
 
-  async function logout() { await sb.auth.signOut(); location.reload(); }
+  async function checkAuth() {
+    var res = await sb.auth.getUser();
+    if (res.data && res.data.user) {
+      currentUser = res.data.user;
+      var pr = await sb.from('profiles').select('username').eq('id', currentUser.id).single();
+      document.getElementById('navBtns').style.display = 'none';
+      document.getElementById('navUser').style.display = 'flex';
+      document.getElementById('navUsername').textContent = ((pr.data && pr.data.username) || '') + '님';
+    }
+  }
+
+  window.logout = async function() { await sb.auth.signOut(); location.reload(); };
 
   async function loadPool() {
-    const { data: pool } = await sb.from('pools').select('*').eq('id', poolId).single();
-    if (!pool) return;
-    document.title = `FreeBuddy - ${pool.name}`;
+    var res = await sb.from('pools').select('*').eq('id', poolId).single();
+    if (!res.data) return;
+    var pool = res.data;
+    document.title = 'FreeBuddy - ' + pool.name;
     document.getElementById('breadPool').textContent = pool.name;
-    document.getElementById('poolName').textContent = pool.name;
+    document.getElementById('poolName').textContent  = pool.name;
     document.getElementById('poolRegion').textContent = pool.region;
-    const tags = [];
-    if (pool.address) tags.push(pool.address);
-    if (pool.depth) tags.push(pool.depth);
-    if (pool.open_time) tags.push(`${pool.open_time} ~ ${pool.close_time}`);
-    document.getElementById('poolTags').innerHTML = tags.map(t => `<span class="pool-tag">📍 ${t}</span>`).join('');
+    var tags = [];
+    if (pool.address)   tags.push('📍 ' + pool.address);
+    if (pool.depth)     tags.push('🌊 수심 ' + pool.depth);
+    if (pool.open_time) tags.push('⏰ ' + pool.open_time + ' ~ ' + pool.close_time);
+    document.getElementById('poolTags').innerHTML = tags.map(function(t) {
+      return '<span class="pool-tag">' + t + '</span>';
+    }).join('');
   }
 
   async function loadBuddyDates() {
-    const { data } = await sb.from('buddy_posts').select('date').eq('pool_id', poolId);
-    buddyDates = (data || []).map(d => d.date);
+    var res = await sb.from('buddy_posts').select('date').eq('pool_id', poolId);
+    buddyDates = (res.data || []).map(function(d) { return d.date; });
     renderCalendar();
   }
 
+  /* ── 캘린더 ── */
   window.renderCalendar = function() {
-    const monthNames = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-    document.getElementById('calMonth').textContent = `${calYear}년 ${monthNames[calMonth]}`;
-    const grid = document.getElementById('calGrid');
-    const days = ['일','월','화','수','목','금','토'];
-    let html = days.map(d => `<div class="cal-day-hdr">${d}</div>`).join('');
-    const first = new Date(calYear, calMonth, 1).getDay();
-    const total = new Date(calYear, calMonth + 1, 0).getDate();
-    const today = new Date();
-    for (let i = 0; i < first; i++) html += `<div class="cal-day empty"></div>`;
-    for (let d = 1; d <= total; d++) {
-      const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const isToday = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
-      const hasBuddy = buddyDates.includes(dateStr);
-      const isPast = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const isSelected = selectedDate === dateStr;
-      let cls = 'cal-day';
-      if (isPast) cls += ' past';
+    var months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+    document.getElementById('calMonth').textContent = calYear + '년 ' + months[calMonth];
+    var days  = ['일','월','화','수','목','금','토'];
+    var first = new Date(calYear, calMonth, 1).getDay();
+    var total = new Date(calYear, calMonth + 1, 0).getDate();
+    var today = new Date();
+    var html  = days.map(function(d) { return '<div class="cal-day-hdr">' + d + '</div>'; }).join('');
+    for (var i = 0; i < first; i++) html += '<div class="cal-day empty"></div>';
+    for (var d = 1; d <= total; d++) {
+      var ds = calYear + '-' + String(calMonth+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+      var isToday   = today.getFullYear()===calYear && today.getMonth()===calMonth && today.getDate()===d;
+      var hasBuddy  = buddyDates.includes(ds);
+      var isPast    = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      var isSelected = selectedDate === ds;
+      var cls = 'cal-day';
+      if (isPast)       cls += ' past';
       else if (isSelected) cls += ' selected';
-      else if (hasBuddy) cls += ' has-buddy';
-      else if (isToday) cls += ' today';
-      const dot = hasBuddy && !isSelected ? '<div class="dot"></div>' : '';
-      const click = isPast ? '' : `onclick="selectDate('${dateStr}')"`;
-      html += `<div class="${cls}" ${click}>${d}${dot}</div>`;
+      else if (hasBuddy)   cls += ' has-buddy';
+      else if (isToday)    cls += ' today';
+      var dot   = hasBuddy && !isSelected ? '<div class="dot"></div>' : '';
+      var click = isPast ? '' : 'onclick="selectDate(\'' + ds + '\')"';
+      html += '<div class="' + cls + '" ' + click + '>' + d + dot + '</div>';
     }
-    grid.innerHTML = html;
-  }
+    document.getElementById('calGrid').innerHTML = html;
+  };
 
-  window.changeMonth = function(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
+  window.changeMonth = function(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  };
 
+  /* ── 날짜 선택 ── */
   window.selectDate = async function(dateStr) {
     selectedDate = dateStr;
-    selectedSlot = null;
     renderCalendar();
-    const dateLabel = new Date(dateStr).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
-    document.querySelector('.time-panel .date-label').innerHTML = `<strong>${dateLabel}</strong> 버디 현황`;
-    const { data: posts } = await sb.from('buddy_posts').select('time_slot').eq('pool_id', poolId).eq('date', dateStr);
-    const counts = {};
-    (posts || []).forEach(p => { counts[p.time_slot] = (counts[p.time_slot] || 0) + 1; });
-    document.getElementById('timeSlots').innerHTML = TIME_SLOTS.map(slot => `
-      <div class="time-slot ${counts[slot] ? 'active' : ''}" onclick="selectSlot('${slot}', this)">
-        <span class="time-label">${slot.replace('~', ' ~ ')}</span>
-        <span class="time-count">버디 <span class="cnt">${counts[slot] || 0}명</span></span>
-      </div>
-    `).join('');
-    loadBuddyPosts(dateStr, null);
-    document.getElementById('buddySectionTitle').textContent = `${dateLabel} 버디 모집 현황`;
+
+    var d = new Date(dateStr);
+    var weekdays = ['일','월','화','수','목','금','토'];
+    var label = (d.getMonth()+1) + '월 ' + d.getDate() + '일 (' + weekdays[d.getDay()] + ')';
+
+    document.getElementById('buddySectionTitle').textContent = label + ' 버디 모집 현황';
+
+    // 해당 날짜 버디 목록
+    var res = await sb.from('buddy_posts')
+      .select('*, profiles(username, license_type, license_level)')
+      .eq('pool_id', poolId).eq('date', dateStr)
+      .order('time_slot', { ascending: true });
+    var posts = res.data || [];
+
+    // 오른쪽 패널
+    var panel = document.getElementById('rightPanel');
+    if (posts.length === 0) {
+      panel.innerHTML =
+        '<div class="date-label"><strong>' + label + '</strong></div>' +
+        '<div class="empty-panel">이 날 버디 모집이 없어요<br>첫 번째로 버디를 구해보세요!</div>' +
+        '<button class="btn-write" onclick="goWrite(\'' + dateStr + '\')">' +
+        '<i class="fa fa-plus"></i> 버디 모집하기</button>';
+    } else {
+      // 집합 시간 목록
+      var timeHtml = posts.map(function(p) {
+        var username = (p.profiles && p.profiles.username) || '?';
+        var lt = (p.profiles && p.profiles.license_type) || '';
+        var ll = (p.profiles && p.profiles.license_level) || '';
+        return '<div class="time-item" onclick="location.href=\'buddy-detail.html?id=' + p.id + '\'">' +
+          '<div>' +
+            '<div class="time-val">⏰ ' + (p.time_slot || '시간 미정') + '</div>' +
+            '<div class="time-user">👤 ' + username + (lt ? ' · ' + lt + ' ' + ll : '') + '</div>' +
+          '</div>' +
+          '<span class="time-badge">상세 보기</span>' +
+        '</div>';
+      }).join('');
+
+      panel.innerHTML =
+        '<div class="date-label"><strong>' + label + '</strong> · 버디 ' + posts.length + '명 모집 중</div>' +
+        '<div class="time-list">' + timeHtml + '</div>' +
+        '<button class="btn-write" onclick="goWrite(\'' + dateStr + '\')">' +
+        '<i class="fa fa-plus"></i> 나도 버디 구하기</button>';
+    }
+
+    // 하단 버디 카드 목록
+    renderBuddyList(posts, label);
+  };
+
+  function renderBuddyList(posts, label) {
+    var list = document.getElementById('buddyList');
+    if (!posts || posts.length === 0) {
+      list.innerHTML = '<div class="empty">이 날 버디 모집이 없습니다</div>';
+      return;
+    }
+    list.innerHTML = posts.map(function(p) {
+      var username = (p.profiles && p.profiles.username) || '?';
+      var lt = (p.profiles && p.profiles.license_type)  || '';
+      var ll = (p.profiles && p.profiles.license_level) || '';
+      return '<div class="buddy-card" onclick="location.href=\'buddy-detail.html?id=' + p.id + '\'">' +
+        '<div class="buddy-card-top">' +
+          '<div class="buddy-user">' +
+            '<div class="avatar">' + username[0] + '</div>' +
+            '<span class="buddy-username">' + username + '</span>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px">' +
+            (lt ? '<span class="level-badge">' + lt + ' ' + ll + '</span>' : '') +
+            '<button class="btn-contact" onclick="contactBuddy(event, \'' + p.id + '\', \'' + (p.contact || '') + '\', \'' + username + '\')">연락하기</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="buddy-info-row">' +
+          '<span class="buddy-info-item">⏰ ' + (p.time_slot || '시간 미정') + '</span>' +
+          (p.note ? '<span class="buddy-info-item">📝 ' + p.note + '</span>' : '') +
+        '</div>' +
+      '</div>';
+    }).join('');
   }
 
-  window.selectSlot = function(slot, el) {
-    selectedSlot = slot;
-    document.querySelectorAll('.time-slot').forEach(e => e.classList.remove('selected-slot'));
-    el.style.borderColor = '#0F6E56';
-    document.getElementById('modalTimeSlot').value = slot;
-    loadBuddyPosts(selectedDate, slot);
-  }
+  window.contactBuddy = function(e, postId, contact, username) {
+    e.stopPropagation();
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+    var url = (contact || '').trim();
+    if (url && url.startsWith('http')) window.open(url, '_blank');
+    else location.href = 'buddy-detail.html?id=' + postId;
+  };
 
-  async function loadBuddyPosts(date, slot) {
-    let query = sb.from('buddy_posts').select('*, profiles(username, license_type, license_level)').eq('pool_id', poolId).eq('date', date);
-    if (slot) query = query.eq('time_slot', slot);
-    const { data: posts } = await query.order('created_at', { ascending: false });
-    const list = document.getElementById('buddyList');
-    if (!posts || posts.length === 0) { list.innerHTML = '<div class="empty">이 시간대에 버디 모집이 없습니다</div>'; return; }
-    list.innerHTML = posts.map(p => `
-      <div class="buddy-card">
-        <div class="buddy-card-top">
-          <div class="buddy-user">
-            <div class="avatar">${(p.profiles?.username || '?')[0]}</div>
-            <span class="buddy-username">${p.profiles?.username || ''}</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="level-badge">${p.profiles?.license_type || ''} ${p.profiles?.license_level || ''}</span>
-            <button class="btn-contact" onclick="contactBuddy('${p.contact || ''}', '${p.profiles?.username || ''}')">연락하기</button>
-          </div>
-        </div>
-        <div class="buddy-info-row">
-          <span class="buddy-info-item">⏰ ${p.time_slot}</span>
-          ${p.note ? `<span class="buddy-info-item">📝 ${p.note}</span>` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
+  window.goWrite = function(dateStr) {
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+    // 풀장 ID와 날짜를 파라미터로 넘겨서 write-buddy에서 자동 선택
+    location.href = 'write-buddy.html?pool_id=' + poolId + '&date=' + dateStr;
+  };
 
-  window.contactBuddy = function(contact, username) {
-    if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
-    if (contact) window.open(contact, '_blank');
-    else alert(`${username}님의 연락처가 등록되지 않았습니다`);
-  }
-
-  window.openBuddyModal = function() {
-    if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
-    if (!selectedDate) { alert('날짜를 먼저 선택해주세요'); return; }
-    document.getElementById('buddyModal').classList.add('show');
-  }
-
-  window.closeBuddyModal = function() { document.getElementById('buddyModal').classList.remove('show'); }
-
-  window.submitBuddyPost = async function() {
-    const timeSlot = document.getElementById('modalTimeSlot').value;
-    const contact = document.getElementById('modalContact').value.trim();
-    const note = document.getElementById('modalNote').value.trim();
-    const { error } = await sb.from('buddy_posts').insert({ user_id: currentUser.id, pool_id: poolId, date: selectedDate, time_slot: timeSlot, contact, note });
-    if (error) { alert('등록 중 오류가 발생했습니다'); return; }
-    closeBuddyModal();
-    alert('버디 모집 등록이 완료됐습니다!');
-    loadBuddyDates();
-    selectDate(selectedDate);
-  }
-
-  checkAuth();
-  loadPool();
-  loadBuddyDates();
-
+  initSB();
 })();
 </script>
 </body>

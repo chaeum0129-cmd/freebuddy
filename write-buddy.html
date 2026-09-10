@@ -567,6 +567,11 @@
       html += '</optgroup>';
     });
     sel.innerHTML = html;
+    // pool-detail에서 넘어온 경우 자동 선택
+    if (window._autoPoolId) {
+      sel.value = window._autoPoolId;
+      updatePreview();
+    }
   }
 
   /* ── 유형 선택 ── */
@@ -752,8 +757,12 @@
     setTimeout(function() { t.classList.remove('show'); }, 2500);
   }
 
-  // 오늘 날짜 기본값
-  document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+  // URL 파라미터 자동 적용 (pool-detail에서 넘어올 때)
+  var urlParams = new URLSearchParams(window.location.search);
+  var paramDate   = urlParams.get('date');
+  var paramPoolId = urlParams.get('pool_id');
+  document.getElementById('dateInput').value = paramDate || new Date().toISOString().split('T')[0];
+  if (paramPoolId) { window._autoPoolId = paramPoolId; }
   updatePreview();
   initSB();
 })();
