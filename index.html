@@ -3,16 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FreeBuddy - 프리다이빙 버디 매칭</title>
+  <title>FreeBuddy - 다이빙 버디 매칭</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
     a { text-decoration: none; color: inherit; }
-    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+
+    /* ── NAV ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
     .logo { font-size: 20px; font-weight: 700; color: #1D9E75; }
     .logo span { color: #222; }
-    .nav-links { display: flex; gap: 24px; }
+
+    /* 종목 탭 (GNB 중앙) */
+    .sport-tab {
+      display: flex;
+      background: #f1f3f5;
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .sport-tab button {
+      padding: 5px 16px;
+      border: none;
+      border-radius: 17px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: #888;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .sport-tab button.active {
+      background: #fff;
+      color: #1D9E75;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    }
+    .sport-tab button.scuba.active {
+      color: #1565C0;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-links { display: flex; gap: 20px; }
     .nav-link { font-size: 14px; color: #555; font-weight: 500; }
     .nav-link:hover { color: #1D9E75; }
     .nav-btns { display: flex; gap: 8px; }
@@ -20,45 +64,160 @@
     .btn-ghost:hover { border-color: #1D9E75; color: #1D9E75; }
     .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
     .btn-primary:hover { background: #178a65; }
+    .btn-primary.scuba-mode { background: #1565C0; }
+    .btn-primary.scuba-mode:hover { background: #0D47A1; }
     .nav-user { display: none; align-items: center; gap: 12px; }
-    .nav-user span { font-size: 14px; color: #333; font-weight: 500; }
-    .hero { background: linear-gradient(135deg, #e8f8f2 0%, #f0faf6 100%); padding: 64px 24px; text-align: center; }
-    .hero h1 { font-size: 32px; font-weight: 700; color: #111; margin-bottom: 12px; line-height: 1.4; }
-    .hero h1 span { color: #1D9E75; }
-    .hero p { font-size: 16px; color: #555; margin-bottom: 32px; line-height: 1.7; }
-    .hero-search { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
-    .hero-search select { flex: 1; padding: 12px 16px; border: 1px solid #ddd; border-radius: 10px; background: #fff; font-size: 14px; color: #333; }
-    .hero-search button { padding: 12px 24px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 52px 24px 40px;
+      text-align: center;
+      background: linear-gradient(160deg, #e8f8f2 0%, #f0faf6 60%, #f8f9fa 100%);
+      transition: background 0.4s;
+    }
+    .hero.scuba-hero {
+      background: linear-gradient(160deg, #e3f0ff 0%, #eef5ff 60%, #f8f9fa 100%);
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid #c8eee0;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0F6E56;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    .hero-badge.scuba { border-color: #b3d4f5; color: #1565C0; }
+    .hero h1 {
+      font-size: 30px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 10px;
+      line-height: 1.45;
+    }
+    .hero h1 .accent { color: #1D9E75; transition: color 0.3s; }
+    .hero h1 .accent.scuba { color: #1565C0; }
+    .hero p { font-size: 15px; color: #666; margin-bottom: 28px; line-height: 1.7; }
+
+    /* ── 검색바 ── */
+    .search-box {
+      display: flex;
+      gap: 8px;
+      max-width: 680px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1.5px solid #dde3e7;
+      border-radius: 14px;
+      padding: 8px 8px 8px 4px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: border-color 0.3s;
+    }
+    .search-box:focus-within { border-color: #1D9E75; }
+    .search-box.scuba-focus:focus-within { border-color: #1565C0; }
+
+    .search-field {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      padding: 4px 12px;
+      border-right: 1px solid #e9ecef;
+    }
+    .search-field:last-of-type { border-right: none; }
+    .search-field label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #999;
+      margin-bottom: 2px;
+      letter-spacing: 0.03em;
+    }
+    .search-field select,
+    .search-field input {
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: #222;
+      background: transparent;
+      padding: 0;
+      width: 100%;
+      font-family: inherit;
+    }
+    .search-field select option { color: #222; }
+    .search-btn {
+      flex-shrink: 0;
+      padding: 10px 22px;
+      background: #1D9E75;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.3s;
+    }
+    .search-btn:hover { background: #178a65; }
+    .search-btn.scuba { background: #1565C0; }
+    .search-btn.scuba:hover { background: #0D47A1; }
+
+    /* ── AD ── */
     .ad-banner { margin: 20px auto; max-width: 960px; padding: 0 24px; }
     .ad-box { height: 80px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .ad-label { font-size: 11px; color: #999; }
     .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
-    .section { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .section-title { font-size: 18px; font-weight: 700; color: #111; }
-    .section-more { font-size: 13px; color: #1D9E75; font-weight: 500; cursor: pointer; }
+
+    /* ── SECTIONS ── */
+    .section { max-width: 960px; margin: 0 auto; padding: 28px 24px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .section-title { font-size: 17px; font-weight: 700; color: #111; display: flex; align-items: center; gap: 8px; }
+    .section-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 20px;
+      background: #e8f8f2;
+      color: #0F6E56;
+    }
+    .section-tag.scuba { background: #e3f0ff; color: #1565C0; }
+    .section-more { font-size: 13px; color: #1D9E75; font-weight: 500; }
+    .section-more:hover { text-decoration: underline; }
+
+    /* 풀장 그리드 */
     .pool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 768px) { .pool-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .pool-grid { grid-template-columns: 1fr; } .hero h1 { font-size: 24px; } .hero-search { flex-direction: column; } .nav-links { display: none; } }
     .pool-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow 0.2s; }
     .pool-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .pool-img { height: 80px; background: linear-gradient(135deg, #e8f8f2, #c8eee0); display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .pool-img.scuba { background: linear-gradient(135deg, #dbeeff, #b3d4f5); }
     .pool-info { padding: 14px; }
     .pool-name { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 4px; }
     .pool-meta { font-size: 12px; color: #888; margin-bottom: 8px; }
     .pool-badge { display: inline-block; font-size: 11px; padding: 3px 8px; border-radius: 20px; background: #e8f8f2; color: #0F6E56; font-weight: 500; }
+    .pool-badge.scuba { background: #e3f0ff; color: #1565C0; }
+
+    /* 버디 리스트 */
     .buddy-list { display: flex; flex-direction: column; gap: 10px; }
     .buddy-item { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: box-shadow 0.2s; }
     .buddy-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
     .buddy-left { display: flex; align-items: center; gap: 12px; }
     .avatar { width: 38px; height: 38px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .avatar.scuba { background: #e3f0ff; color: #1565C0; }
     .buddy-name { font-size: 14px; font-weight: 600; color: #111; }
     .buddy-detail { font-size: 12px; color: #888; margin-top: 2px; }
     .buddy-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
     .level-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #EEEDFE; color: #3C3489; font-weight: 500; }
     .time-text { font-size: 11px; color: #bbb; }
+
+    /* 강습 그리드 */
     .lesson-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    @media (max-width: 600px) { .lesson-list { grid-template-columns: 1fr; } }
     .lesson-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px; cursor: pointer; transition: box-shadow 0.2s; }
     .lesson-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
     .lesson-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
@@ -68,59 +227,149 @@
     .lesson-level { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #fff3e0; color: #e65100; font-weight: 500; }
     .lesson-info { font-size: 13px; color: #555; line-height: 1.8; }
     .lesson-price { font-size: 14px; font-weight: 700; color: #1D9E75; margin-top: 8px; }
+
+    /* 스쿠버 전용 빈 상태 */
+    .scuba-coming { text-align: center; padding: 48px 24px; }
+    .scuba-coming .icon { font-size: 40px; margin-bottom: 14px; }
+    .scuba-coming h3 { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .scuba-coming p { font-size: 13px; color: #999; line-height: 1.6; }
+
     .divider { max-width: 960px; margin: 0 auto; height: 1px; background: #e9ecef; }
     footer { background: #fff; border-top: 1px solid #e9ecef; padding: 24px; text-align: center; margin-top: 48px; }
-    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 12px; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 12px; flex-wrap: wrap; }
     .footer-link { font-size: 13px; color: #888; }
     .footer-copy { font-size: 12px; color: #bbb; }
     .loading { text-align: center; padding: 40px; color: #999; font-size: 14px; }
     .empty { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .pool-grid { grid-template-columns: repeat(2, 1fr); }
+      .sport-tab button { padding: 5px 12px; font-size: 12px; }
+    }
+    @media (max-width: 600px) {
+      .lesson-list { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .hero h1 { font-size: 24px; }
+      .search-box {
+        flex-direction: column;
+        padding: 12px;
+        gap: 0;
+      }
+      .search-field {
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 8px 4px;
+      }
+      .search-field:last-of-type { border-bottom: none; padding-bottom: 4px; }
+      .search-btn { width: 100%; justify-content: center; margin-top: 10px; }
+    }
+    @media (max-width: 480px) {
+      .pool-grid { grid-template-columns: 1fr; }
+      .sport-tab { display: none; }  /* 모바일 GNB에서는 히어로 탭으로 대체 */
+      .hero-tabs { display: flex !important; }
+    }
+    /* 히어로 탭 (모바일용 — 기본 숨김) */
+    .hero-tabs {
+      display: none;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .hero-tab-btn {
+      padding: 8px 22px;
+      border-radius: 20px;
+      border: 1.5px solid #ddd;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+    }
+    .hero-tab-btn.active { border-color: #1D9E75; background: #e8f8f2; color: #1D9E75; }
+    .hero-tab-btn.active.scuba { border-color: #1565C0; background: #e3f0ff; color: #1565C0; }
   </style>
 </head>
 <body>
 
 <nav>
   <a href="index.html" class="logo">Free<span>Buddy</span></a>
-  <div class="nav-links">
-    <a href="pools.html" class="nav-link">풀장 찾기</a>
-    <a href="buddy.html" class="nav-link">버디 구하기</a>
-    <a href="lessons.html" class="nav-link">강습</a>
+
+  <!-- 종목 토글 탭 (GNB 중앙) -->
+  <div class="sport-tab" id="sportTabNav">
+    <button class="active" onclick="setSport('freediving', this)">🤿 프리다이빙</button>
+    <button class="scuba" onclick="setSport('scuba', this)">🐠 스쿠버다이빙</button>
   </div>
-  <div class="nav-btns" id="navBtns">
-    <button class="btn-ghost" onclick="location.href='login.html'">로그인</button>
-    <button class="btn-primary" onclick="location.href='signup.html'">회원가입</button>
-  </div>
-  <div class="nav-user" id="navUser">
-    <a href="my-page.html" id="navUsername" style="font-size:14px;color:#333;font-weight:500;text-decoration:none;cursor:pointer"></a>
-    <button class="btn-ghost" id="logoutBtn">로그아웃</button>
+
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="pools.html" class="nav-link">풀장 찾기</a>
+      <a href="buddy.html" class="nav-link">버디 구하기</a>
+      <a href="lessons.html" class="nav-link">강습</a>
+    </div>
+    <div class="nav-btns" id="navBtns">
+      <button class="btn-ghost" onclick="location.href='login.html'">로그인</button>
+      <button class="btn-primary" id="signupBtn" onclick="location.href='signup.html'">회원가입</button>
+    </div>
+    <div class="nav-user" id="navUser">
+      <a href="my-page.html" id="navUsername" style="font-size:14px;color:#333;font-weight:500;text-decoration:none;cursor:pointer"></a>
+      <button class="btn-ghost" id="logoutBtn">로그아웃</button>
+    </div>
   </div>
 </nav>
 
-<div class="hero">
-  <h1>프리다이빙 <span>버디</span>를<br>찾아보세요</h1>
-  <p>전국 풀장에서 같은 시간, 같은 레벨의 버디를 매칭해드립니다</p>
-  <div class="hero-search">
-    <select id="regionSelect">
-      <option value="">전체 지역</option>
-      <option value="서울">서울</option>
-      <option value="경기">경기</option>
-      <option value="인천">인천</option>
-      <option value="강원">강원</option>
-      <option value="충청">충청</option>
-      <option value="대전">대전</option>
-      <option value="세종">세종</option>
-      <option value="전라">전라</option>
-      <option value="광주">광주</option>
-      <option value="경상">경상</option>
-      <option value="부산">부산</option>
-      <option value="대구">대구</option>
-      <option value="울산">울산</option>
-      <option value="제주">제주</option>
-    </select>
-    <button id="searchBtn">풀장 찾기</button>
+<!-- HERO -->
+<div class="hero" id="heroSection">
+  <!-- 모바일 전용 탭 -->
+  <div class="hero-tabs" id="heroTabs">
+    <button class="hero-tab-btn active" onclick="setSport('freediving', this)">🤿 프리다이빙</button>
+    <button class="hero-tab-btn scuba" onclick="setSport('scuba', this)">🐠 스쿠버다이빙</button>
+  </div>
+
+  <div class="hero-badge" id="heroBadge">🤿 프리다이빙</div>
+  <h1 id="heroTitle">다이빙 <span class="accent" id="heroAccent">버디</span>를<br>찾아보세요</h1>
+  <p id="heroDesc">전국 풀장에서 같은 시간, 같은 레벨의 버디를 매칭해드립니다</p>
+
+  <!-- 통합 검색바 -->
+  <div class="search-box" id="searchBox">
+    <div class="search-field">
+      <label>종목</label>
+      <select id="sportSelect">
+        <option value="freediving">🤿 프리다이빙</option>
+        <option value="scuba">🐠 스쿠버다이빙</option>
+      </select>
+    </div>
+    <div class="search-field">
+      <label>지역</label>
+      <select id="regionSelect">
+        <option value="">전체 지역</option>
+        <option value="서울">서울</option>
+        <option value="경기">경기</option>
+        <option value="인천">인천</option>
+        <option value="강원">강원</option>
+        <option value="충청">충청</option>
+        <option value="대전">대전</option>
+        <option value="세종">세종</option>
+        <option value="전라">전라</option>
+        <option value="광주">광주</option>
+        <option value="경상">경상</option>
+        <option value="부산">부산</option>
+        <option value="대구">대구</option>
+        <option value="울산">울산</option>
+        <option value="제주">제주</option>
+      </select>
+    </div>
+    <div class="search-field">
+      <label>날짜</label>
+      <input type="date" id="dateSelect">
+    </div>
+    <button class="search-btn" id="searchBtn">
+      <i class="fa fa-search"></i> 찾기
+    </button>
   </div>
 </div>
 
+<!-- AD -->
 <div class="ad-banner">
   <div class="ad-box">
     <span class="ad-badge">광고</span>
@@ -128,9 +377,13 @@
   </div>
 </div>
 
+<!-- 인기 풀장 -->
 <div class="section">
   <div class="section-header">
-    <span class="section-title">인기 풀장</span>
+    <span class="section-title">
+      인기 풀장
+      <span class="section-tag" id="poolSectionTag">프리다이빙</span>
+    </span>
     <a href="pools.html" class="section-more">전체 보기 →</a>
   </div>
   <div class="pool-grid" id="poolGrid">
@@ -140,9 +393,13 @@
 
 <div class="divider"></div>
 
+<!-- 버디 모집 -->
 <div class="section">
   <div class="section-header">
-    <span class="section-title">최근 버디 모집</span>
+    <span class="section-title">
+      최근 버디 모집
+      <span class="section-tag" id="buddySectionTag">프리다이빙</span>
+    </span>
     <a href="buddy.html" class="section-more">더 보기 →</a>
   </div>
   <div class="buddy-list" id="buddyList">
@@ -159,9 +416,13 @@
 
 <div class="divider"></div>
 
+<!-- 강습 -->
 <div class="section">
   <div class="section-header">
-    <span class="section-title">강습 찾기</span>
+    <span class="section-title">
+      강습 찾기
+      <span class="section-tag" id="lessonSectionTag">프리다이빙</span>
+    </span>
     <a href="lessons.html" class="section-more">더 보기 →</a>
   </div>
   <div class="lesson-list" id="lessonList">
@@ -184,7 +445,87 @@
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
   var sb;
+  var currentSport = 'freediving';
 
+  /* ── 종목 전환 ── */
+  window.setSport = function(sport, triggerBtn) {
+    currentSport = sport;
+    var isScuba = sport === 'scuba';
+
+    /* GNB 탭 동기화 */
+    document.querySelectorAll('#sportTabNav button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    /* 히어로 탭 동기화 */
+    document.querySelectorAll('#heroTabs .hero-tab-btn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    /* 클릭된 버튼 active */
+    if (triggerBtn) triggerBtn.classList.add('active');
+    /* 반대편 탭도 동기화 */
+    var allTabs = document.querySelectorAll('#sportTabNav button, #heroTabs .hero-tab-btn');
+    allTabs.forEach(function(b) {
+      var isSame = (sport === 'scuba' && b.classList.contains('scuba')) ||
+                   (sport === 'freediving' && !b.classList.contains('scuba'));
+      if (isSame) b.classList.add('active');
+    });
+
+    /* 히어로 스타일 */
+    document.getElementById('heroSection').classList.toggle('scuba-hero', isScuba);
+    document.getElementById('heroBadge').textContent = isScuba ? '🐠 스쿠버다이빙' : '🤿 프리다이빙';
+    document.getElementById('heroBadge').classList.toggle('scuba', isScuba);
+    document.getElementById('heroAccent').classList.toggle('scuba', isScuba);
+
+    /* 검색바 */
+    document.getElementById('sportSelect').value = sport;
+    document.getElementById('searchBox').classList.toggle('scuba-focus', isScuba);
+    document.getElementById('searchBtn').classList.toggle('scuba', isScuba);
+
+    /* 섹션 태그 */
+    var label = isScuba ? '스쿠버다이빙' : '프리다이빙';
+    ['poolSectionTag', 'buddySectionTag', 'lessonSectionTag'].forEach(function(id) {
+      var el = document.getElementById(id);
+      el.textContent = label;
+      el.classList.toggle('scuba', isScuba);
+    });
+
+    /* 콘텐츠 갱신 */
+    if (isScuba) {
+      showScubaPlaceholder();
+    } else {
+      if (sb) { loadPools(); loadBuddyPosts(); loadLessons(); }
+    }
+  };
+
+  /* 스쿠버 준비 중 안내 */
+  function showScubaPlaceholder() {
+    var ph = '<div class="scuba-coming"><div class="icon">🐠</div><h3>스쿠버다이빙 서비스 준비 중</h3><p>곧 스쿠버다이빙 버디 매칭 서비스도 오픈됩니다.<br>지금은 프리다이빙 버디를 먼저 만나보세요!</p></div>';
+    document.getElementById('poolGrid').innerHTML = ph;
+    document.getElementById('buddyList').innerHTML = ph;
+    document.getElementById('lessonList').innerHTML = ph;
+  }
+
+  /* 검색 종목 셀렉트 → 탭 동기화 */
+  document.getElementById('sportSelect').addEventListener('change', function() {
+    setSport(this.value, null);
+  });
+
+  /* 검색 버튼 */
+  document.getElementById('searchBtn').addEventListener('click', function() {
+    var sport  = document.getElementById('sportSelect').value;
+    var region = document.getElementById('regionSelect').value;
+    var date   = document.getElementById('dateSelect').value;
+    var params = [];
+    if (region) params.push('region=' + encodeURIComponent(region));
+    if (date)   params.push('date='   + encodeURIComponent(date));
+    if (sport === 'scuba') {
+      alert('스쿠버다이빙 서비스는 준비 중입니다.');
+      return;
+    }
+    location.href = 'pools.html' + (params.length ? '?' + params.join('&') : '');
+  });
+
+  /* ── Supabase 초기화 ── */
   function initSB() {
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
       sb = window.supabase.createClient(SB_URL, SB_KEY);
@@ -203,19 +544,13 @@
       var profile = await sb.from('profiles').select('username').eq('id', res.data.user.id).single();
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
-      var uname = ((profile.data && profile.data.username) || '') + '님';
-      document.getElementById('navUsername').textContent = uname;
+      document.getElementById('navUsername').textContent = ((profile.data && profile.data.username) || '') + '님';
     }
   }
 
   document.getElementById('logoutBtn').addEventListener('click', async function() {
     await sb.auth.signOut();
     location.reload();
-  });
-
-  document.getElementById('searchBtn').addEventListener('click', function() {
-    var region = document.getElementById('regionSelect').value;
-    location.href = 'pools.html' + (region ? '?region=' + region : '');
   });
 
   async function loadPools() {
@@ -234,34 +569,37 @@
   }
 
   async function loadBuddyPosts() {
-    var res = await sb.from('buddy_posts').select('*, profiles(username, license_type, license_level), pools(name, region)').order('created_at', { ascending: false }).limit(5);
+    var res = await sb.from('buddy_posts')
+      .select('*, profiles(username, license_type, license_level), pools(name, region)')
+      .order('created_at', { ascending: false }).limit(5);
     var list = document.getElementById('buddyList');
     if (!res.data || res.data.length === 0) { list.innerHTML = '<div class="empty">아직 버디 모집글이 없습니다</div>'; return; }
     list.innerHTML = res.data.map(function(p) {
-      var ago = timeAgo(p.created_at);
-      var username = (p.profiles && p.profiles.username) || '?';
-      var poolName = (p.pools && p.pools.name) || '';
+      var username  = (p.profiles && p.profiles.username) || '?';
+      var poolName  = (p.pools && p.pools.name) || '';
       var poolRegion = (p.pools && p.pools.region) || '';
       var lt = (p.profiles && p.profiles.license_type) || '';
       var ll = (p.profiles && p.profiles.license_level) || '';
       return '<div class="buddy-item" onclick="location.href=\'pool-detail.html?id=' + p.pool_id + '\'">' +
         '<div class="buddy-left"><div class="avatar">' + username[0] + '</div>' +
         '<div><div class="buddy-name">' + poolName + ' · ' + poolRegion + '</div>' +
-        '<div class="buddy-detail">' + p.date + ' ' + p.time_slot + '</div></div></div>' +
+        '<div class="buddy-detail">' + p.date + ' · ' + p.time_slot + '</div></div></div>' +
         '<div class="buddy-right"><span class="level-badge">' + lt + ' ' + ll + '</span>' +
-        '<span class="time-text">' + ago + '</span></div></div>';
+        '<span class="time-text">' + timeAgo(p.created_at) + '</span></div></div>';
     }).join('');
   }
 
   async function loadLessons() {
-    var res = await sb.from('lessons').select('*, profiles(username, license_type, license_level), pools(name, region)').order('date', { ascending: true }).limit(4);
+    var res = await sb.from('lessons')
+      .select('*, profiles(username, license_type, license_level), pools(name, region)')
+      .order('date', { ascending: true }).limit(4);
     var list = document.getElementById('lessonList');
     if (!res.data || res.data.length === 0) { list.innerHTML = '<div class="empty">등록된 강습이 없습니다</div>'; return; }
     list.innerHTML = res.data.map(function(l) {
-      var username = (l.profiles && l.profiles.username) || '?';
+      var username  = (l.profiles && l.profiles.username) || '?';
       var lt = (l.profiles && l.profiles.license_type) || '';
       var ll = (l.profiles && l.profiles.license_level) || '';
-      var poolName = (l.pools && l.pools.name) || '';
+      var poolName  = (l.pools && l.pools.name) || '';
       var poolRegion = (l.pools && l.pools.region) || '';
       return '<div class="lesson-card" onclick="location.href=\'lesson-detail.html?id=' + l.id + '\'">' +
         '<div class="lesson-top"><div class="instructor-info"><div class="avatar">' + username[0] + '</div>' +
