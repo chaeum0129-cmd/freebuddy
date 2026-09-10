@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreeBuddy - 버디 구하기</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
     a { text-decoration: none; color: inherit; }
+
+    /* ── NAV ── */
     nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
     .logo { font-size: 20px; font-weight: 700; color: #1D9E75; }
     .logo span { color: #222; }
@@ -16,35 +19,259 @@
     .nav-link:hover { color: #1D9E75; }
     .nav-btns { display: flex; gap: 8px; }
     .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-ghost:hover { border-color: #1D9E75; color: #1D9E75; }
     .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
     .nav-user { display: none; align-items: center; gap: 12px; }
-    .nav-user span { font-size: 14px; color: #333; font-weight: 500; }
-    .page-header { background: #fff; border-bottom: 1px solid #e9ecef; padding: 24px; }
-    .page-header h1 { font-size: 22px; font-weight: 700; color: #111; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: #fff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 0 24px;
+    }
+
+    /* 메인 탭 (잠수풀 번개 / 해양·해외 투어) */
+    .main-tabs {
+      display: flex;
+      gap: 0;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .main-tab {
+      padding: 18px 24px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #aaa;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      border-bottom: 3px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: color 0.18s, border-color 0.18s;
+    }
+    .main-tab:hover { color: #555; }
+    .main-tab.active { color: #1D9E75; border-bottom-color: #1D9E75; }
+    .main-tab .tab-count {
+      font-size: 11px;
+      font-weight: 700;
+      background: #e8f8f2;
+      color: #0F6E56;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+    .main-tab.active .tab-count { background: #1D9E75; color: #fff; }
+
+    /* ── 필터바 ── */
+    .filter-bar {
+      background: #fff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 12px 24px;
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+    }
+    .filter-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #bbb;
+      white-space: nowrap;
+      padding-right: 2px;
+    }
+    .filter-chip {
+      padding: 5px 13px;
+      border: 1px solid #e0e3e7;
+      border-radius: 20px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { border-color: #1D9E75; color: #1D9E75; }
+    .filter-chip.active { border-color: #1D9E75; background: #e8f8f2; color: #0F6E56; font-weight: 700; }
+    .filter-divider { width: 1px; height: 20px; background: #e9ecef; margin: 0 4px; flex-shrink: 0; }
+
+    /* 필터 초기화 */
+    .filter-reset {
+      margin-left: auto;
+      font-size: 12px;
+      color: #bbb;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      border: none;
+      background: none;
+      padding: 4px 0;
+    }
+    .filter-reset:hover { color: #888; }
+    .filter-reset.visible { color: #1D9E75; }
+    .filter-reset.visible:hover { color: #0F6E56; }
+
+    /* ── 결과 툴바 ── */
+    .result-toolbar {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 14px 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .result-count { font-size: 13px; color: #888; }
+    .result-count strong { color: #111; font-weight: 700; }
+    .btn-write {
+      padding: 8px 18px;
+      background: #1D9E75;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-write:hover { background: #178a65; }
+
+    /* ── AD ── */
     .ad-banner { margin: 16px auto; max-width: 960px; padding: 0 24px; }
     .ad-box { height: 72px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .ad-label { font-size: 11px; color: #999; }
     .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; }
-    .section { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+    /* ── BUDDY LIST ── */
+    .section { max-width: 960px; margin: 0 auto; padding: 16px 24px 40px; }
     .buddy-list { display: flex; flex-direction: column; gap: 12px; }
-    .buddy-item { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: box-shadow 0.2s; }
-    .buddy-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-    .buddy-left { display: flex; align-items: center; gap: 12px; }
-    .avatar { width: 40px; height: 40px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
-    .buddy-name { font-size: 15px; font-weight: 600; color: #111; }
-    .buddy-detail { font-size: 13px; color: #888; margin-top: 3px; }
-    .buddy-note { font-size: 12px; color: #aaa; margin-top: 2px; }
-    .buddy-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .level-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #EEEDFE; color: #3C3489; font-weight: 500; }
-    .time-text { font-size: 11px; color: #bbb; }
-    .btn-contact { font-size: 12px; padding: 6px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #333; cursor: pointer; }
-    .btn-contact:hover { border-color: #1D9E75; color: #1D9E75; }
+
+    .buddy-card {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 14px;
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: box-shadow 0.18s, border-color 0.18s;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .buddy-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.07); border-color: #d0f0e4; }
+
+    /* 왼쪽: 아바타 */
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #e8f8f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F6E56;
+      flex-shrink: 0;
+    }
+
+    /* 중앙: 정보 */
+    .buddy-body { min-width: 0; }
+    .buddy-top-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 5px;
+    }
+    .buddy-pool {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .buddy-region {
+      font-size: 12px;
+      color: #aaa;
+      white-space: nowrap;
+    }
+
+    /* 태그 행 */
+    .buddy-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .tag {
+      font-size: 11px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tag-sport-free  { background: #e8f8f2; color: #0F6E56; }
+    .tag-sport-scuba { background: #e3f0ff; color: #1565C0; }
+    .tag-level       { background: #EEEDFE; color: #3C3489; }
+    .tag-tour        { background: #fff3e0; color: #e65100; }
+
+    .buddy-meta { font-size: 12px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+    .buddy-note { font-size: 12px; color: #aaa; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 480px; }
+
+    /* 오른쪽: 액션 */
+    .buddy-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+    .time-text { font-size: 11px; color: #ccc; white-space: nowrap; }
+    .btn-contact {
+      font-size: 12px;
+      padding: 7px 16px;
+      border: 1.5px solid #1D9E75;
+      border-radius: 8px;
+      background: #fff;
+      color: #1D9E75;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-contact:hover { background: #1D9E75; color: #fff; }
+
+    /* 해양투어 카드 강조 */
+    .buddy-card.tour { border-left: 3px solid #FF8A00; }
+
     .loading { text-align: center; padding: 60px; color: #999; font-size: 14px; }
     .empty { text-align: center; padding: 60px; color: #bbb; font-size: 14px; }
-    @media (max-width: 600px) { .nav-links { display: none; } .buddy-item { flex-direction: column; align-items: flex-start; gap: 10px; } .buddy-right { align-items: flex-start; flex-direction: row; } }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .buddy-card { grid-template-columns: auto 1fr; grid-template-rows: auto auto; }
+      .buddy-actions { grid-column: 2; flex-direction: row; align-items: center; justify-content: space-between; }
+      .filter-inner { gap: 6px; }
+      .main-tab { font-size: 13px; padding: 15px 14px 13px; gap: 5px; }
+    }
+    @media (max-width: 400px) {
+      .filter-chip { font-size: 11px; padding: 4px 10px; }
+    }
   </style>
 </head>
 <body>
+
+<!-- NAV -->
 <nav>
   <a href="index.html" class="logo">Free<span>Buddy</span></a>
   <div class="nav-links">
@@ -62,10 +289,78 @@
   </div>
 </nav>
 
+<!-- PAGE HEADER: 메인 탭 -->
 <div class="page-header">
-  <h1>전국 버디 모집 현황</h1>
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="setMainTab('pool', this)">
+      🏊 잠수풀 번개 <span class="tab-count" id="poolTabCount">-</span>
+    </button>
+    <button class="main-tab" onclick="setMainTab('tour', this)">
+      🌊 해양·해외 투어 <span class="tab-count" id="tourTabCount">-</span>
+    </button>
+  </div>
 </div>
 
+<!-- 필터바 -->
+<div class="filter-bar">
+  <div class="filter-inner">
+
+    <!-- 종목 -->
+    <span class="filter-label">종목</span>
+    <div class="filter-group" id="fg-sport">
+      <button class="filter-chip active" data-group="sport" data-val="">전체</button>
+      <button class="filter-chip" data-group="sport" data-val="프리다이빙">🤿 프리</button>
+      <button class="filter-chip" data-group="sport" data-val="스쿠버다이빙">🐠 스쿠버</button>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- 지역 -->
+    <span class="filter-label">지역</span>
+    <div class="filter-group" id="fg-region">
+      <button class="filter-chip active" data-group="region" data-val="">전체</button>
+      <button class="filter-chip" data-group="region" data-val="서울">서울</button>
+      <button class="filter-chip" data-group="region" data-val="경기">경기</button>
+      <button class="filter-chip" data-group="region" data-val="인천">인천</button>
+      <button class="filter-chip" data-group="region" data-val="부산">부산</button>
+      <button class="filter-chip" data-group="region" data-val="제주">제주</button>
+      <button class="filter-chip" data-group="region" data-val="대구">대구</button>
+      <button class="filter-chip" data-group="region" data-val="기타">기타</button>
+    </div>
+
+    <div class="filter-divider"></div>
+
+    <!-- 레벨 -->
+    <span class="filter-label">레벨</span>
+    <div class="filter-group" id="fg-level">
+      <button class="filter-chip active" data-group="level" data-val="">전체</button>
+      <!-- 프리다이빙 레벨 -->
+      <button class="filter-chip" data-group="level" data-val="입문">입문</button>
+      <button class="filter-chip" data-group="level" data-val="레벨2">레벨2</button>
+      <button class="filter-chip" data-group="level" data-val="레벨3">레벨3</button>
+      <button class="filter-chip" data-group="level" data-val="레벨4">레벨4</button>
+      <!-- 스쿠버 레벨 -->
+      <button class="filter-chip" data-group="level" data-val="오픈워터">오픈워터</button>
+      <button class="filter-chip" data-group="level" data-val="어드밴스">어드밴스</button>
+      <button class="filter-chip" data-group="level" data-val="레스큐">레스큐</button>
+      <button class="filter-chip" data-group="level" data-val="다이브마스터">다이브마스터</button>
+    </div>
+
+    <button class="filter-reset" id="filterResetBtn" onclick="resetFilters()">
+      <i class="fa fa-rotate-left"></i> 초기화
+    </button>
+  </div>
+</div>
+
+<!-- 결과 툴바 -->
+<div class="result-toolbar">
+  <span class="result-count" id="resultCount">불러오는 중...</span>
+  <button class="btn-write" onclick="goWrite()">
+    <i class="fa fa-plus"></i> 버디 모집하기
+  </button>
+</div>
+
+<!-- AD -->
 <div class="ad-banner">
   <div class="ad-box">
     <span class="ad-badge">광고</span>
@@ -73,6 +368,7 @@
   </div>
 </div>
 
+<!-- 리스트 -->
 <div class="section">
   <div class="buddy-list" id="buddyList">
     <div class="loading">버디 모집 현황을 불러오는 중...</div>
@@ -84,66 +380,227 @@
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var sb;
 
-  let currentUser = null;
+  var currentUser = null;
+  var allPosts    = [];   // 전체 원본 데이터
 
-  async function checkAuth() {
-    const { data: { user } } = await sb.auth.getUser();
-    currentUser = user;
-    if (user) {
-      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
-      document.getElementById('navBtns').style.display = 'none';
-      document.getElementById('navUser').style.display = 'flex';
-      document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
+  // 필터 상태
+  var filters = { mainTab: 'pool', sport: '', region: '', level: '' };
+
+  /* ────────────────────────────────
+     Supabase 초기화
+  ──────────────────────────────── */
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      checkAuth();
+      loadPosts();
+    } else {
+      setTimeout(initSB, 100);
     }
   }
 
-  async function logout() { await sb.auth.signOut(); location.reload(); }
+  async function checkAuth() {
+    var res = await sb.auth.getUser();
+    if (res.data && res.data.user) {
+      currentUser = res.data.user;
+      var profile = await sb.from('profiles').select('username').eq('id', currentUser.id).single();
+      document.getElementById('navBtns').style.display = 'none';
+      document.getElementById('navUser').style.display = 'flex';
+      document.getElementById('navUsername').textContent = ((profile.data && profile.data.username) || '') + '님';
+    }
+  }
 
+  window.logout = async function() { await sb.auth.signOut(); location.reload(); };
+
+  /* ────────────────────────────────
+     데이터 로드 (전체 1회)
+  ──────────────────────────────── */
+  async function loadPosts() {
+    var res = await sb
+      .from('buddy_posts')
+      .select('*, profiles(username, license_type, license_level), pools(name, region)')
+      .order('created_at', { ascending: false });
+
+    allPosts = res.data || [];
+
+    // 탭 카운트 계산
+    var poolCount = allPosts.filter(function(p) { return (p.post_type || 'pool') === 'pool'; }).length;
+    var tourCount = allPosts.filter(function(p) { return p.post_type === 'tour'; }).length;
+    document.getElementById('poolTabCount').textContent = poolCount;
+    document.getElementById('tourTabCount').textContent = tourCount;
+
+    render();
+  }
+
+  /* ────────────────────────────────
+     메인 탭 전환
+  ──────────────────────────────── */
+  window.setMainTab = function(tab, btn) {
+    filters.mainTab = tab;
+    document.querySelectorAll('.main-tab').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    render();
+  };
+
+  /* ────────────────────────────────
+     필터 칩 클릭
+  ──────────────────────────────── */
+  document.querySelectorAll('.filter-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      var group = this.dataset.group;
+      var val   = this.dataset.val;
+
+      // 같은 그룹의 active 해제 → 클릭된 것만 active
+      document.querySelectorAll('.filter-chip[data-group="' + group + '"]').forEach(function(c) {
+        c.classList.remove('active');
+      });
+      this.classList.add('active');
+
+      filters[group] = val;
+      updateResetBtn();
+      render();
+    });
+  });
+
+  function updateResetBtn() {
+    var dirty = filters.sport !== '' || filters.region !== '' || filters.level !== '';
+    var btn = document.getElementById('filterResetBtn');
+    btn.classList.toggle('visible', dirty);
+  }
+
+  window.resetFilters = function() {
+    filters.sport = ''; filters.region = ''; filters.level = '';
+    document.querySelectorAll('.filter-chip').forEach(function(c) {
+      c.classList.toggle('active', c.dataset.val === '');
+    });
+    updateResetBtn();
+    render();
+  };
+
+  /* ────────────────────────────────
+     렌더링 (필터 적용)
+  ──────────────────────────────── */
+  function render() {
+    var list = document.getElementById('buddyList');
+
+    var filtered = allPosts.filter(function(p) {
+      // 메인 탭
+      var ptype = p.post_type || 'pool';
+      if (filters.mainTab === 'pool' && ptype !== 'pool') return false;
+      if (filters.mainTab === 'tour' && ptype !== 'tour') return false;
+
+      // 종목
+      if (filters.sport) {
+        var sport = p.sport || (p.profiles && p.profiles.license_type) || '';
+        if (!sport.includes(filters.sport)) return false;
+      }
+
+      // 지역
+      if (filters.region) {
+        var region = (p.pools && p.pools.region) || p.region || '';
+        var OTHER_REGIONS = ['서울','경기','인천','부산','제주','대구'];
+        if (filters.region === '기타') {
+          if (OTHER_REGIONS.some(function(r) { return region.includes(r); })) return false;
+        } else {
+          if (!region.includes(filters.region)) return false;
+        }
+      }
+
+      // 레벨
+      if (filters.level) {
+        var level = (p.profiles && p.profiles.license_level) || p.level || '';
+        if (!level.includes(filters.level)) return false;
+      }
+
+      return true;
+    });
+
+    // 결과 수
+    document.getElementById('resultCount').innerHTML =
+      '총 <strong>' + filtered.length + '</strong>개의 모집글';
+
+    if (filtered.length === 0) {
+      list.innerHTML =
+        '<div class="empty">' +
+        '<div class="empty-icon">' + (filters.mainTab === 'tour' ? '🌊' : '🏊') + '</div>' +
+        '<div>조건에 맞는 모집글이 없습니다</div>' +
+        '</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.map(function(p) {
+      var username  = (p.profiles && p.profiles.username) || '?';
+      var poolName  = (p.pools   && p.pools.name)        || (p.location || '');
+      var region    = (p.pools   && p.pools.region)      || (p.region   || '');
+      var licType   = (p.profiles && p.profiles.license_type)  || (p.sport  || '');
+      var licLevel  = (p.profiles && p.profiles.license_level) || (p.level  || '');
+      var isTour    = (p.post_type === 'tour');
+
+      // 종목 태그 클래스
+      var sportClass = (licType.includes('스쿠버') || licType.includes('scuba'))
+        ? 'tag-sport-scuba' : 'tag-sport-free';
+      var sportLabel = licType || '프리다이빙';
+
+      return (
+        '<div class="buddy-card' + (isTour ? ' tour' : '') + '">' +
+          '<div class="avatar">' + username[0] + '</div>' +
+          '<div class="buddy-body">' +
+            '<div class="buddy-top-row">' +
+              '<span class="buddy-pool">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</span>' +
+              '<span class="buddy-region">' + region + '</span>' +
+            '</div>' +
+            '<div class="buddy-tags">' +
+              '<span class="tag ' + sportClass + '">' + sportLabel + '</span>' +
+              (licLevel ? '<span class="tag tag-level">' + licLevel + '</span>' : '') +
+              (isTour   ? '<span class="tag tag-tour">해양·해외</span>' : '') +
+            '</div>' +
+            '<div class="buddy-meta">' +
+              '<span>📅 ' + (p.date || '') + '</span>' +
+              '<span>⏰ ' + (p.time_slot || '') + '</span>' +
+              '<span>👤 ' + username + '</span>' +
+            '</div>' +
+            (p.note ? '<div class="buddy-note">📝 ' + p.note + '</div>' : '') +
+          '</div>' +
+          '<div class="buddy-actions">' +
+            '<span class="time-text">' + timeAgo(p.created_at) + '</span>' +
+            '<button class="btn-contact" onclick="contactBuddy(\'' + (p.contact || '') + '\',\'' + username + '\',event)">연락하기</button>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  /* ────────────────────────────────
+     유틸
+  ──────────────────────────────── */
   function timeAgo(dateStr) {
-    const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
-    if (diff < 60) return diff + '분 전';
+    var diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
+    if (diff < 60)   return diff + '분 전';
     if (diff < 1440) return Math.floor(diff / 60) + '시간 전';
     return Math.floor(diff / 1440) + '일 전';
   }
 
-  async function loadBuddyPosts() {
-    const { data: posts } = await sb
-      .from('buddy_posts')
-      .select('*, profiles(username, license_type, license_level), pools(name, region)')
-      .order('created_at', { ascending: false });
-    const list = document.getElementById('buddyList');
-    if (!posts || posts.length === 0) { list.innerHTML = '<div class="empty">아직 버디 모집글이 없습니다</div>'; return; }
-    list.innerHTML = posts.map(p => `
-      <div class="buddy-item">
-        <div class="buddy-left">
-          <div class="avatar">${(p.profiles?.username || '?')[0]}</div>
-          <div>
-            <div class="buddy-name">${p.pools?.name || ''} <span style="color:#aaa;font-size:12px">· ${p.pools?.region || ''}</span></div>
-            <div class="buddy-detail">📅 ${p.date} &nbsp; ⏰ ${p.time_slot}</div>
-            ${p.note ? `<div class="buddy-note">📝 ${p.note}</div>` : ''}
-          </div>
-        </div>
-        <div class="buddy-right">
-          <span class="level-badge">${p.profiles?.license_type || ''} ${p.profiles?.license_level || ''}</span>
-          <span class="time-text">${timeAgo(p.created_at)}</span>
-          <button class="btn-contact" onclick="contactBuddy('${p.contact || ''}', '${p.profiles?.username || ''}', event)">연락하기</button>
-        </div>
-      </div>
-    `).join('');
-  }
-
   window.contactBuddy = function(contact, username, e) {
     e.stopPropagation();
-    if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
     if (contact) window.open(contact, '_blank');
-    else alert(`${username}님의 연락처 정보가 없습니다`);
-  }
+    else alert(username + '님의 연락처 정보가 없습니다');
+  };
 
-  checkAuth();
-  loadBuddyPosts();
+  window.goWrite = function() {
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+    location.href = 'write-buddy.html';
+  };
 
+  initSB();
 })();
 </script>
 </body>
