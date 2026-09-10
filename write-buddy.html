@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 버디 모집하기</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; }
+    .logo span { color: #222; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-link { font-size: 14px; color: #555; font-weight: 500; }
+    .nav-link:hover { color: #1D9E75; }
+    .nav-btns { display: flex; gap: 8px; }
+    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-ghost:hover { border-color: #1D9E75; color: #1D9E75; }
+    .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
+    .nav-user { display: none; align-items: center; gap: 12px; }
+
+    /* 페이지 헤더 */
+    .page-header {
+      background: #fff;
+      border-bottom: 1px solid #e9ecef;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .back-btn {
+      width: 34px; height: 34px;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: #555;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .back-btn:hover { border-color: #1D9E75; color: #1D9E75; }
+    .page-header h1 { font-size: 18px; font-weight: 700; color: #111; }
+
+    /* 폼 레이아웃 */
+    .form-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    /* 미리보기 카드 */
+    .preview-section {
+      margin-bottom: 28px;
+    }
+    .preview-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #bbb;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .preview-card {
+      background: #fff;
+      border: 1.5px solid #1D9E75;
+      border-radius: 14px;
+      padding: 18px 20px;
+      position: relative;
+      box-shadow: 0 2px 12px rgba(29,158,117,0.08);
+    }
+    .preview-card .host-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: #e8f8f2;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: #0F6E56;
+      flex-shrink: 0;
+    }
+    .host-name { font-size: 14px; font-weight: 700; color: #111; }
+    .host-cert { font-size: 12px; color: #888; margin-top: 1px; }
+    .host-badge {
+      margin-left: auto;
+      font-size: 11px;
+      font-weight: 700;
+      background: #1D9E75;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .preview-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .preview-info { flex: 1; min-width: 0; }
+    .preview-pool {
+      font-size: 16px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+    }
+    .preview-pool .region { font-size: 13px; font-weight: 400; color: #aaa; margin-left: 6px; }
+    .preview-meta {
+      font-size: 13px;
+      color: #555;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 8px;
+    }
+    .preview-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 11px; padding: 3px 10px;
+      border-radius: 20px; font-weight: 600;
+    }
+    .tag-free  { background: #e8f8f2; color: #0F6E56; }
+    .tag-scuba { background: #e3f0ff; color: #1565C0; }
+    .tag-level { background: #EEEDFE; color: #3C3489; }
+    .tag-tour  { background: #fff3e0; color: #e65100; }
+    .preview-note {
+      font-size: 12px; color: #888;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+    .preview-chat {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .btn-chat-preview {
+      padding: 8px 16px;
+      background: #FEE500;
+      color: #3A1D1D;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: default;
+      white-space: nowrap;
+    }
+    .preview-placeholder {
+      font-size: 12px;
+      color: #ccc;
+      font-style: italic;
+    }
+
+    /* 섹션 */
+    .form-section {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 14px;
+      padding: 22px 20px;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .section-title i { color: #1D9E75; font-size: 14px; }
+
+    /* 필드 */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 7px;
+    }
+    .field label .req { color: #1D9E75; margin-left: 2px; }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e0e3e7;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #222;
+      background: #fff;
+      font-family: inherit;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: #1D9E75; }
+    .field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* 탭 타입 선택 */
+    .type-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .type-tab {
+      padding: 14px;
+      border: 1.5px solid #e0e3e7;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .type-tab .type-icon { font-size: 22px; margin-bottom: 6px; }
+    .type-tab .type-name { font-size: 13px; font-weight: 700; color: #555; }
+    .type-tab .type-desc { font-size: 11px; color: #bbb; margin-top: 2px; }
+    .type-tab.active {
+      border-color: #1D9E75;
+      background: #f0fdf8;
+    }
+    .type-tab.active .type-name { color: #0F6E56; }
+
+    /* 칩 선택 (종목/레벨) */
+    .chip-group { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip {
+      padding: 7px 16px;
+      border: 1.5px solid #e0e3e7;
+      border-radius: 20px;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .chip:hover { border-color: #1D9E75; color: #1D9E75; }
+    .chip.active { border-color: #1D9E75; background: #e8f8f2; color: #0F6E56; font-weight: 700; }
+
+    /* 카카오 채팅 입력 */
+    .kakao-field {
+      position: relative;
+    }
+    .kakao-field input { padding-left: 42px; }
+    .kakao-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: #bbb;
+      margin-top: 5px;
+    }
+
+    /* 제출 버튼 */
+    .submit-area {
+      margin-top: 24px;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: #1D9E75;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .btn-submit:hover { background: #178a65; }
+    .btn-submit:disabled { background: #ccc; cursor: default; }
+    .submit-note {
+      text-align: center;
+      font-size: 12px;
+      color: #bbb;
+      margin-top: 10px;
+    }
+
+    /* 토스트 */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #111;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 999;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+  <div class="nav-links">
+    <a href="pools.html" class="nav-link">풀장 찾기</a>
+    <a href="buddy.html" class="nav-link" style="color:#1D9E75">버디 구하기</a>
+    <a href="lessons.html" class="nav-link">강습</a>
+  </div>
+  <div class="nav-btns" id="navBtns">
+    <button class="btn-ghost" onclick="location.href='login.html'">로그인</button>
+    <button class="btn-primary" onclick="location.href='signup.html'">회원가입</button>
+  </div>
+  <div class="nav-user" id="navUser">
+    <a href="my-page.html" id="navUsername" style="font-size:14px;color:#333;font-weight:500;text-decoration:none;cursor:pointer"></a>
+    <button class="btn-ghost" onclick="logout()">로그아웃</button>
+  </div>
+</nav>
+
+<!-- 페이지 헤더 -->
+<div class="page-header">
+  <button class="back-btn" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
+  <h1>버디 모집하기</h1>
+</div>
+
+<div class="form-wrap">
+
+  <!-- 미리보기 카드 -->
+  <div class="preview-section">
+    <div class="preview-label">📋 모집글 미리보기</div>
+    <div class="preview-card">
+      <div class="host-row">
+        <div class="avatar" id="pvAvatar">?</div>
+        <div>
+          <div class="host-name" id="pvName">닉네임</div>
+          <div class="host-cert" id="pvCert">자격증</div>
+        </div>
+        <span class="host-badge">방장</span>
+      </div>
+      <div class="preview-main">
+        <div class="preview-info">
+          <div class="preview-pool" id="pvPool">
+            풀장을 선택해주세요
+            <span class="region" id="pvRegion"></span>
+          </div>
+          <div class="preview-meta">
+            <span id="pvDate">📅 날짜 미정</span>
+            <span id="pvTime">⏰ 집합시간 미정</span>
+          </div>
+          <div class="preview-tags" id="pvTags">
+            <span class="tag tag-free">프리다이빙</span>
+          </div>
+          <div class="preview-note" id="pvNote" style="display:none"></div>
+        </div>
+        <div class="preview-chat">
+          <div class="btn-chat-preview" id="pvChatBtn" style="display:none">
+            💬 오픈채팅 참여
+          </div>
+          <div class="preview-placeholder" id="pvChatPlaceholder">채팅링크 선택</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 1: 모임 유형 -->
+  <div class="form-section">
+    <div class="section-title"><i class="fa fa-flag"></i> 모임 유형</div>
+    <div class="type-tabs">
+      <div class="type-tab active" id="typePool" onclick="setType('pool')">
+        <div class="type-icon">🏊</div>
+        <div class="type-name">잠수풀 번개</div>
+        <div class="type-desc">실내 풀장에서 함께</div>
+      </div>
+      <div class="type-tab" id="typeTour" onclick="setType('tour')">
+        <div class="type-icon">🌊</div>
+        <div class="type-name">해양·해외 투어</div>
+        <div class="type-desc">바다 / 해외 다이빙</div>
+      </div>
+    </div>
+
+    <!-- 종목 -->
+    <div class="field">
+      <label>종목 <span class="req">*</span></label>
+      <div class="chip-group" id="sportChips">
+        <button class="chip active" data-val="프리다이빙" onclick="setSport(this)">🤿 프리다이빙</button>
+        <button class="chip" data-val="스쿠버다이빙" onclick="setSport(this)">🐠 스쿠버다이빙</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 2: 장소 -->
+  <div class="form-section" id="poolSection">
+    <div class="section-title"><i class="fa fa-location-dot"></i> 장소</div>
+    <div class="field">
+      <label>풀장 선택 <span class="req">*</span></label>
+      <select id="poolSelect" onchange="updatePreview()">
+        <option value="">풀장을 선택하세요</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 해양 투어 장소 (투어 선택 시) -->
+  <div class="form-section" id="tourSection" style="display:none">
+    <div class="section-title"><i class="fa fa-location-dot"></i> 장소</div>
+    <div class="field-row">
+      <div class="field">
+        <label>지역 <span class="req">*</span></label>
+        <select id="tourRegion" onchange="updatePreview()">
+          <option value="">지역 선택</option>
+          <option>제주</option><option>거제</option><option>울릉도</option>
+          <option>속초</option><option>강릉</option><option>여수</option>
+          <option>태국</option><option>필리핀</option><option>인도네시아</option>
+          <option>몰디브</option><option>기타 해외</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>장소명</label>
+        <input type="text" id="tourPlace" placeholder="예: 문섬, 서귀포 앞바다" oninput="updatePreview()">
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 3: 일정 -->
+  <div class="form-section">
+    <div class="section-title"><i class="fa fa-calendar"></i> 일정</div>
+    <div class="field-row">
+      <div class="field">
+        <label>날짜 <span class="req">*</span></label>
+        <input type="date" id="dateInput" onchange="updatePreview()">
+      </div>
+      <div class="field">
+        <label>집합 시간 <span class="req">*</span></label>
+        <input type="time" id="timeInput" onchange="updatePreview()">
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 4: 모집 조건 -->
+  <div class="form-section">
+    <div class="section-title"><i class="fa fa-users"></i> 모집 조건</div>
+
+    <div class="field">
+      <label>원하는 레벨 (복수 선택 가능)</label>
+      <div class="chip-group" id="levelChips">
+        <button class="chip active" data-val="" onclick="toggleLevel(this)">무관</button>
+        <button class="chip" data-val="입문" onclick="toggleLevel(this)">입문</button>
+        <button class="chip" data-val="레벨2" onclick="toggleLevel(this)">레벨2</button>
+        <button class="chip" data-val="레벨3" onclick="toggleLevel(this)">레벨3</button>
+        <button class="chip" data-val="레벨4" onclick="toggleLevel(this)">레벨4</button>
+        <button class="chip" data-val="오픈워터" onclick="toggleLevel(this)">오픈워터</button>
+        <button class="chip" data-val="어드밴스" onclick="toggleLevel(this)">어드밴스</button>
+        <button class="chip" data-val="레스큐" onclick="toggleLevel(this)">레스큐</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>한줄 소개 <span style="color:#ccc;font-weight:400">(선택)</span></label>
+      <textarea id="noteInput" placeholder="예) 레벨2 연습 중인데 같이 하실 분 구해요! 초보 환영 :)" oninput="updatePreview()" maxlength="100"></textarea>
+      <div class="field-hint" id="noteCount">0 / 100자</div>
+    </div>
+  </div>
+
+  <!-- 섹션 5: 오픈채팅 -->
+  <div class="form-section">
+    <div class="section-title"><i class="fa fa-comment"></i> 연락 방법</div>
+    <div class="field">
+      <label>카카오 오픈채팅 링크 <span style="color:#ccc;font-weight:400">(선택)</span></label>
+      <div class="kakao-field">
+        <span class="kakao-icon">💬</span>
+        <input type="url" id="chatLink" placeholder="https://open.kakao.com/o/..." oninput="updatePreview()">
+      </div>
+      <div class="field-hint">링크가 없으면 버디가 댓글로 신청할 수 있어요</div>
+    </div>
+  </div>
+
+  <!-- 제출 -->
+  <div class="submit-area">
+    <button class="btn-submit" id="submitBtn" onclick="submitPost()">
+      <i class="fa fa-flag"></i> 버디 모집 시작하기
+    </button>
+    <div class="submit-note">로그인 상태에서만 등록할 수 있습니다</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb;
+
+  var currentUser    = null;
+  var currentProfile = null;
+  var currentType    = 'pool';
+  var currentSport   = '프리다이빙';
+  var pools          = [];
+
+  /* ── init ── */
+  function initSB() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      checkAuth();
+      loadPools();
+    } else {
+      setTimeout(initSB, 100);
+    }
+  }
+
+  async function checkAuth() {
+    var res = await sb.auth.getUser();
+    if (res.data && res.data.user) {
+      currentUser = res.data.user;
+      var pr = await sb.from('profiles').select('username, license_type, license_level').eq('id', currentUser.id).single();
+      currentProfile = pr.data || {};
+      document.getElementById('navBtns').style.display = 'none';
+      document.getElementById('navUser').style.display = 'flex';
+      document.getElementById('navUsername').textContent = (currentProfile.username || '') + '님';
+      updatePreview();
+    }
+  }
+
+  window.logout = async function() { await sb.auth.signOut(); location.reload(); };
+
+  async function loadPools() {
+    var res = await sb.from('pools').select('id, name, region').order('region');
+    pools = res.data || [];
+    var sel = document.getElementById('poolSelect');
+    // 지역별 그룹
+    var groups = {};
+    pools.forEach(function(p) {
+      if (!groups[p.region]) groups[p.region] = [];
+      groups[p.region].push(p);
+    });
+    var html = '<option value="">풀장을 선택하세요</option>';
+    Object.keys(groups).forEach(function(region) {
+      html += '<optgroup label="' + region + '">';
+      groups[region].forEach(function(p) {
+        html += '<option value="' + p.id + '" data-region="' + p.region + '" data-name="' + p.name + '">' + p.name + '</option>';
+      });
+      html += '</optgroup>';
+    });
+    sel.innerHTML = html;
+  }
+
+  /* ── 유형 선택 ── */
+  window.setType = function(type) {
+    currentType = type;
+    document.getElementById('typePool').classList.toggle('active', type === 'pool');
+    document.getElementById('typeTour').classList.toggle('active', type === 'tour');
+    document.getElementById('poolSection').style.display  = type === 'pool' ? '' : 'none';
+    document.getElementById('tourSection').style.display  = type === 'tour' ? '' : 'none';
+    updatePreview();
+  };
+
+  /* ── 종목 선택 ── */
+  window.setSport = function(btn) {
+    document.querySelectorAll('#sportChips .chip').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    currentSport = btn.dataset.val;
+    // 레벨 칩 변경
+    updateLevelChips();
+    updatePreview();
+  };
+
+  function updateLevelChips() {
+    var isScuba = currentSport === '스쿠버다이빙';
+    var chips = document.querySelectorAll('#levelChips .chip');
+    chips.forEach(function(c) {
+      var val = c.dataset.val;
+      if (val === '') return; // 무관은 항상 표시
+      var isFreeLevel  = ['입문','레벨2','레벨3','레벨4'].includes(val);
+      var isScubaLevel = ['오픈워터','어드밴스','레스큐'].includes(val);
+      if (isScuba) {
+        c.style.display = isScubaLevel ? '' : 'none';
+      } else {
+        c.style.display = isFreeLevel  ? '' : 'none';
+      }
+      c.classList.remove('active');
+    });
+    // 무관 다시 active
+    document.querySelector('#levelChips .chip[data-val=""]').classList.add('active');
+  }
+
+  /* ── 레벨 토글 (복수 선택) ── */
+  window.toggleLevel = function(btn) {
+    if (btn.dataset.val === '') {
+      // 무관 선택 시 나머지 해제
+      document.querySelectorAll('#levelChips .chip').forEach(function(c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+    } else {
+      // 특정 레벨 선택 시 무관 해제
+      document.querySelector('#levelChips .chip[data-val=""]').classList.remove('active');
+      btn.classList.toggle('active');
+      // 아무것도 선택 안 되면 무관으로 되돌리기
+      var anyActive = Array.from(document.querySelectorAll('#levelChips .chip')).some(function(c) {
+        return c.classList.contains('active') && c.dataset.val !== '';
+      });
+      if (!anyActive) document.querySelector('#levelChips .chip[data-val=""]').classList.add('active');
+    }
+    updatePreview();
+  };
+
+  /* ── 글자수 카운트 ── */
+  document.getElementById('noteInput').addEventListener('input', function() {
+    document.getElementById('noteCount').textContent = this.value.length + ' / 100자';
+  });
+
+  /* ── 미리보기 업데이트 ── */
+  window.updatePreview = function() {
+    // 작성자 정보
+    var name = (currentProfile && currentProfile.username) || '닉네임';
+    var cert = (currentProfile && currentProfile.license_type)
+      ? currentProfile.license_type + ' ' + (currentProfile.license_level || '')
+      : '자격증 정보 없음';
+    document.getElementById('pvAvatar').textContent = name[0];
+    document.getElementById('pvName').textContent   = name;
+    document.getElementById('pvCert').textContent   = cert;
+
+    // 장소
+    var poolName = '풀장을 선택해주세요';
+    var region   = '';
+    if (currentType === 'pool') {
+      var sel = document.getElementById('poolSelect');
+      var opt = sel.options[sel.selectedIndex];
+      if (opt && opt.value) {
+        poolName = opt.dataset.name  || opt.text;
+        region   = opt.dataset.region || '';
+      }
+    } else {
+      var tr = document.getElementById('tourRegion').value;
+      var tp = document.getElementById('tourPlace').value;
+      poolName = tp ? tp : (tr || '장소 미정');
+      region   = tr;
+    }
+    document.getElementById('pvPool').childNodes[0].textContent = poolName;
+    document.getElementById('pvRegion').textContent = region ? ' · ' + region : '';
+
+    // 날짜·시간
+    var d = document.getElementById('dateInput').value;
+    var t = document.getElementById('timeInput').value;
+    document.getElementById('pvDate').textContent = d ? '📅 ' + d : '📅 날짜 미정';
+    document.getElementById('pvTime').textContent = t ? '⏰ ' + t + ' 집합' : '⏰ 집합시간 미정';
+
+    // 태그
+    var sportClass = currentSport === '스쿠버다이빙' ? 'tag-scuba' : 'tag-free';
+    var levelTags  = Array.from(document.querySelectorAll('#levelChips .chip.active'))
+      .filter(function(c) { return c.dataset.val !== ''; })
+      .map(function(c) { return '<span class="tag tag-level">' + c.dataset.val + '</span>'; }).join('');
+    var tourTag = currentType === 'tour' ? '<span class="tag tag-tour">해양·해외</span>' : '';
+    document.getElementById('pvTags').innerHTML =
+      '<span class="tag ' + sportClass + '">' + currentSport + '</span>' + levelTags + tourTag;
+
+    // 메모
+    var note = document.getElementById('noteInput').value;
+    var pvNote = document.getElementById('pvNote');
+    if (note) { pvNote.style.display = ''; pvNote.textContent = '📝 ' + note; }
+    else { pvNote.style.display = 'none'; }
+
+    // 오픈채팅
+    var chat = document.getElementById('chatLink').value;
+    document.getElementById('pvChatBtn').style.display         = chat ? '' : 'none';
+    document.getElementById('pvChatPlaceholder').style.display = chat ? 'none' : '';
+  };
+
+  /* ── 제출 ── */
+  window.submitPost = async function() {
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+
+    // 유효성 검사
+    var date = document.getElementById('dateInput').value;
+    var time = document.getElementById('timeInput').value;
+    if (!date || !time) { showToast('날짜와 집합 시간을 입력해주세요'); return; }
+
+    var poolId = null;
+    var tourInfo = null;
+    if (currentType === 'pool') {
+      poolId = document.getElementById('poolSelect').value;
+      if (!poolId) { showToast('풀장을 선택해주세요'); return; }
+    } else {
+      var tr = document.getElementById('tourRegion').value;
+      if (!tr) { showToast('지역을 선택해주세요'); return; }
+      tourInfo = tr + (document.getElementById('tourPlace').value ? ' · ' + document.getElementById('tourPlace').value : '');
+    }
+
+    var levels = Array.from(document.querySelectorAll('#levelChips .chip.active'))
+      .map(function(c) { return c.dataset.val; }).filter(Boolean).join(',');
+
+    var payload = {
+      user_id:   currentUser.id,
+      post_type: currentType,
+      sport:     currentSport,
+      pool_id:   poolId || null,
+      location:  tourInfo || null,
+      date:      date,
+      time_slot: time,
+      level:     levels || null,
+      note:      document.getElementById('noteInput').value || null,
+      contact:   document.getElementById('chatLink').value  || null,
+    };
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 등록 중...';
+
+    var res = await sb.from('buddy_posts').insert(payload);
+    if (res.error) {
+      showToast('오류가 발생했습니다: ' + res.error.message);
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-flag"></i> 버디 모집 시작하기';
+      return;
+    }
+
+    showToast('✅ 버디 모집글이 등록됐습니다!');
+    setTimeout(function() { location.href = 'buddy.html'; }, 1200);
+  };
+
+  /* ── 토스트 ── */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  // 오늘 날짜 기본값
+  document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+  updatePreview();
+  initSB();
+})();
+</script>
+</body>
+</html>
