@@ -241,8 +241,10 @@
     .btn-detail { font-size: 12px; padding: 7px 16px; border: 1.5px solid #1D9E75; border-radius: 8px; background: #1D9E75; color: #fff; cursor: pointer; font-weight: 600; white-space: nowrap; transition: all 0.15s; }
     .btn-detail:hover { background: #178a65; border-color: #178a65; }
 
-    /* 해양투어 카드 강조 */
-    .buddy-card.tour { border-left: 3px solid #FF8A00; }
+    /* 종목별 카드 컬러 보더 */
+    .buddy-card.free  { border-left: 4px solid #1D9E75; }
+    .buddy-card.scuba { border-left: 4px solid #1565C0; }
+    .buddy-card.tour  { border-left: 4px solid #FF8A00; }
 
     .loading { text-align: center; padding: 60px; color: #999; font-size: 14px; }
     .empty { text-align: center; padding: 60px; color: #bbb; font-size: 14px; }
@@ -515,14 +517,16 @@
       var licLevel  = (p.profiles && p.profiles.license_level) || (p.level  || '');
       var isTour    = (p.post_type === 'tour');
 
-      // 종목 태그 클래스
-      var sportClass = (licType.includes('스쿠버') || licType.includes('scuba'))
-        ? 'tag-sport-scuba' : 'tag-sport-free';
-      var sportLabel = licType || '프리다이빙';
+      // 종목 판별
+      var isScuba   = (p.sport || licType || '').includes('스쿠버');
+      var sportClass = isScuba ? 'tag-sport-scuba' : 'tag-sport-free';
+      var sportLabel = isScuba ? '🐠 스쿠버다이빙' : '🤿 프리다이빙';
+      var cardClass  = isTour ? ' tour' : (isScuba ? ' scuba' : ' free');
+      var avatarClass = isScuba ? ' scuba' : '';
 
       return (
-        '<div class="buddy-card' + (isTour ? ' tour' : '') + '">' +
-          '<div class="avatar">' + username[0] + '</div>' +
+        '<div class="buddy-card' + cardClass + '">' +
+          '<div class="avatar' + avatarClass + '">' + username[0] + '</div>' +
           '<div class="buddy-body">' +
             '<div class="buddy-top-row">' +
               '<span class="buddy-pool">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</span>' +
@@ -530,6 +534,7 @@
             '</div>' +
             '<div class="buddy-tags">' +
               '<span class="tag ' + sportClass + '">' + sportLabel + '</span>' +
+              (licType ? '<span class="tag tag-level">' + licType + '</span>' : '') +
               (licLevel ? '<span class="tag tag-level">' + licLevel + '</span>' : '') +
               (isTour   ? '<span class="tag tag-tour">해양·해외</span>' : '') +
             '</div>' +
