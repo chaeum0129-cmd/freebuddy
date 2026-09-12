@@ -320,10 +320,20 @@
   /* ── 댓글 로드 ── */
   async function loadComments() {
     var res = await sb.from('buddy_comments')
-      .select('*, profiles(username)')
+      .select('id, post_id, user_id, content, created_at')
       .eq('post_id', postId)
       .order('created_at', { ascending: true });
     var comments = res.data || [];
+
+    // 댓글 작성자 프로필 별도 조회
+    var userIds = [...new Set(comments.map(function(c) { return c.user_id; }))];
+    var profiles = {};
+    if (userIds.length > 0) {
+      var prRes = await sb.from('profiles').select('id, username').in('id', userIds);
+      (prRes.data || []).forEach(function(p) { profiles[p.id] = p; });
+    }
+    comments.forEach(function(c) { c.profiles = profiles[c.user_id] || null; });
+
     document.getElementById('commentCount').textContent = comments.length;
     renderComments(comments);
   }
