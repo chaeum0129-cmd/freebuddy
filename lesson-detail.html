@@ -13,10 +13,11 @@
     .logo span { color: #222; }
     .nav-links { display: flex; gap: 24px; }
     .nav-link { font-size: 14px; color: #555; font-weight: 500; }
-    .nav-btns { display: flex; gap: 8px; align-items: center; }
-    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; }
-    .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; }
-    .nav-username { font-size: 14px; color: #333; font-weight: 500; text-decoration: none; }
+    .nav-btns { display: flex; gap: 8px; }
+    .btn-ghost { padding: 7px 16px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 13px; color: #333; cursor: pointer; font-weight: 500; }
+    .btn-primary { padding: 7px 16px; border: none; border-radius: 8px; background: #1D9E75; font-size: 13px; color: #fff; cursor: pointer; font-weight: 500; }
+    .nav-user { display: none; align-items: center; gap: 12px; }
+    .nav-user span { font-size: 14px; color: #333; font-weight: 500; }
     .breadcrumb { padding: 12px 24px; font-size: 13px; color: #aaa; max-width: 800px; margin: 0 auto; }
     .breadcrumb a { color: #1D9E75; }
     .wrap { max-width: 800px; margin: 0 auto; padding: 24px; }
@@ -39,20 +40,48 @@
     .price-row { display: flex; align-items: center; justify-content: space-between; }
     .price { font-size: 22px; font-weight: 700; color: #1D9E75; }
     .btn-book { padding: 14px 32px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
-    .ad-box { height: 72px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 20px; }
-    .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; }
+    .btn-book:hover { background: #178a65; }
+    .btn-book:disabled { background: #ccc; cursor: default; }
+    .ad-banner { margin: 0 0 20px; }
+    .ad-box { height: 72px; background: #f1f3f5; border: 1px dashed #ccc; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .ad-label { font-size: 11px; color: #999; }
+    .ad-badge { font-size: 11px; color: #854F0B; background: #FAEEDA; padding: 2px 8px; border-radius: 4px; }
     .booking-card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 24px; }
     .booking-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 16px; }
     .booking-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f3f5; }
     .booking-item:last-child { border: none; }
     .booking-user { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #333; }
-    .booking-avatar { width: 28px; height: 28px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #0F6E56; }
-    .status-badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .booking-status { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
     .status-pending { background: #fff3e0; color: #e65100; }
     .status-confirmed { background: #e8f8f2; color: #0F6E56; }
     .empty { text-align: center; padding: 30px; color: #bbb; font-size: 13px; }
     .loading { text-align: center; padding: 30px; color: #999; font-size: 14px; }
+    /* 댓글 */
+    .comment-section { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 22px; margin-top: 20px; }
+    .comment-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .comment-count { font-size: 13px; font-weight: 600; color: #1D9E75; background: #e8f8f2; padding: 2px 9px; border-radius: 20px; }
+    .comment-input-box { display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-start; }
+    .c-avatar { width: 34px; height: 34px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .comment-textarea { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e3e7; border-radius: 10px; font-size: 14px; color: #222; font-family: inherit; resize: none; min-height: 76px; outline: none; transition: border-color 0.15s; line-height: 1.6; }
+    .comment-textarea:focus { border-color: #1D9E75; }
+    .comment-input-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .btn-comment-submit { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .login-prompt { background: #f8f9fa; border-radius: 10px; padding: 16px; text-align: center; margin-bottom: 20px; }
+    .login-prompt p { font-size: 13px; color: #888; margin-bottom: 10px; }
+    .btn-login-small { padding: 7px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .comment-list { display: flex; flex-direction: column; gap: 14px; }
+    .comment-item { display: flex; gap: 10px; }
+    .comment-body { flex: 1; }
+    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .comment-username { font-size: 13px; font-weight: 700; color: #111; }
+    .comment-instructor-badge { font-size: 10px; font-weight: 700; background: #e8f8f2; color: #0F6E56; padding: 1px 7px; border-radius: 10px; }
+    .comment-time { font-size: 11px; color: #ccc; }
+    .comment-text { font-size: 14px; color: #444; line-height: 1.65; }
+    .comment-delete { font-size: 11px; color: #ddd; cursor: pointer; background: none; border: none; padding: 0; margin-left: auto; }
+    .comment-delete:hover { color: #e53e3e; }
+    .comment-divider { height: 1px; background: #f1f3f5; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
@@ -67,98 +96,207 @@
     <button class="btn-ghost" onclick="location.href='login.html'">로그인</button>
     <button class="btn-primary" onclick="location.href='signup.html'">회원가입</button>
   </div>
-  <div id="navUser" style="display:none;align-items:center;gap:12px">
-    <a href="my-page.html" class="nav-username" id="navUsername"></a>
-    <button class="btn-ghost" id="logoutBtn">로그아웃</button>
+  <div class="nav-user" id="navUser">
+    <a href="my-page.html" id="navUsername" style="font-size:14px;color:#333;font-weight:500;text-decoration:none;cursor:pointer"></a>
+    <button class="btn-ghost" onclick="logout()">로그아웃</button>
   </div>
 </nav>
 
-<div class="breadcrumb"><a href="lessons.html">강습 목록</a> &rsaquo; 강습 상세</div>
+<div class="breadcrumb">
+  <a href="lessons.html">강습 목록</a> &rsaquo; 강습 상세
+</div>
 
 <div class="wrap">
-  <div class="lesson-card" id="lessonCard"><div class="loading">강습 정보를 불러오는 중...</div></div>
-  <div class="ad-box"><span class="ad-badge">광고</span><span class="ad-label">Google AdSense</span></div>
+  <div class="lesson-card" id="lessonCard">
+    <div class="loading">강습 정보를 불러오는 중...</div>
+  </div>
+
+  <div class="ad-banner">
+    <div class="ad-box">
+      <span class="ad-badge">광고</span>
+      <span class="ad-label">Google AdSense — 강습 상세</span>
+    </div>
+  </div>
+
   <div class="booking-card">
     <div class="booking-title">예약 현황</div>
     <div id="bookingList"><div class="loading">불러오는 중...</div></div>
   </div>
 </div>
 
+  <!-- 댓글 섹션 -->
+  <div class="comment-section">
+    <div class="comment-title">댓글 <span class="comment-count" id="commentCount">0</span></div>
+    <div id="commentInputArea" style="display:none">
+      <div class="comment-input-box">
+        <div class="c-avatar" id="myAvatar">?</div>
+        <div style="flex:1">
+          <textarea class="comment-textarea" id="commentText" placeholder="강습에 대해 궁금한 점을 물어보세요 :)" maxlength="300"></textarea>
+          <div class="comment-input-footer">
+            <button class="btn-comment-submit" onclick="submitComment()">등록</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="loginPrompt" class="login-prompt">
+      <p>댓글을 작성하려면 로그인이 필요합니다</p>
+      <button class="btn-login-small" onclick="location.href='login.html'">로그인하기</button>
+    </div>
+    <div class="comment-list" id="commentList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="sb.js"></script>
 <script>
-  var sb = getSB();
-  var lessonId = new URLSearchParams(window.location.search).get('id');
-  var currentUser = null;
-  var lessonData = null;
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+  const lessonId = new URLSearchParams(window.location.search).get('id');
+  let currentUser = null;
+  let lessonData = null;
 
   async function checkAuth() {
-    var res = await sb.auth.getUser();
-    currentUser = res.data && res.data.user;
-    if (currentUser) {
-      var profile = await sb.from('profiles').select('username').eq('id', currentUser.id).single();
+    const { data: { user } } = await sb.auth.getUser();
+    currentUser = user;
+    if (user) {
+      const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
-      document.getElementById('navUsername').textContent = ((profile.data && profile.data.username) || '') + '님';
+      document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
+      document.getElementById('myAvatar').textContent = (profile?.username || '?')[0];
+      document.getElementById('commentInputArea').style.display = 'block';
+      document.getElementById('loginPrompt').style.display = 'none';
     }
   }
 
-  document.getElementById('logoutBtn').addEventListener('click', async function() {
-    await sb.auth.signOut(); location.reload();
-  });
+  async function logout() { await sb.auth.signOut(); location.reload(); }
 
   async function loadLesson() {
-    var res = await sb.from('lessons').select('*, profiles(username, license_type, license_level, intro, contact), pools(name, region, address)').eq('id', lessonId).single();
-    if (!res.data) { document.getElementById('lessonCard').innerHTML = '<div class="empty">강습 정보를 찾을 수 없습니다</div>'; return; }
-    lessonData = res.data;
-    var l = lessonData;
-    var username = (l.profiles && l.profiles.username) || '?';
-    var levelClass = 'level-' + (l.level || '입문');
-    document.title = 'FreeBuddy - ' + username + ' 강사 강습';
-    document.getElementById('lessonCard').innerHTML =
-      '<div class="instructor-row"><div class="avatar">' + username[0] + '</div>' +
-      '<div style="flex:1"><div class="instructor-name">' + username + ' 강사</div>' +
-      '<div class="instructor-cert">' + (l.profiles && l.profiles.license_type || '') + ' ' + (l.profiles && l.profiles.license_level || '') + '</div>' +
-      (l.profiles && l.profiles.intro ? '<div class="instructor-intro">' + l.profiles.intro + '</div>' : '') + '</div>' +
-      '<span class="level-badge ' + levelClass + '">' + (l.level || '') + '</span></div>' +
-      '<div class="info-grid">' +
-      '<div class="info-item"><div class="info-label">풀장</div><div class="info-value">📍 ' + (l.pools && l.pools.name || '') + '</div></div>' +
-      '<div class="info-item"><div class="info-label">지역</div><div class="info-value">' + (l.pools && l.pools.region || '') + '</div></div>' +
-      '<div class="info-item"><div class="info-label">날짜</div><div class="info-value">📅 ' + l.date + '</div></div>' +
-      '<div class="info-item"><div class="info-label">시간</div><div class="info-value">⏰ ' + l.time_slot + '</div></div>' +
-      '<div class="info-item"><div class="info-label">수강 인원</div><div class="info-value">👥 최대 ' + l.max_students + '명</div></div>' +
-      '<div class="info-item"><div class="info-label">수준</div><div class="info-value">' + (l.level || '') + '</div></div></div>' +
-      (l.note ? '<div class="lesson-note">📝 ' + l.note + '</div>' : '') +
-      '<div class="price-row"><div class="price">' + (l.price || '가격 협의') + '</div>' +
-      '<button class="btn-book" id="bookBtn">수강 신청</button></div>';
-
-    document.getElementById('bookBtn').addEventListener('click', bookLesson);
+    const { data: lesson } = await sb.from('lessons').select('*, profiles(username, license_type, license_level, intro, contact), pools(name, region, address)').eq('id', lessonId).single();
+    if (!lesson) { document.getElementById('lessonCard').innerHTML = '<div class="empty">강습 정보를 찾을 수 없습니다</div>'; return; }
+    lessonData = lesson;
+    document.title = `FreeBuddy - ${lesson.profiles?.username} 강사 강습`;
+    const levelClass = `level-${lesson.level || '입문'}`;
+    document.getElementById('lessonCard').innerHTML = `
+      <div class="instructor-row">
+        <div class="avatar">${(lesson.profiles?.username || '?')[0]}</div>
+        <div style="flex:1">
+          <div class="instructor-name">${lesson.profiles?.username || ''} 강사</div>
+          <div class="instructor-cert">${lesson.profiles?.license_type || ''} ${lesson.profiles?.license_level || ''}</div>
+          ${lesson.profiles?.intro ? `<div class="instructor-intro">${lesson.profiles.intro}</div>` : ''}
+        </div>
+        <span class="level-badge ${levelClass}">${lesson.level || ''}</span>
+      </div>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">풀장</div><div class="info-value">📍 ${lesson.pools?.name || ''}</div></div>
+        <div class="info-item"><div class="info-label">지역</div><div class="info-value">${lesson.pools?.region || ''}</div></div>
+        <div class="info-item"><div class="info-label">날짜</div><div class="info-value">📅 ${lesson.date}</div></div>
+        <div class="info-item"><div class="info-label">시간</div><div class="info-value">⏰ ${lesson.time_slot}</div></div>
+        <div class="info-item"><div class="info-label">수강 인원</div><div class="info-value">👥 최대 ${lesson.max_students}명</div></div>
+        <div class="info-item"><div class="info-label">수준</div><div class="info-value">${lesson.level || ''}</div></div>
+      </div>
+      ${lesson.note ? `<div class="lesson-note">📝 ${lesson.note}</div>` : ''}
+      <div class="price-row">
+        <div class="price">${lesson.price || '가격 협의'}</div>
+        <button class="btn-book" onclick="bookLesson()">수강 신청</button>
+      </div>
+    `;
     loadBookings();
   }
 
   async function loadBookings() {
-    var res = await sb.from('lesson_bookings').select('*, profiles(username)').eq('lesson_id', lessonId);
-    var list = document.getElementById('bookingList');
-    if (!res.data || !res.data.length) { list.innerHTML = '<div class="empty">아직 예약자가 없습니다</div>'; return; }
-    list.innerHTML = res.data.map(function(b) {
-      var uname = (b.profiles && b.profiles.username) || '?';
-      return '<div class="booking-item"><div class="booking-user"><div class="booking-avatar">' + uname[0] + '</div>' + uname + '</div>' +
-        '<span class="status-badge status-' + b.status + '">' + (b.status === 'pending' ? '신청 중' : '확정') + '</span></div>';
-    }).join('');
+    const { data: bookings } = await sb.from('lesson_bookings').select('*, profiles(username)').eq('lesson_id', lessonId);
+    const list = document.getElementById('bookingList');
+    if (!bookings || bookings.length === 0) { list.innerHTML = '<div class="empty">아직 예약자가 없습니다</div>'; return; }
+    list.innerHTML = bookings.map(b => `
+      <div class="booking-item">
+        <div class="booking-user">
+          <div class="avatar" style="width:28px;height:28px;font-size:11px">${(b.profiles?.username || '?')[0]}</div>
+          ${b.profiles?.username || ''}
+        </div>
+        <span class="booking-status status-${b.status}">${b.status === 'pending' ? '신청 중' : '확정'}</span>
+      </div>
+    `).join('');
   }
 
-  async function bookLesson() {
+  window.bookLesson = async function() {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (lessonData && currentUser.id === lessonData.instructor_id) { alert('본인 강습에는 신청할 수 없습니다'); return; }
-    var res = await sb.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });
-    if (res.error) { alert(res.error.message.includes('duplicate') ? '이미 신청한 강습입니다' : '오류가 발생했습니다'); return; }
+    const { error } = await sb.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });
+    if (error) { alert(error.message.includes('duplicate') ? '이미 신청한 강습입니다' : '오류가 발생했습니다'); return; }
     alert('수강 신청이 완료됐습니다!\n강사님께 연락하여 일정을 확정해주세요.');
-    if (lessonData && lessonData.profiles && lessonData.profiles.contact) window.open(lessonData.profiles.contact, '_blank');
+    if (lessonData?.profiles?.contact) window.open(lessonData.profiles.contact, '_blank');
     loadBookings();
   }
 
   checkAuth();
   loadLesson();
+  loadComments();
+
+  async function loadComments() {
+    var res = await sb.from('lesson_comments')
+      .select('id, lesson_id, user_id, content, created_at')
+      .eq('lesson_id', lessonId)
+      .order('created_at', { ascending: true });
+    var comments = res.data || [];
+    var userIds = [...new Set(comments.map(function(c) { return c.user_id; }))];
+    var profiles = {};
+    if (userIds.length > 0) {
+      var pr = await sb.from('profiles').select('id, username').in('id', userIds);
+      (pr.data || []).forEach(function(p) { profiles[p.id] = p; });
+    }
+    comments.forEach(function(c) { c.profiles = profiles[c.user_id] || null; });
+    document.getElementById('commentCount').textContent = comments.length;
+    var list = document.getElementById('commentList');
+    if (!comments.length) { list.innerHTML = '<div class="empty">아직 댓글이 없습니다. 첫 번째로 질문해보세요!</div>'; return; }
+    list.innerHTML = comments.map(function(c, i) {
+      var username = (c.profiles && c.profiles.username) || '?';
+      var isInstructor = lessonData && c.user_id === lessonData.instructor_id;
+      var isOwner = currentUser && currentUser.id === c.user_id;
+      var diff = Math.floor((Date.now() - new Date(c.created_at)) / 60000);
+      var ago = diff < 60 ? diff + '분 전' : diff < 1440 ? Math.floor(diff/60) + '시간 전' : Math.floor(diff/1440) + '일 전';
+      return (i > 0 ? '<div class="comment-divider"></div>' : '') +
+        '<div class="comment-item"><div class="c-avatar">' + username[0] + '</div>' +
+        '<div class="comment-body"><div class="comment-header">' +
+        '<span class="comment-username">' + username + '</span>' +
+        (isInstructor ? '<span class="comment-instructor-badge">강사</span>' : '') +
+        '<span class="comment-time">' + ago + '</span>' +
+        (isOwner ? '<button class="comment-delete" onclick="deleteComment(' + c.id + ')"><i class="fa fa-times"></i></button>' : '') +
+        '</div><div class="comment-text">' + c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
+/g,'<br>') + '</div></div></div>';
+    }).join('');
+  }
+
+  window.submitComment = async function() {
+    if (!currentUser) { location.href = 'login.html'; return; }
+    var text = document.getElementById('commentText').value.trim();
+    if (!text) { showToast('댓글 내용을 입력해주세요'); return; }
+    var res = await sb.from('lesson_comments').insert({ lesson_id: parseInt(lessonId), user_id: currentUser.id, content: text });
+    if (res.error) { showToast('오류가 발생했습니다'); return; }
+    document.getElementById('commentText').value = '';
+    showToast('댓글이 등록됐습니다');
+    loadComments();
+  };
+
+  window.deleteComment = async function(id) {
+    if (!confirm('댓글을 삭제할까요?')) return;
+    await sb.from('lesson_comments').delete().eq('id', id).eq('user_id', currentUser.id);
+    showToast('삭제됐습니다');
+    loadComments();
+  };
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+})();
 </script>
 </body>
 </html>
