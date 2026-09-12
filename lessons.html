@@ -288,11 +288,18 @@
         '</div>' +
         (l.note ? '<div class="lesson-note">📝 ' + l.note + '</div>' : '') +
         '<div class="lesson-footer">' +
-          '<span class="lesson-price">' + (l.price || '가격 협의') + '</span>' +
+          '<span class="lesson-price">' + formatPrice(l.price) + '</span>' +
           '<button class="btn-detail" onclick="event.stopPropagation();location.href=\'lesson-detail.html?id=' + l.id + '\'">상세보기</button>' +
         '</div>' +
       '</div>';
     }).join('');
+  }
+
+  function formatPrice(val) {
+    if (!val) return '가격 협의';
+    var num = parseInt(val.toString().replace(/[^0-9]/g, ''));
+    if (isNaN(num)) return val;
+    return num.toLocaleString('ko-KR') + '원';
   }
 
   window.goWrite = function() {

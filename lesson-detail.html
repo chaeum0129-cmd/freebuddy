@@ -156,6 +156,13 @@
   var sb = window.supabase.createClient(SB_URL, SB_KEY);
 
   const lessonId = new URLSearchParams(window.location.search).get('id');
+
+  function formatPrice(val) {
+    if (!val) return '가격 협의';
+    var num = parseInt(val.toString().replace(/[^0-9]/g, ''));
+    if (isNaN(num)) return val;
+    return num.toLocaleString('ko-KR') + '원';
+  }
   let currentUser = null;
   let lessonData = null;
 
@@ -201,7 +208,7 @@
       </div>
       ${lesson.note ? `<div class="lesson-note">📝 ${lesson.note}</div>` : ''}
       <div class="price-row">
-        <div class="price">${lesson.price || '가격 협의'}</div>
+        <div class="price">${formatPrice(lesson.price)}</div>
         <button class="btn-book" onclick="bookLesson()">수강 신청</button>
       </div>
     `;
