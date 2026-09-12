@@ -228,11 +228,7 @@
     .lesson-info { font-size: 13px; color: #555; line-height: 1.8; }
     .lesson-price { font-size: 14px; font-weight: 700; color: #1D9E75; margin-top: 8px; }
 
-    /* 스쿠버 전용 빈 상태 */
-    .scuba-coming { text-align: center; padding: 48px 24px; }
-    .scuba-coming .icon { font-size: 40px; margin-bottom: 14px; }
-    .scuba-coming h3 { font-size: 16px; font-weight: 700; color: #333; margin-bottom: 8px; }
-    .scuba-coming p { font-size: 13px; color: #999; line-height: 1.6; }
+
 
     .divider { max-width: 960px; margin: 0 auto; height: 1px; background: #e9ecef; }
     footer { background: #fff; border-top: 1px solid #e9ecef; padding: 24px; text-align: center; margin-top: 48px; }
@@ -490,20 +486,8 @@
     });
 
     /* 콘텐츠 갱신 */
-    if (isScuba) {
-      showScubaPlaceholder();
-    } else {
-      if (sb) { loadPools(); loadBuddyPosts(); loadLessons(); }
-    }
+    if (sb) { loadPools(); loadBuddyPosts(); loadLessons(); }
   };
-
-  /* 스쿠버 준비 중 안내 */
-  function showScubaPlaceholder() {
-    var ph = '<div class="scuba-coming"><div class="icon">🐠</div><h3>스쿠버다이빙 서비스 준비 중</h3><p>곧 스쿠버다이빙 버디 매칭 서비스도 오픈됩니다.<br>지금은 프리다이빙 버디를 먼저 만나보세요!</p></div>';
-    document.getElementById('poolGrid').innerHTML = ph;
-    document.getElementById('buddyList').innerHTML = ph;
-    document.getElementById('lessonList').innerHTML = ph;
-  }
 
   /* 검색 종목 셀렉트 → 탭 동기화 */
   document.getElementById('sportSelect').addEventListener('change', function() {
@@ -518,10 +502,6 @@
     var params = [];
     if (region) params.push('region=' + encodeURIComponent(region));
     if (date)   params.push('date='   + encodeURIComponent(date));
-    if (sport === 'scuba') {
-      alert('스쿠버다이빙 서비스는 준비 중입니다.');
-      return;
-    }
     location.href = 'pools.html' + (params.length ? '?' + params.join('&') : '');
   });
 
