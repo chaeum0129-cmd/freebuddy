@@ -221,7 +221,7 @@
   var sb;
   var currentUser    = null;
   var currentProfile = null;
-  var postId         = new URLSearchParams(window.location.search).get('id');
+  var postId         = parseInt(new URLSearchParams(window.location.search).get('id'), 10);
   var postData       = null;
 
   function initSB() {
