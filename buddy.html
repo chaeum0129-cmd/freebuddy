@@ -67,7 +67,7 @@
     .filter-bar {
       background: #fff;
       border-bottom: 1px solid #e9ecef;
-      padding: 12px 24px;
+      padding: 10px 24px;
       position: sticky;
       top: 56px;
       z-index: 90;
@@ -78,38 +78,28 @@
       display: flex;
       gap: 8px;
       align-items: center;
-      flex-wrap: wrap;
     }
-    .filter-group {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .filter-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: #bbb;
-      white-space: nowrap;
-      padding-right: 2px;
-    }
-    .filter-chip {
-      padding: 5px 13px;
-      border: 1px solid #e0e3e7;
+    .filter-select {
+      padding: 7px 12px;
+      border: 1.5px solid #e0e3e7;
       border-radius: 20px;
       background: #fff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 500;
-      color: #666;
+      color: #555;
       cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
     }
-    .filter-chip:hover { border-color: #1D9E75; color: #1D9E75; }
-    .filter-chip.active { border-color: #1D9E75; background: #e8f8f2; color: #0F6E56; font-weight: 700; }
-    .filter-divider { width: 1px; height: 20px; background: #e9ecef; margin: 0 4px; flex-shrink: 0; }
-
-    /* 필터 초기화 */
+    .filter-select:focus, .filter-select.active { border-color: #1D9E75; color: #0F6E56; }
+    .filter-select.active { background-color: #e8f8f2; }
     .filter-reset {
       margin-left: auto;
       font-size: 12px;
@@ -121,7 +111,7 @@
       white-space: nowrap;
       border: none;
       background: none;
-      padding: 4px 0;
+      padding: 4px 8px;
     }
     .filter-reset:hover { color: #888; }
     .filter-reset.visible { color: #1D9E75; }
@@ -306,47 +296,41 @@
 <!-- 필터바 -->
 <div class="filter-bar">
   <div class="filter-inner">
+    <!-- 종목 드롭다운 -->
+    <select class="filter-select" id="sel-sport" onchange="onSelectFilter('sport', this)">
+      <option value="">🤿 종목 전체</option>
+      <option value="프리다이빙">🤿 프리다이빙</option>
+      <option value="스쿠버다이빙">🐠 스쿠버다이빙</option>
+    </select>
 
-    <!-- 종목 -->
-    <span class="filter-label">종목</span>
-    <div class="filter-group" id="fg-sport">
-      <button class="filter-chip active" data-group="sport" data-val="">전체</button>
-      <button class="filter-chip" data-group="sport" data-val="프리다이빙">🤿 프리</button>
-      <button class="filter-chip" data-group="sport" data-val="스쿠버다이빙">🐠 스쿠버</button>
-    </div>
+    <!-- 지역 드롭다운 -->
+    <select class="filter-select" id="sel-region" onchange="onSelectFilter('region', this)">
+      <option value="">📍 지역 전체</option>
+      <option value="서울">서울</option>
+      <option value="경기">경기</option>
+      <option value="인천">인천</option>
+      <option value="부산">부산</option>
+      <option value="제주">제주</option>
+      <option value="대구">대구</option>
+      <option value="기타">기타</option>
+    </select>
 
-    <div class="filter-divider"></div>
-
-    <!-- 지역 -->
-    <span class="filter-label">지역</span>
-    <div class="filter-group" id="fg-region">
-      <button class="filter-chip active" data-group="region" data-val="">전체</button>
-      <button class="filter-chip" data-group="region" data-val="서울">서울</button>
-      <button class="filter-chip" data-group="region" data-val="경기">경기</button>
-      <button class="filter-chip" data-group="region" data-val="인천">인천</button>
-      <button class="filter-chip" data-group="region" data-val="부산">부산</button>
-      <button class="filter-chip" data-group="region" data-val="제주">제주</button>
-      <button class="filter-chip" data-group="region" data-val="대구">대구</button>
-      <button class="filter-chip" data-group="region" data-val="기타">기타</button>
-    </div>
-
-    <div class="filter-divider"></div>
-
-    <!-- 레벨 -->
-    <span class="filter-label">레벨</span>
-    <div class="filter-group" id="fg-level">
-      <button class="filter-chip active" data-group="level" data-val="">전체</button>
-      <!-- 프리다이빙 레벨 -->
-      <button class="filter-chip" data-group="level" data-val="입문">입문</button>
-      <button class="filter-chip" data-group="level" data-val="레벨2">레벨2</button>
-      <button class="filter-chip" data-group="level" data-val="레벨3">레벨3</button>
-      <button class="filter-chip" data-group="level" data-val="레벨4">레벨4</button>
-      <!-- 스쿠버 레벨 -->
-      <button class="filter-chip" data-group="level" data-val="오픈워터">오픈워터</button>
-      <button class="filter-chip" data-group="level" data-val="어드밴스">어드밴스</button>
-      <button class="filter-chip" data-group="level" data-val="레스큐">레스큐</button>
-      <button class="filter-chip" data-group="level" data-val="다이브마스터">다이브마스터</button>
-    </div>
+    <!-- 레벨 드롭다운 -->
+    <select class="filter-select" id="sel-level" onchange="onSelectFilter('level', this)">
+      <option value="">🎓 레벨 전체</option>
+      <optgroup label="── 프리다이빙 ──">
+        <option value="입문">입문</option>
+        <option value="레벨2">레벨2</option>
+        <option value="레벨3">레벨3</option>
+        <option value="레벨4">레벨4</option>
+      </optgroup>
+      <optgroup label="── 스쿠버 ──">
+        <option value="오픈워터">오픈워터</option>
+        <option value="어드밴스">어드밴스</option>
+        <option value="레스큐">레스큐</option>
+        <option value="다이브마스터">다이브마스터</option>
+      </optgroup>
+    </select>
 
     <button class="filter-reset" id="filterResetBtn" onclick="resetFilters()">
       <i class="fa fa-rotate-left"></i> 초기화
@@ -447,24 +431,14 @@
   };
 
   /* ────────────────────────────────
-     필터 칩 클릭
+     셀렉트 필터 변경
   ──────────────────────────────── */
-  document.querySelectorAll('.filter-chip').forEach(function(chip) {
-    chip.addEventListener('click', function() {
-      var group = this.dataset.group;
-      var val   = this.dataset.val;
-
-      // 같은 그룹의 active 해제 → 클릭된 것만 active
-      document.querySelectorAll('.filter-chip[data-group="' + group + '"]').forEach(function(c) {
-        c.classList.remove('active');
-      });
-      this.classList.add('active');
-
-      filters[group] = val;
-      updateResetBtn();
-      render();
-    });
-  });
+  window.onSelectFilter = function(group, el) {
+    filters[group] = el.value;
+    el.classList.toggle('active', el.value !== '');
+    updateResetBtn();
+    render();
+  };
 
   function updateResetBtn() {
     var dirty = filters.sport !== '' || filters.region !== '' || filters.level !== '';
@@ -474,9 +448,10 @@
 
   window.resetFilters = function() {
     filters.sport = ''; filters.region = ''; filters.level = '';
-    document.querySelectorAll('.filter-chip').forEach(function(c) {
-      c.classList.toggle('active', c.dataset.val === '');
-    });
+    document.getElementById('sel-sport').value  = '';
+    document.getElementById('sel-region').value = '';
+    document.getElementById('sel-level').value  = '';
+    document.querySelectorAll('.filter-select').forEach(function(s) { s.classList.remove('active'); });
     updateResetBtn();
     render();
   };
