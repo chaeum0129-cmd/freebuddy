@@ -565,6 +565,7 @@
           '</div>' +
           '<div class="buddy-actions">' +
             '<span class="time-text">' + timeAgo(p.created_at) + '</span>' +
+            '<button class="btn-detail" onclick="event.stopPropagation();location.href=\'buddy-detail.html?id=' + p.id + '\'">상세보기</button>' +
             '<button class="btn-contact" onclick="contactBuddy(\'' + (p.contact || '') + '\',\'' + username + '\',event)">연락하기</button>' +
           '</div>' +
         '</div>'
