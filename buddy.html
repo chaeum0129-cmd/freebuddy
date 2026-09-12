@@ -259,6 +259,17 @@
     .buddy-card.scuba:hover { box-shadow: 0 4px 16px rgba(21,101,192,0.12); }
     .buddy-card.tour:hover  { box-shadow: 0 4px 16px rgba(255,138,0,0.12); }
 
+    /* 2열 분할 레이아웃 */
+    .split-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .split-col { }
+    .split-title {
+      font-size: 15px; font-weight: 700; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+      padding-bottom: 10px; border-bottom: 2px solid #e9ecef;
+    }
+    .split-title.free  { border-color: #1D9E75; color: #0F6E56; }
+    .split-title.scuba { border-color: #1565C0; color: #1565C0; }
+    @media (max-width: 640px) { .split-wrap { grid-template-columns: 1fr; } }
     .loading { text-align: center; padding: 60px; color: #999; font-size: 14px; }
     .empty { text-align: center; padding: 60px; color: #bbb; font-size: 14px; }
     .empty-icon { font-size: 36px; margin-bottom: 12px; }
@@ -371,8 +382,15 @@
 
 <!-- 리스트 -->
 <div class="section">
-  <div class="buddy-list" id="buddyList">
-    <div class="loading">버디 모집 현황을 불러오는 중...</div>
+  <div class="split-wrap" id="buddyList">
+    <div class="split-col">
+      <div class="split-title free">🤿 프리다이빙</div>
+      <div class="buddy-list" id="freeList"><div class="loading">불러오는 중...</div></div>
+    </div>
+    <div class="split-col">
+      <div class="split-title scuba">🐠 스쿠버다이빙</div>
+      <div class="buddy-list" id="scubaList"><div class="loading">불러오는 중...</div></div>
+    </div>
   </div>
 </div>
 
@@ -475,8 +493,6 @@
      렌더링 (필터 적용)
   ──────────────────────────────── */
   function render() {
-    var list = document.getElementById('buddyList');
-
     var filtered = allPosts.filter(function(p) {
       // 메인 탭
       var ptype = p.post_type || 'pool';
@@ -509,20 +525,45 @@
       return true;
     });
 
-    // 결과 수
+    // 잠수풀 번개: 프리/스쿠버 분리, 투어: 통합
+    var isTourTab = filters.mainTab === 'tour';
     document.getElementById('resultCount').innerHTML =
       '총 <strong>' + filtered.length + '</strong>개의 모집글';
 
-    if (filtered.length === 0) {
-      list.innerHTML =
-        '<div class="empty">' +
-        '<div class="empty-icon">' + (filters.mainTab === 'tour' ? '🌊' : '🏊') + '</div>' +
-        '<div>조건에 맞는 모집글이 없습니다</div>' +
-        '</div>';
+    if (isTourTab) {
+      // 투어 탭은 기존 단일 열
+      var tourList = document.getElementById('freeList');
+      var scubaListEl = document.getElementById('scubaList');
+      document.querySelector('.split-title.free').textContent = '🌊 해양·해외 투어';
+      document.querySelector('.split-title.scuba').style.display = 'none';
+      if (scubaListEl) scubaListEl.parentElement.style.display = 'none';
+      if (filtered.length === 0) {
+        tourList.innerHTML = '<div class="empty"><div class="empty-icon">🌊</div><div>투어 모집글이 없습니다</div></div>';
+      } else {
+        tourList.innerHTML = filtered.map(renderCard).join('');
+      }
       return;
     }
 
-    list.innerHTML = filtered.map(function(p) {
+    // 잠수풀 번개 탭 — 프리/스쿠버 2열
+    document.querySelector('.split-title.free').textContent = '🤿 프리다이빙';
+    document.querySelector('.split-title.scuba').style.display = '';
+    var scubaColEl = document.querySelector('.split-title.scuba').parentElement;
+    scubaColEl.style.display = '';
+
+    var freePosts  = filtered.filter(function(p) { return !(p.sport || '').includes('스쿠버'); });
+    var scubaPosts = filtered.filter(function(p) { return  (p.sport || '').includes('스쿠버'); });
+
+    var freeList  = document.getElementById('freeList');
+    var scubaList = document.getElementById('scubaList');
+
+    freeList.innerHTML  = freePosts.length  ? freePosts.map(renderCard).join('')
+      : '<div class="empty" style="padding:30px"><div>프리다이빙 모집글이 없습니다</div></div>';
+    scubaList.innerHTML = scubaPosts.length ? scubaPosts.map(renderCard).join('')
+      : '<div class="empty" style="padding:30px"><div>스쿠버 모집글이 없습니다</div></div>';
+  }
+
+  function renderCard(p) {
       var username  = (p.profiles && p.profiles.username) || '?';
       var poolName  = (p.pools   && p.pools.name)        || (p.location || '');
       var region    = (p.pools   && p.pools.region)      || (p.region   || '');
@@ -565,7 +606,6 @@
           '</div>' +
         '</div>'
       );
-    }).join('');
   }
 
   /* ────────────────────────────────
