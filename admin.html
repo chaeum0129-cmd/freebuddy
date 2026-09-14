@@ -305,7 +305,7 @@
       var regionOpts = REGIONS.map(function(r) { return '<option value="' + r + '"' + (p.region===r?' selected':'') + '>' + r + '</option>'; }).join('');
       return '<div class="pool-item" id="pool_' + p.id + '">' +
         '<div class="pool-item-top">' +
-          (p.image_url ? '<img src="' + p.image_url + '" style="width:80px;height:60px;object-fit:cover;border-radius:8px;margin-right:12px;flex-shrink:0" onerror="this.style.display=&quot;none&quot;">' : '<div style="width:80px;height:60px;background:#f1f3f5;border-radius:8px;margin-right:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px">🏊</div>') +
+          (p.image_url ? '<img src="' + p.image_url + '" style="width:80px;height:60px;object-fit:cover;border-radius:8px;margin-right:12px;flex-shrink:0">' : '<div style="width:80px;height:60px;background:#f1f3f5;border-radius:8px;margin-right:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px">🏊</div>') +
           '<div style="flex:1"><div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth?' · '+p.depth:'') + '</div>' +
           '<div class="pool-item-hours">' + (p.address?'📍 '+p.address+'<br>':'') + (p.weekday_hours?'평일: '+p.weekday_hours+'<br>':'') + (p.weekend_hours?'주말: '+p.weekend_hours:'') + '</div></div>' +
           '<div class="pool-item-btns">' +
@@ -318,7 +318,7 @@
           '<div><label style="font-size:12px;margin-bottom:4px;display:block">지역</label><select id="eRegion_' + p.id + '">' + regionOpts + '</select></div></div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">주소</label><input id="eAddress_' + p.id + '" value="' + (p.address||'') + '"></div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">수심</label><input id="eDepth_' + p.id + '" value="' + (p.depth||'') + '"></div>' +
-          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">이미지 URL</label><input type="url" id="eImageUrl_' + p.id + '" value="' + (p.image_url||'') + '" placeholder="https://..."><div style="font-size:11px;color:#aaa;margin-top:4px">풀장 건물/시설 사진 URL</div>' + (p.image_url ? '<img src="' + p.image_url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px" onerror="this.style.display='none'">' : '') + '</div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">이미지 URL</label><input type="url" id="eImageUrl_' + p.id + '" value="' + (p.image_url||'') + '" placeholder="https://..."><div style="font-size:11px;color:#aaa;margin-top:4px">풀장 건물/시설 사진 URL</div>' + (p.image_url ? '<img src="' + p.image_url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px">' : '') + '</div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">평일 운영시간</label><textarea id="eWeekday_' + p.id + '">' + (p.weekday_hours||'') + '</textarea></div>' +
           '<div style="margin-bottom:12px"><label style="font-size:12px;margin-bottom:4px;display:block">주말 운영시간</label><textarea id="eWeekend_' + p.id + '">' + (p.weekend_hours||'') + '</textarea></div>' +
           '<button class="btn-save" data-id="' + p.id + '">저장</button>' +
