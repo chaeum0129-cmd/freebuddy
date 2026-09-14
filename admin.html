@@ -141,6 +141,11 @@
       <input type="text" id="poolDepth" placeholder="예: 25m / 33m">
     </div>
     <div class="form-group">
+      <label>풀장 이미지 URL</label>
+      <input type="url" id="poolImageUrl" placeholder="예: https://example.com/pool.jpg">
+      <div class="hint">풀장 건물/시설 사진 URL을 입력하세요 (구글 이미지 주소 또는 직접 업로드한 이미지 URL)</div>
+    </div>
+    <div class="form-group">
       <label>평일 운영시간 및 타임</label>
       <textarea id="weekdayHours" placeholder="예: 1타임 09:00~11:00 / 2타임 11:00~13:00 / 3타임 14:00~16:00"></textarea>
       <div class="hint">타임이 있는 경우 타임별로, 자유이용은 운영시간만 입력</div>
@@ -282,10 +287,11 @@
     var weekday = document.getElementById('weekdayHours').value.trim();
     var weekend = document.getElementById('weekendHours').value.trim();
     if (!name) { alert('풀장 이름을 입력해주세요'); return; }
-    var res = await sb.from('pools').insert({ name: name, region: region, address: address, depth: depth, weekday_hours: weekday, weekend_hours: weekend });
+    var imageUrl = document.getElementById('poolImageUrl').value.trim();
+    var res = await sb.from('pools').insert({ name: name, region: region, address: address, depth: depth, weekday_hours: weekday, weekend_hours: weekend, image_url: imageUrl || null });
     if (res.error) { alert('등록 오류: ' + res.error.message); return; }
     alert('풀장이 등록됐습니다!');
-    ['poolName','poolAddress','poolDepth','weekdayHours','weekendHours'].forEach(function(id) { document.getElementById(id).value = ''; });
+    ['poolName','poolAddress','poolDepth','weekdayHours','weekendHours','poolImageUrl'].forEach(function(id) { document.getElementById(id).value = ''; });
     loadPools();
   });
 
@@ -298,7 +304,8 @@
       var regionOpts = REGIONS.map(function(r) { return '<option value="' + r + '"' + (p.region===r?' selected':'') + '>' + r + '</option>'; }).join('');
       return '<div class="pool-item" id="pool_' + p.id + '">' +
         '<div class="pool-item-top">' +
-          '<div><div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth?' · '+p.depth:'') + '</div>' +
+          (p.image_url ? '<img src="' + p.image_url + '" style="width:80px;height:60px;object-fit:cover;border-radius:8px;margin-right:12px;flex-shrink:0" onerror="this.style.display='none'">' : '<div style="width:80px;height:60px;background:#f1f3f5;border-radius:8px;margin-right:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px">🏊</div>') +
+          '<div style="flex:1"><div class="pool-item-info">' + p.name + ' · ' + p.region + (p.depth?' · '+p.depth:'') + '</div>' +
           '<div class="pool-item-hours">' + (p.address?'📍 '+p.address+'<br>':'') + (p.weekday_hours?'평일: '+p.weekday_hours+'<br>':'') + (p.weekend_hours?'주말: '+p.weekend_hours:'') + '</div></div>' +
           '<div class="pool-item-btns">' +
             '<button class="btn-edit" data-id="' + p.id + '">수정</button>' +
@@ -310,6 +317,7 @@
           '<div><label style="font-size:12px;margin-bottom:4px;display:block">지역</label><select id="eRegion_' + p.id + '">' + regionOpts + '</select></div></div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">주소</label><input id="eAddress_' + p.id + '" value="' + (p.address||'') + '"></div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">수심</label><input id="eDepth_' + p.id + '" value="' + (p.depth||'') + '"></div>' +
+          '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">이미지 URL</label><input type="url" id="eImageUrl_' + p.id + '" value="' + (p.image_url||'') + '" placeholder="https://..."><div style="font-size:11px;color:#aaa;margin-top:4px">풀장 건물/시설 사진 URL</div>' + (p.image_url ? '<img src="' + p.image_url + '" style="width:100%;max-height:120px;object-fit:cover;border-radius:8px;margin-top:8px" onerror="this.style.display='none'">' : '') + '</div>' +
           '<div style="margin-bottom:10px"><label style="font-size:12px;margin-bottom:4px;display:block">평일 운영시간</label><textarea id="eWeekday_' + p.id + '">' + (p.weekday_hours||'') + '</textarea></div>' +
           '<div style="margin-bottom:12px"><label style="font-size:12px;margin-bottom:4px;display:block">주말 운영시간</label><textarea id="eWeekend_' + p.id + '">' + (p.weekend_hours||'') + '</textarea></div>' +
           '<button class="btn-save" data-id="' + p.id + '">저장</button>' +
@@ -339,7 +347,8 @@
           address: document.getElementById('eAddress_'+id).value.trim(),
           depth: document.getElementById('eDepth_'+id).value.trim(),
           weekday_hours: document.getElementById('eWeekday_'+id).value.trim(),
-          weekend_hours: document.getElementById('eWeekend_'+id).value.trim()
+          weekend_hours: document.getElementById('eWeekend_'+id).value.trim(),
+          image_url: document.getElementById('eImageUrl_'+id).value.trim() || null
         }).eq('id', id);
         if (res.error) { alert('수정 오류: ' + res.error.message); return; }
         alert('수정됐습니다!');
