@@ -240,6 +240,13 @@
     `).join('');
   }
 
+  window.toggleLicenseOther = function() {
+    var sel = document.getElementById('editLicenseType');
+    var other = document.getElementById('editLicenseOther');
+    other.style.display = sel.value === '직접입력' ? 'block' : 'none';
+    if (sel.value !== '직접입력') other.value = '';
+  };
+
   window.toggleEditForm = function() {
     var form = document.getElementById('editForm');
     form.style.display = form.style.display === 'none' ? 'block' : 'none';
@@ -253,7 +260,11 @@
     var res = await sb.from('profiles').update({
       username: username,
       region: document.getElementById('editRegion').value || null,
-      license_type: document.getElementById('editLicenseType').value || null,
+      license_type: (function() {
+        var t = document.getElementById('editLicenseType').value;
+        if (t === '직접입력') return document.getElementById('editLicenseOther').value.trim() || null;
+        return t || null;
+      })(),
       license_level: document.getElementById('editLicenseLevel').value || null,
       intro: document.getElementById('editIntro').value.trim() || null
     }).eq('id', currentUser.id);
