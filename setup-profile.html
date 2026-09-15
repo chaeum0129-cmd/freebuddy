@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 프로필 설정</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px; display: flex; align-items: center; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .wrap { max-width: 480px; margin: 48px auto; padding: 0 24px 60px; }
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 36px; }
+
+    .welcome-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #e8f8f2; border: 1px solid #9FE1CB;
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 12px; font-weight: 600; color: #0F6E56;
+      margin-bottom: 16px;
+    }
+    h2 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 8px; }
+    .sub { font-size: 14px; color: #888; margin-bottom: 28px; line-height: 1.6; }
+
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    label .req { color: #1D9E75; margin-left: 2px; }
+    input, select { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e3e7; border-radius: 10px; font-size: 14px; color: #222; font-family: inherit; outline: none; transition: border-color 0.15s; }
+    input:focus, select:focus { border-color: #1D9E75; }
+    .field-hint { font-size: 11px; color: #bbb; margin-top: 5px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* 칩 선택 */
+    .chip-group { display: flex; gap: 7px; flex-wrap: wrap; }
+    .chip { padding: 7px 16px; border: 1.5px solid #e0e3e7; border-radius: 20px; background: #fff; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.15s; }
+    .chip:hover { border-color: #1D9E75; color: #1D9E75; }
+    .chip.active { border-color: #1D9E75; background: #e8f8f2; color: #0F6E56; font-weight: 700; }
+
+    .btn-submit { width: 100%; padding: 15px; background: #1D9E75; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit:hover { background: #178a65; }
+    .btn-submit:disabled { background: #ccc; cursor: default; }
+
+    .skip-link { text-align: center; margin-top: 14px; font-size: 13px; color: #bbb; cursor: pointer; }
+    .skip-link:hover { color: #888; }
+
+    .error { color: #e53935; font-size: 13px; margin-top: 8px; display: none; }
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+</nav>
+
+<div class="wrap">
+  <div class="card">
+    <div class="welcome-badge">🎉 Google 로그인 성공!</div>
+    <h2>프로필 설정</h2>
+    <p class="sub">FreeBuddy에서 사용할 정보를 입력해주세요.<br>나중에 마이페이지에서 수정할 수 있어요.</p>
+
+    <!-- 닉네임 -->
+    <div class="form-group">
+      <label>닉네임 <span class="req">*</span></label>
+      <input type="text" id="username" placeholder="사이트에서 사용할 별명" maxlength="20">
+      <div class="field-hint">한글/영문/숫자, 2~20자</div>
+      <div class="error" id="usernameErr">닉네임을 입력해주세요</div>
+    </div>
+
+    <!-- 종목 -->
+    <div class="form-group">
+      <label>주 종목 <span class="req">*</span></label>
+      <div class="chip-group" id="sportChips">
+        <button class="chip active" data-val="프리다이빙" onclick="setSport(this)">🤿 프리다이빙</button>
+        <button class="chip" data-val="스쿠버다이빙" onclick="setSport(this)">🐠 스쿠버다이빙</button>
+        <button class="chip" data-val="둘다" onclick="setSport(this)">🌊 둘 다</button>
+      </div>
+    </div>
+
+    <!-- 자격증 -->
+    <div class="form-group">
+      <div class="field-row">
+        <div>
+          <label>자격증 종류</label>
+          <select id="licenseType" onchange="updateLevelOptions()">
+            <option value="">선택 안함</option>
+            <option value="AIDA">AIDA</option>
+            <option value="SSI">SSI</option>
+            <option value="PADI">PADI</option>
+            <option value="CMAS">CMAS</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div>
+          <label>레벨</label>
+          <select id="licenseLevel">
+            <option value="">선택 안함</option>
+            <option value="입문">입문</option>
+            <option value="레벨2">레벨2</option>
+            <option value="레벨3">레벨3</option>
+            <option value="레벨4">레벨4</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 활동 지역 -->
+    <div class="form-group">
+      <label>주 활동 지역</label>
+      <select id="region">
+        <option value="">선택 안함</option>
+        <option value="서울">서울</option>
+        <option value="경기">경기</option>
+        <option value="인천">인천</option>
+        <option value="강원">강원</option>
+        <option value="충청">충청</option>
+        <option value="대전">대전</option>
+        <option value="세종">세종</option>
+        <option value="전라">전라</option>
+        <option value="광주">광주</option>
+        <option value="경상">경상</option>
+        <option value="부산">부산</option>
+        <option value="대구">대구</option>
+        <option value="울산">울산</option>
+        <option value="제주">제주</option>
+      </select>
+    </div>
+
+    <div class="error" id="generalErr"></div>
+    <button type="button" class="btn-submit" id="saveBtn" onclick="saveProfile()">
+      프로필 저장하고 시작하기 🏊
+    </button>
+    <div class="skip-link" onclick="skipProfile()">나중에 설정하기</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var currentUser = null;
+  var currentSport = '프리다이빙';
+
+  /* 로그인 확인 */
+  async function init() {
+    var res = await sb.auth.getUser();
+    if (!res.data || !res.data.user) {
+      location.href = 'login.html';
+      return;
+    }
+    currentUser = res.data.user;
+
+    /* 이미 프로필 있으면 메인으로 */
+    var pr = await sb.from('profiles').select('id, username').eq('id', currentUser.id).single();
+    if (pr.data && pr.data.username) {
+      location.href = 'index.html';
+      return;
+    }
+  }
+
+  window.setSport = function(btn) {
+    document.querySelectorAll('#sportChips .chip').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    currentSport = btn.dataset.val;
+
+    /* 스쿠버 레벨 옵션 변경 */
+    updateLevelOptions();
+  };
+
+  window.updateLevelOptions = function() {
+    var licType = document.getElementById('licenseType').value;
+    var levelSel = document.getElementById('licenseLevel');
+    var isScuba = currentSport === '스쿠버다이빙' || licType === 'PADI';
+    levelSel.innerHTML = '<option value="">선택 안함</option>';
+    if (isScuba) {
+      ['오픈워터','어드밴스','레스큐','다이브마스터'].forEach(function(l) {
+        levelSel.innerHTML += '<option value="' + l + '">' + l + '</option>';
+      });
+    } else {
+      ['입문','레벨2','레벨3','레벨4'].forEach(function(l) {
+        levelSel.innerHTML += '<option value="' + l + '">' + l + '</option>';
+      });
+    }
+  };
+
+  window.saveProfile = async function() {
+    var username = document.getElementById('username').value.trim();
+    if (!username) {
+      document.getElementById('usernameErr').style.display = 'block';
+      return;
+    }
+    document.getElementById('usernameErr').style.display = 'none';
+
+    var btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = '저장 중...';
+
+    var res = await sb.from('profiles').upsert({
+      id: currentUser.id,
+      username: username,
+      sport: currentSport,
+      license_type: document.getElementById('licenseType').value || null,
+      license_level: document.getElementById('licenseLevel').value || null,
+      region: document.getElementById('region').value || null,
+      user_type: 'member'
+    });
+
+    if (res.error) {
+      if (res.error.message.includes('duplicate') || res.error.code === '23505') {
+        document.getElementById('generalErr').textContent = '이미 사용 중인 닉네임입니다.';
+        document.getElementById('generalErr').style.display = 'block';
+      } else {
+        document.getElementById('generalErr').textContent = '오류: ' + res.error.message;
+        document.getElementById('generalErr').style.display = 'block';
+      }
+      btn.disabled = false;
+      btn.textContent = '프로필 저장하고 시작하기 🏊';
+      return;
+    }
+
+    showToast('✅ 프로필이 저장됐습니다!');
+    setTimeout(function() { location.href = 'index.html'; }, 1000);
+  };
+
+  window.skipProfile = async function() {
+    /* 닉네임 없이 임시 저장 */
+    var email = currentUser.email || '';
+    var tempName = email.split('@')[0];
+    await sb.from('profiles').upsert({
+      id: currentUser.id,
+      username: tempName,
+      user_type: 'member'
+    });
+    location.href = 'index.html';
+  };
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
