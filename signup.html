@@ -36,6 +36,7 @@
     .notice { background: #e8f8f2; border: 1px solid #9FE1CB; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #0F6E56; margin-bottom: 16px; display: none; }
     #licenseOtherGroup { display: none; margin-top: 8px; }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <nav>
@@ -180,11 +181,7 @@
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
 
   function initSB() {
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      sb = window.supabase.createClient(SB_URL, SB_KEY);
-    } else {
-      setTimeout(initSB, 100);
-    }
+    sb = window.supabase.createClient(SB_URL, SB_KEY);
   }
 
   function setType(type) {
@@ -233,7 +230,8 @@
     if (!valid) return;
 
     var btn = document.getElementById('signupBtn');
-    btn.textContent = '처리 중...';
+    btn.textContent = '가입 처리 중...';
+    btn.style.background = '#888';
     btn.disabled = true;
 
     try {
@@ -306,6 +304,5 @@
   initSB();
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
