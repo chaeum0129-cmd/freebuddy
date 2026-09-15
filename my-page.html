@@ -152,7 +152,7 @@
             <label>자격증 종류</label>
             <select id="editLicenseType">
               <option value="">선택 안함</option>
-              ${['AIDA','SSI','PADI','CMAS','기타'].map(l => `<option value="${l}" ${profile.license_type===l?'selected':''}>${l}</option>`).join('')}
+              ${['자격증없음','AIDA','SSI','PADI','CMAS','직접입력'].map(l => `<option value="${l}" ${profile.license_type===l?'selected':''}>${l==='자격증없음'?'자격증 없음':l}</option>`).join('')}
             </select>
           </div>
           <div class="edit-field">
