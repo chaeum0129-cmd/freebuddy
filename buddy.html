@@ -579,6 +579,8 @@
       var cardClass  = isTour ? ' tour' : (isScuba ? ' scuba' : ' free');
       var avatarClass = isScuba ? ' scuba' : '';
 
+      var isClosed = p.status === 'closed';
+      if (isClosed) cardClass += ' closed';
       return (
         '<div class="buddy-card' + cardClass + '">' +
           (p.profiles && p.profiles.avatar_url ? '<div class="avatar' + avatarClass + '"><img src="' + p.profiles.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>' : '<div class="avatar' + avatarClass + '">' + username[0] + '</div>') +
@@ -588,6 +590,7 @@
               '<span class="buddy-region">' + region + '</span>' +
             '</div>' +
             '<div class="buddy-tags">' +
+              (isClosed ? '<span class="tag tag-closed">🔒 마감</span>' : '') +
               '<span class="tag ' + sportClass + '">' + sportLabel + '</span>' +
               (licType ? '<span class="tag tag-level">' + licType + '</span>' : '') +
               (licLevel ? '<span class="tag tag-level">' + licLevel + '</span>' : '') +

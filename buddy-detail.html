@@ -74,8 +74,17 @@
     /* 삭제 버튼 (방장만) */
     .btn-delete { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #fff; border: 1px solid #ffd0d0; border-radius: 10px; font-size: 13px; color: #e53e3e; cursor: pointer; width: 100%; }
     .btn-delete:hover { background: #fff5f5; }
-    .owner-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .owner-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
     .btn-edit { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #fff; border: 1px solid #1D9E75; border-radius: 10px; font-size: 13px; color: #1D9E75; cursor: pointer; }
+    .btn-edit:hover { background: #e8f8f2; }
+    .status-badge-open { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; background: #e8f8f2; color: #0F6E56; padding: 4px 12px; border-radius: 20px; }
+    .status-badge-closed { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; background: #f1f3f5; color: #aaa; padding: 4px 12px; border-radius: 20px; }
+    .btn-close-post { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #fff; border: 1px solid #FF8A00; border-radius: 10px; font-size: 13px; color: #FF8A00; cursor: pointer; width: 100%; }
+    .btn-close-post:hover { background: #fff8f0; }
+    .btn-reopen-post { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; background: #fff; border: 1px solid #1D9E75; border-radius: 10px; font-size: 13px; color: #1D9E75; cursor: pointer; width: 100%; }
+    .btn-reopen-post:hover { background: #e8f8f2; }
+    .closed-overlay { background: #f8f9fa; border-radius: 10px; padding: 16px; text-align: center; margin-bottom: 12px; }
+    .closed-overlay p { font-size: 14px; color: #aaa; }
     .btn-edit:hover { background: #e8f8f2; }
     /* 수정 폼 */
     .edit-post-form { background: #f8f9fa; border-radius: 12px; padding: 18px; margin-top: 14px; display: none; }
@@ -302,7 +311,12 @@
         '<span class="time-ago" style="margin-left:8px">' + timeAgo(p.created_at) + '</span>' +
       '</div>' +
 
-      '<div class="post-pool">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+        '<div class="post-pool" style="margin-bottom:0">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</div>' +
+        (p.status === 'closed'
+          ? '<span class="status-badge-closed">🔒 모집마감</span>'
+          : '<span class="status-badge-open">🟢 모집중</span>') +
+      '</div>' +
       (region ? '<div class="post-region">📍 ' + region + '</div>' : '') +
 
       '<div class="info-grid">' +
@@ -326,8 +340,14 @@
       ) +
 
       (isOwner ?
+        (p.status === 'closed'
+          ? '<div class="closed-overlay"><p>🔒 모집이 마감된 게시글입니다</p></div>'
+          : '') +
         '<div class="owner-btns">' +
           '<button class="btn-edit" onclick="toggleEditPost()"><i class="fa fa-pen"></i> 수정</button>' +
+          (p.status === 'closed'
+            ? '<button class="btn-reopen-post" onclick="toggleStatus('open')"><i class="fa fa-lock-open"></i> 재모집</button>'
+            : '<button class="btn-close-post" onclick="toggleStatus('closed')"><i class="fa fa-lock"></i> 마감</button>') +
           '<button class="btn-delete" onclick="deletePost()"><i class="fa fa-trash"></i> 삭제</button>' +
         '</div>' +
         '<div class="edit-post-form" id="editPostForm">' +
@@ -424,6 +444,15 @@
   };
 
   /* ── 모집글 삭제 ── */
+  window.toggleStatus = async function(status) {
+    var msg = status === 'closed' ? '모집을 마감할까요?' : '모집을 재개할까요?';
+    if (!confirm(msg)) return;
+    var res = await sb.from('buddy_posts').update({ status: status }).eq('id', postId).eq('user_id', currentUser.id);
+    if (res.error) { showToast('오류: ' + res.error.message); return; }
+    showToast(status === 'closed' ? '🔒 모집이 마감됐습니다' : '✅ 모집이 재개됐습니다');
+    setTimeout(function() { location.reload(); }, 1000);
+  };
+
   window.toggleEditPost = function() {
     var form = document.getElementById('editPostForm');
     if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
