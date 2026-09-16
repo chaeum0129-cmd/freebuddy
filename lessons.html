@@ -189,7 +189,9 @@
 
   function initSB() {
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      sb = window.supabase.createClient(SB_URL, SB_KEY);
+      sb = window.supabase.createClient(SB_URL, SB_KEY, {
+        auth: { persistSession: true, storageKey: 'freebuddy-auth', storage: window.localStorage }
+      });
       checkAuth();
       loadLessons();
     } else { setTimeout(initSB, 100); }

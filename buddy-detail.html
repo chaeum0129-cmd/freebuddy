@@ -346,8 +346,8 @@
         '<div class="owner-btns">' +
           '<button class="btn-edit" onclick="toggleEditPost()"><i class="fa fa-pen"></i> 수정</button>' +
           (p.status === 'closed'
-            ? '<button class="btn-reopen-post" onclick="toggleStatus('open')"><i class="fa fa-lock-open"></i> 재모집</button>'
-            : '<button class="btn-close-post" onclick="toggleStatus('closed')"><i class="fa fa-lock"></i> 마감</button>') +
+            ? '<button class="btn-reopen-post" onclick="toggleStatus(&quot;open&quot;)"><i class="fa fa-lock-open"></i> 재모집</button>'
+            : '<button class="btn-close-post" onclick="toggleStatus(&quot;closed&quot;)"><i class="fa fa-lock"></i> 마감</button>') +
           '<button class="btn-delete" onclick="deletePost()"><i class="fa fa-trash"></i> 삭제</button>' +
         '</div>' +
         '<div class="edit-post-form" id="editPostForm">' +
