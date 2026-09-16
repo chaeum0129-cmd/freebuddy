@@ -109,9 +109,11 @@
       });
 
   let currentRegion = '';
+  var currentUser = null;
 
   async function checkAuth() { // returns promise
     const { data: { user } } = await sb.auth.getUser();
+    currentUser = user;
     if (user) {
       const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
       document.getElementById('navBtns').style.display = 'none';
