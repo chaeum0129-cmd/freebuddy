@@ -581,7 +581,7 @@
 
       return (
         '<div class="buddy-card' + cardClass + '">' +
-          '<div class="avatar' + avatarClass + '">' + username[0] + '</div>' +
+          (p.profiles && p.profiles.avatar_url ? '<div class="avatar' + avatarClass + '"><img src="' + p.profiles.avatar_url + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>' : '<div class="avatar' + avatarClass + '">' + username[0] + '</div>') +
           '<div class="buddy-body">' +
             '<div class="buddy-top-row">' +
               '<span class="buddy-pool">' + (isTour ? '🌊 ' : '🏊 ') + poolName + '</span>' +

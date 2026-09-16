@@ -280,7 +280,7 @@
 
     var html =
       '<div class="host-row">' +
-        '<div class="avatar">' + username[0] + '</div>' +
+        (p.profiles && p.profiles.avatar_url ? '<div class="avatar"><img src="' + (p.profiles && p.profiles.avatar_url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%"></div>' : '<div class="avatar">' + username[0] + '</div>') +
         '<div class="host-info">' +
           '<div class="host-name">' + username + '</div>' +
           '<div class="host-cert">' + licType + (licLevel ? ' · ' + licLevel : '') + '</div>' +
@@ -330,7 +330,7 @@
     var userIds = [...new Set(comments.map(function(c) { return c.user_id; }))];
     var profiles = {};
     if (userIds.length > 0) {
-      var prRes = await sb.from('profiles').select('id, username').in('id', userIds);
+      var prRes = await sb.from('profiles').select('id, username, avatar_url').in('id', userIds);
       (prRes.data || []).forEach(function(p) { profiles[p.id] = p; });
     }
     comments.forEach(function(c) { c.profiles = profiles[c.user_id] || null; });

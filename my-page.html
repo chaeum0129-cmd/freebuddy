@@ -17,7 +17,10 @@
     .wrap { max-width: 760px; margin: 0 auto; padding: 32px 24px; }
     .profile-card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
     .profile-top { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-    .avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
+    .avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #0F6E56; flex-shrink: 0; overflow: hidden; position: relative; cursor: pointer; }
+    .avatar-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .avatar-lg .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); border-radius: 50%; display: none; align-items: center; justify-content: center; color: #fff; font-size: 12px; }
+    .avatar-lg:hover .avatar-overlay { display: flex; }
     .profile-name { font-size: 20px; font-weight: 700; color: #111; }
     .profile-type { font-size: 13px; color: #888; margin-top: 4px; }
     .badge-approved { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #e8f8f2; color: #0F6E56; font-weight: 600; margin-left: 8px; }
@@ -150,10 +153,10 @@
         <div class="edit-row">
           <div class="edit-field">
             <label>자격증 종류</label>
-            <select id="editLicenseType">
-              <option value="">선택 안함</option>
+            <select id="editLicenseType" onchange="toggleLicenseOther()">
               ${['자격증없음','AIDA','SSI','PADI','CMAS','직접입력'].map(l => `<option value="${l}" ${profile.license_type===l?'selected':''}>${l==='자격증없음'?'자격증 없음':l}</option>`).join('')}
             </select>
+            <input type="text" id="editLicenseOther" placeholder="자격증 이름 입력" style="margin-top:6px;display:${profile.license_type&&!['자격증없음','AIDA','SSI','PADI','CMAS'].includes(profile.license_type)?'block':'none'}" value="${profile.license_type&&!['자격증없음','AIDA','SSI','PADI','CMAS'].includes(profile.license_type)?profile.license_type:''}">
           </div>
           <div class="edit-field">
             <label>레벨</label>
@@ -239,6 +242,38 @@
       </div>
     `).join('');
   }
+
+  window.uploadAvatar = async function(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { showToast('이미지는 2MB 이하로 올려주세요'); return; }
+
+    var ext = file.name.split('.').pop();
+    var path = currentUser.id + '/avatar.' + ext;
+
+    showToast('업로드 중...');
+
+    // Supabase Storage에 업로드
+    var uploadRes = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+    if (uploadRes.error) {
+      // Storage 없으면 base64로 저장
+      var reader = new FileReader();
+      reader.onload = async function(e) {
+        var base64 = e.target.result;
+        await sb.from('profiles').update({ avatar_url: base64 }).eq('id', currentUser.id);
+        showToast('✅ 프로필 사진이 저장됐습니다!');
+        setTimeout(function() { location.reload(); }, 1000);
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    var urlRes = sb.storage.from('avatars').getPublicUrl(path);
+    var publicUrl = urlRes.data.publicUrl;
+    await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+    showToast('✅ 프로필 사진이 저장됐습니다!');
+    setTimeout(function() { location.reload(); }, 1000);
+  };
 
   window.toggleLicenseOther = function() {
     var sel = document.getElementById('editLicenseType');
