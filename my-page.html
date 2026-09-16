@@ -48,6 +48,12 @@
     .edit-field input:focus, .edit-field select:focus { border-color: #1D9E75; }
     .btn-save-profile { padding: 11px 24px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
     .btn-cancel-edit { padding: 11px 20px; background: #fff; color: #888; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; cursor: pointer; margin-left: 8px; }
+    .fav-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+    .fav-item { background: #f8f9fa; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+    .fav-item:hover { background: #e8f8f2; }
+    .fav-name { font-size: 13px; font-weight: 600; color: #111; }
+    .fav-region { font-size: 11px; color: #aaa; margin-top: 2px; }
+    .btn-unfav { background: none; border: none; font-size: 16px; cursor: pointer; flex-shrink: 0; }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .btn-logout:hover { border-color: #e53935; color: #e53935; }
@@ -275,6 +281,29 @@
     await sb.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
     showToast('✅ 프로필 사진이 저장됐습니다!');
     setTimeout(function() { location.reload(); }, 1000);
+  };
+
+  async function loadFavorites() {
+    var res = await sb.from('favorites')
+      .select('pool_id, pools(name, region)')
+      .eq('user_id', currentUser.id);
+    var list = document.getElementById('favList');
+    var favs = res.data || [];
+    if (!favs.length) { list.innerHTML = '<div class="empty">즐겨찾기한 풀장이 없습니다</div>'; return; }
+    list.innerHTML = '<div class="fav-list">' + favs.map(function(f) {
+      var pool = f.pools || {};
+      return '<div class="fav-item" onclick="location.href='pool-detail.html?id=' + f.pool_id + ''">' +
+        '<div><div class="fav-name">' + (pool.name||'') + '</div><div class="fav-region">📍 ' + (pool.region||'') + '</div></div>' +
+        '<button class="btn-unfav" onclick="unfav(event,' + f.pool_id + ')">❤️</button>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  window.unfav = async function(e, poolId) {
+    e.stopPropagation();
+    await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('pool_id', poolId);
+    showToast('즐겨찾기에서 삭제됐습니다');
+    loadFavorites();
   };
 
   window.toggleLicenseOther = function() {

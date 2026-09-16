@@ -110,7 +110,7 @@
 
   let currentRegion = '';
 
-  async function checkAuth() {
+  async function checkAuth() { // returns promise
     const { data: { user } } = await sb.auth.getUser();
     if (user) {
       const { data: profile } = await sb.from('profiles').select('username').eq('id', user.id).single();
@@ -129,6 +129,33 @@
     });
     loadPools();
   }
+
+  var favorites = [];
+
+  async function loadFavorites() {
+    if (!currentUser) return;
+    var res = await sb.from('favorites').select('pool_id').eq('user_id', currentUser.id);
+    favorites = (res.data || []).map(function(f) { return f.pool_id; });
+  }
+
+  window.toggleFav = async function(e, poolId) {
+    e.stopPropagation();
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+    var btn = document.getElementById('fav-' + poolId);
+    var isFav = favorites.includes(poolId);
+    if (isFav) {
+      await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('pool_id', poolId);
+      favorites = favorites.filter(function(id) { return id !== poolId; });
+      if (btn) btn.textContent = '🤍';
+    } else {
+      await sb.from('favorites').insert({ user_id: currentUser.id, pool_id: poolId });
+      favorites.push(poolId);
+      if (btn) btn.textContent = '❤️';
+    }
+  };
 
   async function loadPools() {
     const grid = document.getElementById('poolGrid');
@@ -166,8 +193,7 @@
   const regionParam = urlParams.get('region');
   if (regionParam) filterRegion(regionParam);
 
-  checkAuth();
-  loadPools();
+  checkAuth().then(loadFavorites).then(loadPools);
 
 })();
 </script>

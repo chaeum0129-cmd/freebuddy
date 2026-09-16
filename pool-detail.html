@@ -112,6 +112,9 @@
     .btn-contact:hover { background: #1D9E75; color: #fff; }
 
     .empty { text-align: center; padding: 40px; color: #bbb; font-size: 14px; }
+    .btn-fav-detail { display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border: 1.5px solid #e0e3e7; border-radius: 20px; background: #fff; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+    .btn-fav-detail:hover { border-color: #e53e3e; color: #e53e3e; }
+    .btn-fav-detail.active { border-color: #e53e3e; background: #fff5f5; color: #e53e3e; font-weight: 700; }
     .loading { text-align: center; padding: 30px; color: #999; font-size: 14px; }
   </style>
 </head>
@@ -145,7 +148,10 @@
       <div class="pool-title" id="poolName">불러오는 중...</div>
       <div class="pool-tags" id="poolTags"></div>
     </div>
-    <span class="region-badge" id="poolRegion"></span>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn-fav-detail" id="favBtn" onclick="toggleFav()">🤍 즐겨찾기</button>
+      <span class="region-badge" id="poolRegion"></span>
+    </div>
   </div>
 </div>
 
@@ -237,6 +243,42 @@
   }
 
   window.logout = async function() { await sb.auth.signOut(); location.reload(); };
+
+  var isFav = false;
+
+  async function loadFavorite() {
+    if (!currentUser) return;
+    var res = await sb.from('favorites').select('id').eq('user_id', currentUser.id).eq('pool_id', poolId).single();
+    isFav = !!(res.data);
+    updateFavBtn();
+  }
+
+  function updateFavBtn() {
+    var btn = document.getElementById('favBtn');
+    if (!btn) return;
+    if (isFav) {
+      btn.textContent = '❤️ 즐겨찾기';
+      btn.classList.add('active');
+    } else {
+      btn.textContent = '🤍 즐겨찾기';
+      btn.classList.remove('active');
+    }
+  }
+
+  window.toggleFav = async function() {
+    if (!currentUser) {
+      if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html';
+      return;
+    }
+    if (isFav) {
+      await sb.from('favorites').delete().eq('user_id', currentUser.id).eq('pool_id', poolId);
+      isFav = false;
+    } else {
+      await sb.from('favorites').insert({ user_id: currentUser.id, pool_id: parseInt(poolId) });
+      isFav = true;
+    }
+    updateFavBtn();
+  };
 
   async function loadPool() {
     var res = await sb.from('pools').select('*').eq('id', poolId).single();
