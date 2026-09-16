@@ -119,6 +119,15 @@
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
+      // 이미 신청했는지 확인
+      setTimeout(async function() {
+        if (!lessonId) return;
+        var check = await sb.from('lesson_bookings').select('id').eq('lesson_id', parseInt(lessonId)).eq('student_id', user.id);
+        if (check.data && check.data.length > 0) {
+          var btn = document.getElementById('bookBtn') || document.querySelector('.btn-book');
+          if (btn) { btn.textContent = '✅ 신청완료'; btn.disabled = true; btn.style.background = '#aaa'; btn.style.cursor = 'default'; }
+        }
+      }, 1500);
     }
   }
 
@@ -175,9 +184,13 @@
   window.bookLesson = async function() {
     if (!currentUser) { if (confirm('로그인이 필요합니다. 로그인 하시겠습니까?')) location.href = 'login.html'; return; }
     if (lessonData && currentUser.id === lessonData.instructor_id) { alert('본인 강습에는 신청할 수 없습니다'); return; }
-    const { error } = await sb.from('lesson_bookings').insert({ lesson_id: lessonId, student_id: currentUser.id });
-    if (error) { alert(error.message.includes('duplicate') ? '이미 신청한 강습입니다' : '오류가 발생했습니다'); return; }
-    alert('수강 신청이 완료됐습니다!\n강사님께 연락하여 일정을 확정해주세요.');
+    var check = await sb.from('lesson_bookings').select('id').eq('lesson_id', parseInt(lessonId)).eq('student_id', currentUser.id);
+    if (check.data && check.data.length > 0) { alert('이미 신청한 강습입니다!'); return; }
+    const { error } = await sb.from('lesson_bookings').insert({ lesson_id: parseInt(lessonId), student_id: currentUser.id });
+    if (error) { alert('오류가 발생했습니다: ' + error.message); return; }
+    alert('수강 신청이 완료됐습니다! 강사님께 연락하여 일정을 확정해주세요.');
+    var btn = document.querySelector('.btn-book');
+    if (btn) { btn.textContent = '✅ 신청완료'; btn.disabled = true; btn.style.background = '#aaa'; }
     if (lessonData?.profiles?.contact) window.open(lessonData.profiles.contact, '_blank');
     loadBookings();
   }
