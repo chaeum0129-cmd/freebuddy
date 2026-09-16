@@ -56,32 +56,6 @@
     .status-confirmed { background: #e8f8f2; color: #0F6E56; }
     .empty { text-align: center; padding: 30px; color: #bbb; font-size: 13px; }
     .loading { text-align: center; padding: 30px; color: #999; font-size: 14px; }
-    /* 댓글 */
-    .comment-section { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 22px; margin-top: 20px; }
-    .comment-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-    .comment-count { font-size: 13px; font-weight: 600; color: #1D9E75; background: #e8f8f2; padding: 2px 9px; border-radius: 20px; }
-    .comment-input-box { display: flex; gap: 10px; margin-bottom: 20px; align-items: flex-start; }
-    .c-avatar { width: 34px; height: 34px; border-radius: 50%; background: #e8f8f2; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #0F6E56; flex-shrink: 0; }
-    .comment-textarea { width: 100%; padding: 11px 14px; border: 1.5px solid #e0e3e7; border-radius: 10px; font-size: 14px; color: #222; font-family: inherit; resize: none; min-height: 76px; outline: none; transition: border-color 0.15s; line-height: 1.6; }
-    .comment-textarea:focus { border-color: #1D9E75; }
-    .comment-input-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
-    .btn-comment-submit { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
-    .login-prompt { background: #f8f9fa; border-radius: 10px; padding: 16px; text-align: center; margin-bottom: 20px; }
-    .login-prompt p { font-size: 13px; color: #888; margin-bottom: 10px; }
-    .btn-login-small { padding: 7px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .comment-list { display: flex; flex-direction: column; gap: 14px; }
-    .comment-item { display: flex; gap: 10px; }
-    .comment-body { flex: 1; }
-    .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .comment-username { font-size: 13px; font-weight: 700; color: #111; }
-    .comment-instructor-badge { font-size: 10px; font-weight: 700; background: #e8f8f2; color: #0F6E56; padding: 1px 7px; border-radius: 10px; }
-    .comment-time { font-size: 11px; color: #ccc; }
-    .comment-text { font-size: 14px; color: #444; line-height: 1.65; }
-    .comment-delete { font-size: 11px; color: #ddd; cursor: pointer; background: none; border: none; padding: 0; margin-left: auto; }
-    .comment-delete:hover { color: #e53e3e; }
-    .comment-divider { height: 1px; background: #f1f3f5; }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
@@ -124,54 +98,16 @@
   </div>
 </div>
 
-  <!-- 댓글 섹션 -->
-  <div class="comment-section">
-    <div class="comment-title">댓글 <span class="comment-count" id="commentCount">0</span></div>
-    <div id="commentInputArea" style="display:none">
-      <div class="comment-input-box">
-        <div class="c-avatar" id="myAvatar">?</div>
-        <div style="flex:1">
-          <textarea class="comment-textarea" id="commentText" placeholder="강습에 대해 궁금한 점을 물어보세요 :)" maxlength="300"></textarea>
-          <div class="comment-input-footer">
-            <button class="btn-comment-submit" onclick="submitComment()">등록</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div id="loginPrompt" class="login-prompt">
-      <p>댓글을 작성하려면 로그인이 필요합니다</p>
-      <button class="btn-login-small" onclick="location.href='login.html'">로그인하기</button>
-    </div>
-    <div class="comment-list" id="commentList"></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
   var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
-  var sb;
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, {
+        auth: { persistSession: true, storageKey: 'freebuddy-auth', storage: window.localStorage }
+      });
 
-  var lessonId = new URLSearchParams(window.location.search).get('id');
-
-  function initSB() {
-    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-      sb = window.supabase.createClient(SB_URL, SB_KEY);
-      checkAuth();
-      loadLesson();
-      loadComments();
-    } else { setTimeout(initSB, 100); }
-  }
-
-  function formatPrice(val) {
-    if (!val) return '가격 협의';
-    var num = parseInt(val.toString().replace(/[^0-9]/g, ''));
-    if (isNaN(num)) return val;
-    return num.toLocaleString('ko-KR') + '원';
-  }
+  const lessonId = new URLSearchParams(window.location.search).get('id');
   let currentUser = null;
   let lessonData = null;
 
@@ -183,9 +119,6 @@
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (profile?.username || '') + '님';
-      document.getElementById('myAvatar').textContent = (profile?.username || '?')[0];
-      document.getElementById('commentInputArea').style.display = 'block';
-      document.getElementById('loginPrompt').style.display = 'none';
     }
   }
 
@@ -217,7 +150,7 @@
       </div>
       ${lesson.note ? `<div class="lesson-note">📝 ${lesson.note}</div>` : ''}
       <div class="price-row">
-        <div class="price">${formatPrice(lesson.price)}</div>
+        <div class="price">${lesson.price || '가격 협의'}</div>
         <button class="btn-book" onclick="bookLesson()">수강 신청</button>
       </div>
     `;
@@ -249,66 +182,8 @@
     loadBookings();
   }
 
-  initSB();
-
-  async function loadComments() {
-    var res = await sb.from('lesson_comments')
-      .select('id, lesson_id, user_id, content, created_at')
-      .eq('lesson_id', lessonId)
-      .order('created_at', { ascending: true });
-    var comments = res.data || [];
-    var userIds = [...new Set(comments.map(function(c) { return c.user_id; }))];
-    var profiles = {};
-    if (userIds.length > 0) {
-      var pr = await sb.from('profiles').select('id, username').in('id', userIds);
-      (pr.data || []).forEach(function(p) { profiles[p.id] = p; });
-    }
-    comments.forEach(function(c) { c.profiles = profiles[c.user_id] || null; });
-    document.getElementById('commentCount').textContent = comments.length;
-    var list = document.getElementById('commentList');
-    if (!comments.length) { list.innerHTML = '<div class="empty">아직 댓글이 없습니다. 첫 번째로 질문해보세요!</div>'; return; }
-    list.innerHTML = comments.map(function(c, i) {
-      var username = (c.profiles && c.profiles.username) || '?';
-      var isInstructor = lessonData && c.user_id === lessonData.instructor_id;
-      var isOwner = currentUser && currentUser.id === c.user_id;
-      var diff = Math.floor((Date.now() - new Date(c.created_at)) / 60000);
-      var ago = diff < 60 ? diff + '분 전' : diff < 1440 ? Math.floor(diff/60) + '시간 전' : Math.floor(diff/1440) + '일 전';
-      return (i > 0 ? '<div class="comment-divider"></div>' : '') +
-        '<div class="comment-item"><div class="c-avatar">' + username[0] + '</div>' +
-        '<div class="comment-body"><div class="comment-header">' +
-        '<span class="comment-username">' + username + '</span>' +
-        (isInstructor ? '<span class="comment-instructor-badge">강사</span>' : '') +
-        '<span class="comment-time">' + ago + '</span>' +
-        (isOwner ? '<button class="comment-delete" onclick="deleteComment(' + c.id + ')"><i class="fa fa-times"></i></button>' : '') +
-        '</div><div class="comment-text">' + c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
-/g,'<br>') + '</div></div></div>';
-    }).join('');
-  }
-
-  window.submitComment = async function() {
-    if (!currentUser) { location.href = 'login.html'; return; }
-    var text = document.getElementById('commentText').value.trim();
-    if (!text) { showToast('댓글 내용을 입력해주세요'); return; }
-    var res = await sb.from('lesson_comments').insert({ lesson_id: parseInt(lessonId), user_id: currentUser.id, content: text });
-    if (res.error) { showToast('오류가 발생했습니다'); return; }
-    document.getElementById('commentText').value = '';
-    showToast('댓글이 등록됐습니다');
-    loadComments();
-  };
-
-  window.deleteComment = async function(id) {
-    if (!confirm('댓글을 삭제할까요?')) return;
-    await sb.from('lesson_comments').delete().eq('id', id).eq('user_id', currentUser.id);
-    showToast('삭제됐습니다');
-    loadComments();
-  };
-
-  function showToast(msg) {
-    var t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(function() { t.classList.remove('show'); }, 2500);
-  }
+  checkAuth();
+  loadLesson();
 
 })();
 </script>
