@@ -119,7 +119,6 @@
     .map-section { max-width: 960px; margin: 0 auto; padding: 0 24px 24px; }
     .map-wrap { width: 100%; height: 280px; border-radius: 14px; overflow: hidden; border: 1px solid #e9ecef; }
   </style>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=80150cbff06945b3f75083087b0e957a&libraries=services"></script>
 </head>
 <body>
 
@@ -247,8 +246,30 @@
 
   window.logout = async function() { await sb.auth.signOut(); location.reload(); };
 
+  // 카카오맵 비동기 로드
+  var kakaoMapAddress = null;
+  var kakaoMapName = null;
+
+  function loadKakaoMap() {
+    var script = document.createElement('script');
+    script.async = true;
+    script.src = '//dapi.kakao.com/v2/maps/sdk.js?appkey=80150cbff06945b3f75083087b0e957a&libraries=services&autoload=false';
+    script.onload = function() {
+      kakao.maps.load(function() {
+        if (kakaoMapAddress) initMap(kakaoMapAddress, kakaoMapName);
+      });
+    };
+    document.head.appendChild(script);
+  }
+  loadKakaoMap();
+
   function initMap(address, name) {
-    if (!window.kakao || !window.kakao.maps) return;
+    if (!window.kakao || !window.kakao.maps) {
+      // 아직 로드 안됐으면 저장해두고 나중에 실행
+      kakaoMapAddress = address;
+      kakaoMapName = name;
+      return;
+    }
     var mapContainer = document.getElementById('kakaoMap');
     if (!mapContainer) return;
 
@@ -321,9 +342,11 @@
     document.getElementById('poolTags').innerHTML = tags.map(function(t) {
       return '<span class="pool-tag">' + t + '</span>';
     }).join('');
-    // 카카오맵 초기화
+    // 카카오맵 초기화 (비동기 로드 대비해 주소 저장 후 호출)
     if (pool.address) {
-      setTimeout(function() { initMap(pool.address, pool.name); }, 500);
+      kakaoMapAddress = pool.address;
+      kakaoMapName = pool.name;
+      initMap(pool.address, pool.name);
     }
     // 이미지 배너
     if (pool.image_url) {
