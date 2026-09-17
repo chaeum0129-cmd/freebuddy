@@ -431,7 +431,7 @@
     });
 
     btn.disabled = false;
-    if (res.error) { showToast('오류가 발생했습니다'); return; }
+    if (res.error) { alert('댓글 오류: ' + res.error.message + ' / ' + res.error.details + ' / code:' + res.error.code); return; }
     document.getElementById('commentText').value = '';
     showToast('댓글이 등록됐습니다');
     loadComments();
