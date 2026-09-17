@@ -436,6 +436,7 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="notifications.js"></script>
 <script>
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
@@ -527,6 +528,7 @@
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = ((profile.data && profile.data.username) || '') + '님';
+      initNotifications(sb, res.data.user.id);
     }
   }
 

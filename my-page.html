@@ -72,7 +72,9 @@
     <a href="buddy.html" class="nav-link">버디 구하기</a>
     <a href="lessons.html" class="nav-link">강습</a>
   </div>
-  <button class="btn-ghost" onclick="logout()">로그아웃</button>
+  <div id="navUser" style="display:flex;align-items:center;gap:10px;">
+    <button class="btn-ghost" onclick="logout()">로그아웃</button>
+  </div>
 </nav>
 
 <div class="wrap">
@@ -104,6 +106,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="notifications.js"></script>
 <script>
 (function() {
   var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
@@ -118,6 +121,7 @@
     const { data: { user } } = await sb.auth.getUser();
     if (!user) { location.href = 'login.html'; return; }
     currentUser = user;
+    initNotifications(sb, user.id);
     const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
     if (!profile) return;
 
