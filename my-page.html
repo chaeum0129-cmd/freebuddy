@@ -242,14 +242,14 @@
   }
 
   async function loadMyBookings(userId) {
-    const { data: bookings } = await sb.from('lesson_bookings').select('*, lessons(date, time_slot, level, profiles(username)), pools(name)').eq('student_id', userId);
+    const { data: bookings } = await sb.from('lesson_bookings').select('*, lessons(date, time_slot, level, pools(name), profiles(username))').eq('student_id', userId);
     const el = document.getElementById('myBookings');
     if (!bookings || bookings.length === 0) { el.innerHTML = '<div class="empty">신청한 강습이 없습니다</div>'; return; }
     el.innerHTML = bookings.map(b => `
       <div class="post-item">
         <div>
-          <div class="post-info">${b.lessons?.profiles?.username || ''} 강사 · ${b.lessons?.date || ''} ${b.lessons?.time_slot || ''}</div>
-          <div class="post-detail">${b.status === 'pending' ? '신청 중' : '확정'}</div>
+          <div class="post-info">${b.lessons?.profiles?.username || ''} 강사 · ${b.lessons?.pools?.name || ''}</div>
+          <div class="post-detail">${b.lessons?.date || ''} ${b.lessons?.time_slot || ''} · ${b.status === 'pending' ? '신청 중' : '확정'}</div>
         </div>
       </div>
     `).join('');
