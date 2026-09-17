@@ -543,7 +543,7 @@
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = (currentProfile.username || '') + '님';
-      initNotifications(sb, res.data.user.id);
+      initNotifications(sb, currentUser.id);
       updatePreview();
     }
   }

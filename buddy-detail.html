@@ -270,7 +270,7 @@
       document.getElementById('navBtns').style.display = 'none';
       document.getElementById('navUser').style.display = 'flex';
       document.getElementById('navUsername').textContent = name + '님';
-      initNotifications(sb, res.data.user.id);
+      initNotifications(sb, currentUser.id);
       document.getElementById('myAvatar').textContent = name[0];
       document.getElementById('commentInputArea').style.display = 'block';
       document.getElementById('loginPrompt').style.display = 'none';
