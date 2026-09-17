@@ -292,7 +292,7 @@
     if (!favs.length) { list.innerHTML = '<div class="empty">즐겨찾기한 풀장이 없습니다</div>'; return; }
     list.innerHTML = '<div class="fav-list">' + favs.map(function(f) {
       var pool = f.pools || {};
-      return '<div class="fav-item" onclick="location.href='pool-detail.html?id=' + f.pool_id + ''">' +
+      return '<div class="fav-item" onclick="location.href=\'pool-detail.html?id=' + f.pool_id + '\'">' +
         '<div><div class="fav-name">' + (pool.name||'') + '</div><div class="fav-region">📍 ' + (pool.region||'') + '</div></div>' +
         '<button class="btn-unfav" onclick="unfav(event,' + f.pool_id + ')">❤️</button>' +
       '</div>';
