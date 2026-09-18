@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBuddy - 글쓰기</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans KR', sans-serif; background: #f8f9fa; color: #222; }
+    nav { background: #fff; border-bottom: 1px solid #e9ecef; padding: 0 24px; height: 56px;
+          display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-size: 20px; font-weight: 700; color: #1D9E75; text-decoration: none; }
+    .logo span { color: #222; }
+    .nav-right { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #555; }
+
+    .wrap { max-width: 680px; margin: 32px auto; padding: 0 24px 80px; }
+    .page-top { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .back-btn { width: 36px; height: 36px; border: 1px solid #e0e3e7; border-radius: 8px; background: #fff;
+                display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555; font-size: 14px; }
+    .back-btn:hover { border-color: #1D9E75; color: #1D9E75; }
+    .page-title { font-size: 20px; font-weight: 700; color: #111; }
+
+    .card { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 28px; }
+
+    /* 카테고리 칩 */
+    .cat-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .cat-chip { padding: 8px 18px; border: 1.5px solid #e0e3e7; border-radius: 20px; background: #fff;
+                font-size: 13px; font-weight: 600; color: #888; cursor: pointer; transition: all 0.15s; }
+    .cat-chip:hover { border-color: #1D9E75; color: #1D9E75; }
+    .cat-chip.active { border-color: #1D9E75; background: #1D9E75; color: #fff; }
+
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 6px; }
+    input, textarea {
+      width: 100%; padding: 12px 14px; border: 1.5px solid #e0e3e7;
+      border-radius: 10px; font-size: 14px; color: #222; font-family: inherit; outline: none;
+    }
+    input:focus, textarea:focus { border-color: #1D9E75; }
+    textarea { resize: vertical; min-height: 200px; line-height: 1.7; }
+
+    .char-count { font-size: 11px; color: #bbb; text-align: right; margin-top: 4px; }
+
+    .btn-submit { width: 100%; padding: 15px; background: #1D9E75; color: #fff; border: none;
+                  border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
+    .btn-submit:hover { background: #178a65; }
+    .btn-submit:disabled { background: #ccc; cursor: default; }
+
+    .error { color: #e53935; font-size: 13px; margin-top: 8px; display: none; text-align: center; }
+
+    /* 관리자 전용 공지 옵션 */
+    .admin-only { background: #fffbea; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; margin-bottom: 18px; display: none; }
+    .admin-only-title { font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 10px; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+    .toggle-label { font-size: 13px; color: #555; }
+    .toggle { width: 42px; height: 24px; background: #e0e3e7; border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; border: none; }
+    .toggle.on { background: #1D9E75; }
+    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+    .toggle.on::after { left: 21px; }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Free<span>Buddy</span></a>
+  <div class="nav-right" id="navRight">
+    <span id="navUsername"></span>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="page-top">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div class="page-title">글쓰기</div>
+  </div>
+
+  <div class="card">
+    <!-- 카테고리 -->
+    <div class="form-group">
+      <label>카테고리 *</label>
+      <div class="cat-group">
+        <button class="cat-chip active" data-cat="소통" onclick="setCat(this)">💬 소통</button>
+        <button class="cat-chip" data-cat="자랑" onclick="setCat(this)">🏆 자랑</button>
+        <button class="cat-chip" data-cat="질문" onclick="setCat(this)">❓ 질문</button>
+        <button class="cat-chip" data-cat="정보" onclick="setCat(this)">📌 정보</button>
+      </div>
+    </div>
+
+    <!-- 관리자 전용 -->
+    <div class="admin-only" id="adminOnly">
+      <div class="admin-only-title">🔑 관리자 옵션</div>
+      <div class="toggle-row">
+        <span class="toggle-label">공지사항으로 등록 (상단 고정)</span>
+        <button class="toggle" id="pinnedToggle" onclick="this.classList.toggle('on')"></button>
+      </div>
+    </div>
+
+    <!-- 제목 -->
+    <div class="form-group">
+      <label>제목 *</label>
+      <input type="text" id="titleInput" placeholder="제목을 입력해주세요" maxlength="100">
+    </div>
+
+    <!-- 내용 -->
+    <div class="form-group">
+      <label>내용 *</label>
+      <textarea id="contentInput" placeholder="자유롭게 작성해주세요 🤿" maxlength="2000"
+                oninput="document.getElementById('charCount').textContent=this.value.length+'/2000'"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/2000</div>
+    </div>
+
+    <div class="error" id="errMsg"></div>
+    <button class="btn-submit" id="submitBtn" onclick="submitPost()">등록하기</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function() {
+  var SB_URL = 'https://hlyxoibjbgrzenojrpbn.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhseXhvaWJqYmdyemVub2pycGJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4MzY5NjgsImV4cCI6MjEwNDQxMjk2OH0.9NvqzszqoxYMN7uhGyyGtEXBtA0IF3ph-rRuUxahP2A';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, {
+    auth: { persistSession: true, storageKey: 'freebuddy-auth', storage: window.localStorage }
+  });
+
+  var currentUser = null;
+  var isAdmin = false;
+  var selectedCat = '소통';
+
+  async function init() {
+    var res = await sb.auth.getUser();
+    if (!res.data || !res.data.user) { location.href = 'login.html'; return; }
+    currentUser = res.data.user;
+    var pr = await sb.from('profiles').select('username, user_type').eq('id', currentUser.id).single();
+    document.getElementById('navUsername').textContent = (pr.data && pr.data.username || '') + '님';
+    isAdmin = pr.data && pr.data.user_type === 'admin';
+    if (isAdmin) document.getElementById('adminOnly').style.display = 'block';
+  }
+
+  window.setCat = function(btn) {
+    document.querySelectorAll('.cat-chip').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    selectedCat = btn.dataset.cat;
+  };
+
+  window.submitPost = async function() {
+    var title = document.getElementById('titleInput').value.trim();
+    var content = document.getElementById('contentInput').value.trim();
+    var errEl = document.getElementById('errMsg');
+    errEl.style.display = 'none';
+
+    if (!title) { errEl.textContent = '제목을 입력해주세요'; errEl.style.display = 'block'; return; }
+    if (!content) { errEl.textContent = '내용을 입력해주세요'; errEl.style.display = 'block'; return; }
+
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true; btn.textContent = '등록 중...';
+
+    var isPinned = isAdmin && document.getElementById('pinnedToggle').classList.contains('on');
+    var category = isPinned ? '공지' : selectedCat;
+
+    var res = await sb.from('posts').insert({
+      user_id:   currentUser.id,
+      category:  category,
+      title:     title,
+      content:   content,
+      is_pinned: isPinned
+    }).select('id').single();
+
+    btn.disabled = false; btn.textContent = '등록하기';
+    if (res.error) { errEl.textContent = '오류: ' + res.error.message; errEl.style.display = 'block'; return; }
+    location.href = 'community-detail.html?id=' + res.data.id;
+  };
+
+  init();
+})();
+</script>
+</body>
+</html>
