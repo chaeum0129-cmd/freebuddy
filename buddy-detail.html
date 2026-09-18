@@ -153,6 +153,39 @@
     .empty { text-align: center; padding: 32px; color: #bbb; font-size: 14px; }
     .loading { text-align: center; padding: 32px; color: #999; font-size: 14px; }
 
+    /* 후기/평점 섹션 */
+    .review-section { background: #fff; border: 1px solid #e9ecef; border-radius: 16px; padding: 22px; margin-bottom: 16px; }
+    .review-section-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .review-count { font-size: 13px; font-weight: 600; color: #1D9E75; background: #e8f8f2; padding: 2px 9px; border-radius: 20px; }
+    .rating-summary { display: flex; align-items: center; gap: 14px; background: #f8f9fa; border-radius: 12px; padding: 16px; margin-bottom: 18px; }
+    .rating-big { font-size: 40px; font-weight: 800; color: #111; line-height: 1; }
+    .rating-stars-big { display: flex; gap: 3px; margin-bottom: 4px; }
+    .rating-total { font-size: 12px; color: #aaa; }
+    .review-form { background: #f8f9fa; border-radius: 12px; padding: 16px; margin-bottom: 18px; }
+    .review-form-title { font-size: 13px; font-weight: 700; color: #444; margin-bottom: 10px; }
+    .star-picker { display: flex; gap: 6px; margin-bottom: 12px; }
+    .star-btn { font-size: 26px; cursor: pointer; background: none; border: none; padding: 0; line-height: 1; transition: transform 0.1s; opacity: 0.3; }
+    .star-btn.active { opacity: 1; }
+    .star-btn:hover { transform: scale(1.15); }
+    .review-textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #e0e3e7; border-radius: 8px; font-size: 14px; font-family: inherit; resize: none; min-height: 64px; outline: none; }
+    .review-textarea:focus { border-color: #1D9E75; }
+    .review-form-footer { display: flex; justify-content: flex-end; margin-top: 8px; }
+    .btn-review-submit { padding: 8px 20px; background: #1D9E75; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn-review-submit:disabled { background: #ccc; cursor: default; }
+    .review-list { display: flex; flex-direction: column; gap: 14px; }
+    .review-item { display: flex; gap: 10px; padding-bottom: 14px; border-bottom: 1px solid #f1f3f5; }
+    .review-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .review-body { flex: 1; }
+    .review-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+    .review-username { font-size: 13px; font-weight: 700; color: #111; }
+    .review-stars { display: flex; gap: 2px; }
+    .review-star { font-size: 12px; }
+    .review-time { font-size: 11px; color: #ccc; margin-left: auto; }
+    .review-target { font-size: 11px; color: #1D9E75; background: #e8f8f2; padding: 1px 7px; border-radius: 10px; }
+    .review-text { font-size: 13px; color: #555; line-height: 1.6; margin-top: 4px; }
+    .review-delete { font-size: 11px; color: #ddd; cursor: pointer; background: none; border: none; padding: 0; }
+    .review-delete:hover { color: #e53e3e; }
+
     /* 토스트 */
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; opacity: 0; transition: all 0.3s; z-index: 999; pointer-events: none; white-space: nowrap; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -200,6 +233,44 @@
       <span class="ad-badge">광고</span>
       <span class="ad-label">Google AdSense</span>
     </div>
+  </div>
+
+  <!-- 후기/평점 섹션 -->
+  <div class="review-section" id="reviewSection" style="display:none">
+    <div class="review-section-title">
+      ⭐ 버디 후기 <span class="review-count" id="reviewCount">0</span>
+    </div>
+    <!-- 평균 평점 요약 -->
+    <div class="rating-summary" id="ratingSummary" style="display:none">
+      <div>
+        <div class="rating-big" id="ratingAvg">0.0</div>
+      </div>
+      <div>
+        <div class="rating-stars-big" id="ratingStarsBig"></div>
+        <div class="rating-total" id="ratingTotal"></div>
+      </div>
+    </div>
+    <!-- 후기 작성 폼 (로그인+비방장+마감 시) -->
+    <div class="review-form" id="reviewForm" style="display:none">
+      <div class="review-form-title">함께한 버디에게 후기를 남겨보세요</div>
+      <div style="margin-bottom:8px;font-size:12px;color:#888">후기 대상 선택</div>
+      <select id="reviewTarget" style="width:100%;padding:9px 12px;border:1.5px solid #e0e3e7;border-radius:8px;font-size:14px;margin-bottom:12px;outline:none;font-family:inherit">
+        <option value="">버디 선택...</option>
+      </select>
+      <div class="star-picker" id="starPicker">
+        <button class="star-btn" data-val="1" onclick="setStar(1)">⭐</button>
+        <button class="star-btn" data-val="2" onclick="setStar(2)">⭐</button>
+        <button class="star-btn" data-val="3" onclick="setStar(3)">⭐</button>
+        <button class="star-btn" data-val="4" onclick="setStar(4)">⭐</button>
+        <button class="star-btn" data-val="5" onclick="setStar(5)">⭐</button>
+      </div>
+      <textarea class="review-textarea" id="reviewText" placeholder="버디와 함께한 다이빙은 어떠셨나요? (선택)" maxlength="200"></textarea>
+      <div class="review-form-footer">
+        <button class="btn-review-submit" id="reviewSubmitBtn" onclick="submitReview()">후기 등록</button>
+      </div>
+    </div>
+    <!-- 후기 목록 -->
+    <div class="review-list" id="reviewList"></div>
   </div>
 
   <!-- 댓글 섹션 -->
@@ -254,6 +325,7 @@
       checkAuth();
       loadPost();
       loadComments();
+      loadReviews();
     } else {
       setTimeout(initSB, 100);
     }
@@ -431,7 +503,7 @@
     });
 
     btn.disabled = false;
-    if (res.error) { alert('댓글 오류: ' + res.error.message + ' / ' + res.error.details + ' / code:' + res.error.code); return; }
+    if (res.error) { showToast('댓글 등록 중 오류가 발생했습니다'); return; }
     document.getElementById('commentText').value = '';
     showToast('댓글이 등록됐습니다');
     loadComments();
@@ -502,6 +574,164 @@
     t.classList.add('show');
     setTimeout(function() { t.classList.remove('show'); }, 2500);
   }
+
+
+  /* ── 후기/평점 ── */
+  var selectedStar = 0;
+  var commentorIds = []; // 댓글 단 사람들 (후기 대상 후보)
+
+  window.setStar = function(val) {
+    selectedStar = val;
+    document.querySelectorAll('.star-btn').forEach(function(btn) {
+      btn.classList.toggle('active', parseInt(btn.dataset.val) <= val);
+    });
+  };
+
+  async function loadReviews() {
+    if (!postId) return;
+
+    // 버디글 댓글 작성자 목록 로드 (후기 대상 후보)
+    var cmtRes = await sb.from('buddy_comments')
+      .select('user_id')
+      .eq('post_id', postId);
+    var cmtUserIds = [...new Set((cmtRes.data || []).map(function(c) { return c.user_id; }))];
+
+    // 해당 버디글의 모든 관련자 (방장 + 댓글 작성자)
+    var allIds = postData ? [postData.user_id, ...cmtUserIds] : cmtUserIds;
+    allIds = [...new Set(allIds)];
+
+    // 후기 로드
+    var revRes = await sb.from('buddy_reviews')
+      .select('*, profiles!buddy_reviews_reviewer_id_fkey(username), target:profiles!buddy_reviews_reviewee_id_fkey(username)')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
+    var reviews = revRes.data || [];
+
+    // 후기 섹션 표시 (마감된 글이거나 후기가 있을 때)
+    var section = document.getElementById('reviewSection');
+    var isClosedOrHasReviews = (postData && postData.status === 'closed') || reviews.length > 0;
+    if (isClosedOrHasReviews) section.style.display = 'block';
+
+    // 카운트
+    document.getElementById('reviewCount').textContent = reviews.length;
+
+    // 평균 평점
+    if (reviews.length > 0) {
+      var avg = reviews.reduce(function(s, r) { return s + r.rating; }, 0) / reviews.length;
+      document.getElementById('ratingAvg').textContent = avg.toFixed(1);
+      document.getElementById('ratingStarsBig').innerHTML = [1,2,3,4,5].map(function(i) {
+        return '<span style="font-size:18px;opacity:' + (i <= Math.round(avg) ? '1' : '0.2') + '">⭐</span>';
+      }).join('');
+      document.getElementById('ratingTotal').textContent = '총 ' + reviews.length + '개 후기';
+      document.getElementById('ratingSummary').style.display = 'flex';
+    }
+
+    // 후기 작성 폼: 로그인 + 비방장 + 마감 글 + 아직 후기 안 쓴 경우
+    if (currentUser && postData && postData.status === 'closed') {
+      var isOwner = currentUser.id === postData.user_id;
+      var myReviews = reviews.filter(function(r) { return r.reviewer_id === currentUser.id; });
+      // 이미 쓴 대상 제외한 후기 가능한 대상 목록
+      var myRevieweeIds = myReviews.map(function(r) { return r.reviewee_id; });
+      var candidates = allIds.filter(function(id) {
+        return id !== currentUser.id && !myRevieweeIds.includes(id);
+      });
+
+      if (candidates.length > 0) {
+        // 후보 프로필 조회
+        var prRes = await sb.from('profiles').select('id, username').in('id', candidates);
+        var candProfiles = prRes.data || [];
+        var sel = document.getElementById('reviewTarget');
+        sel.innerHTML = '<option value="">버디 선택...</option>';
+        candProfiles.forEach(function(p) {
+          var opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.username;
+          sel.appendChild(opt);
+        });
+        document.getElementById('reviewForm').style.display = 'block';
+      }
+    }
+
+    // 후기 렌더링
+    renderReviews(reviews);
+  }
+
+  function renderReviews(reviews) {
+    var list = document.getElementById('reviewList');
+    if (reviews.length === 0) {
+      list.innerHTML = '<div class="empty" style="padding:20px">아직 후기가 없습니다</div>';
+      return;
+    }
+    list.innerHTML = reviews.map(function(r) {
+      var reviewer = (r.profiles && r.profiles.username) || '?';
+      var reviewee = (r.target && r.target.username) || '?';
+      var stars = [1,2,3,4,5].map(function(i) {
+        return '<span class="review-star" style="opacity:' + (i <= r.rating ? '1' : '0.2') + '">⭐</span>';
+      }).join('');
+      var isMine = currentUser && currentUser.id === r.reviewer_id;
+      return (
+        '<div class="review-item">' +
+          '<div class="comment-avatar" style="width:34px;height:34px;border-radius:50%;background:#e8f8f2;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0F6E56;flex-shrink:0">' + reviewer[0] + '</div>' +
+          '<div class="review-body">' +
+            '<div class="review-header">' +
+              '<span class="review-username">' + reviewer + '</span>' +
+              '<span style="font-size:11px;color:#bbb">→</span>' +
+              '<span class="review-target">' + reviewee + '</span>' +
+              '<div class="review-stars">' + stars + '</div>' +
+              '<span class="review-time">' + timeAgo(r.created_at) + '</span>' +
+              (isMine ? '<button class="review-delete" onclick="deleteReview(' + r.id + ')">✕</button>' : '') +
+            '</div>' +
+            (r.content ? '<div class="review-text">' + escHtml(r.content) + '</div>' : '') +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  window.submitReview = async function() {
+    if (!currentUser) { location.href = 'login.html'; return; }
+    var revieweeId = document.getElementById('reviewTarget').value;
+    if (!revieweeId) { showToast('후기 대상을 선택해주세요'); return; }
+    if (!selectedStar) { showToast('별점을 선택해주세요 ⭐'); return; }
+    var content = document.getElementById('reviewText').value.trim();
+
+    var btn = document.getElementById('reviewSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = '등록 중...';
+
+    var res = await sb.from('buddy_reviews').insert({
+      reviewer_id: currentUser.id,
+      reviewee_id: revieweeId,
+      post_id: postId,
+      rating: selectedStar,
+      content: content || null
+    });
+
+    btn.disabled = false;
+    btn.textContent = '후기 등록';
+
+    if (res.error) {
+      if (res.error.code === '23505') {
+        showToast('이미 이 버디에게 후기를 작성했습니다');
+      } else {
+        showToast('오류: ' + res.error.message);
+      }
+      return;
+    }
+
+    showToast('⭐ 후기가 등록됐습니다!');
+    selectedStar = 0;
+    document.getElementById('reviewText').value = '';
+    document.querySelectorAll('.star-btn').forEach(function(b) { b.classList.remove('active'); });
+    loadReviews();
+  };
+
+  window.deleteReview = async function(reviewId) {
+    if (!confirm('후기를 삭제할까요?')) return;
+    await sb.from('buddy_reviews').delete().eq('id', reviewId).eq('reviewer_id', currentUser.id);
+    showToast('후기가 삭제됐습니다');
+    loadReviews();
+  };
 
   initSB();
 })();

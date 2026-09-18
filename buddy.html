@@ -444,7 +444,7 @@
   async function loadPosts() {
     var res = await sb
       .from('buddy_posts')
-      .select('*, profiles(username, license_type, license_level), pools(name, region)')
+      .select('*, profiles(username, license_type, license_level, avatar_url), pools(name, region)')
       .order('created_at', { ascending: false });
 
     allPosts = res.data || [];
@@ -603,7 +603,7 @@
             '<div class="buddy-meta">' +
               '<span>📅 ' + (p.date || '') + '</span>' +
               '<span>⏰ ' + (p.time_slot || '') + '</span>' +
-              '<span>👤 ' + username + '</span>' +
+              '<span>👤 ' + username + (p.avg_rating ? ' <span style="color:#f5a623">⭐' + parseFloat(p.avg_rating).toFixed(1) + '</span>' : '') + '</span>' +
             '</div>' +
             (p.note ? '<div class="buddy-note">📝 ' + p.note + '</div>' : '') +
           '</div>' +
