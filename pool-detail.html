@@ -447,7 +447,7 @@
     } else if (pool.owner_id && !hasBizInfo) {
       html += '<div style="font-size:13px;color:#bbb;text-align:center;padding:16px">업체 정보를 아직 등록하지 않았습니다</div>';
     } else if (!pool.owner_id && currentUser) {
-      html += '<button class="btn-register-biz" onclick="location.href='pool-manage.html?id=' + pool.id + ''">🏢 이 풀장의 업체이신가요? 정보를 등록해보세요!</button>';
+      html += '<button class="btn-register-biz" onclick="location.href=\'pool-manage.html?id=' + pool.id + '\'">🏢 이 풀장의 업체이신가요? 정보를 등록해보세요!</button>';
     }
 
     html += '</div>';
