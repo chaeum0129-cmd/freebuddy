@@ -432,8 +432,7 @@
         html += '<div class="biz-item" style="margin-bottom:12px"><div class="biz-label">💰 가격 안내</div><div class="biz-value" style="white-space:pre-line">' + pool.price_info + '</div></div>';
       }
       if (pool.description) {
-        html += '<div class="biz-desc">' + pool.description.replace(/
-/g,'<br>') + '</div>';
+        html += '<div class="biz-desc">' + pool.description.replace(/\n/g,'<br>') + '</div>';
       }
 
       // 링크 버튼
