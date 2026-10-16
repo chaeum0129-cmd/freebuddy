@@ -406,9 +406,9 @@
     html += '<div class="biz-header">';
     html += '<div class="biz-title">🏢 업체 정보' + (pool.is_verified ? ' <span class="biz-verified">✅ 인증</span>' : '') + '</div>';
     if (isOwner) {
-      html += '<button class="btn-manage" onclick="location.href='pool-manage.html?id=' + pool.id + ''"><i class="fa fa-cog"></i> 관리하기</button>';
+      html += '<button class="btn-manage" onclick="location.href=\'pool-manage.html?id=' + pool.id + '\'"><i class="fa fa-cog"></i> 관리하기</button>';
     } else if (!pool.owner_id && currentUser) {
-      html += '<button class="btn-manage" onclick="location.href='pool-manage.html?id=' + pool.id + ''">업체 등록</button>';
+      html += '<button class="btn-manage" onclick="location.href=\'pool-manage.html?id=' + pool.id + '\'">업체 등록</button>';
     }
     html += '</div>';
 
